@@ -14,6 +14,10 @@ export async function GET(request:NextRequest){
  const team=user.teams.find(t=>t.id===teamId);
  if(!team)return NextResponse.json({error:'Team not found for user'},{status:404});
 
+ const latestCompletedGp=await prisma.grandPrix.findFirst({where:{season,fantasyScores:{some:{points:{not:0}}}},orderBy:{round:'desc'}});
+ const targetRound=(latestCompletedGp?.round??0)+1;
+ const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}}});
+
  const snapshot=await prisma.teamSnapshot.findFirst({
   where:{teamId},
   orderBy:{capturedAt:'desc'},
@@ -35,12 +39,13 @@ export async function GET(request:NextRequest){
   team:{id:team.id,name:team.name,season:team.season},
   snapshot:{
    id:snapshot.id,capturedAt:snapshot.capturedAt,
-   grandPrix:{round:snapshot.grandPrix.round,name:snapshot.grandPrix.name},
+   grandPrix:{round:targetGp?.round??snapshot.grandPrix.round,name:targetGp?.name??snapshot.grandPrix.name},
    cashBalance:snapshot.cashBalance===null?null:Number(snapshot.cashBalance),
    freeTransfers:snapshot.freeTransfers,totalPoints:snapshot.totalPoints,
    assets:snapshot.slots.map(s=>{
     const p=s.asset.predictions[0];
-    const history=s.asset.fantasyScores.filter(x=>x.grandPrix.round<snapshot.grandPrix.round).slice(0,2);
+    const currentRound=targetGp?.round??snapshot.grandPrix.round;
+    const history=s.asset.fantasyScores.filter(x=>x.grandPrix.round<currentRound).slice(0,2);
     const probs=p?[p.probabilityMaxRise,p.probabilitySmallRise,p.probabilitySmallFall,p.probabilityMaxFall]:[null,null,null,null];
     const deltas=s.asset.prices[0]&&Number(s.asset.prices[0].price)>=18.5?[.3,.1,-.1,-.3]:[.6,.2,-.2,-.6];
     let mostLikelyDelta:number|null=null,mostLikelyProbability:number|null=null;
