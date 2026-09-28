@@ -62,6 +62,8 @@ async function openDetails(page:Page,cell:Locator){
 async function popupRaces(page:Page){
  await page.waitForSelector('.si-popup__container',{timeout:10000});
  const popup=page.locator('.si-popup__container');
+ await popup.locator('.si-accordion__box').first().waitFor({state:'visible',timeout:5000}).catch(()=>{});
+ await popup.locator('.si-totalPts__counts em').first().waitFor({state:'visible',timeout:3000}).catch(()=>{});
  const boxes=popup.locator('.si-accordion__box');
  const count=await boxes.count();
  const races:{raceName:string,totalPoints:number}[]=[];
