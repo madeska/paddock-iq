@@ -16,9 +16,9 @@ async function main() {
   });
 
   const gp = await prisma.grandPrix.upsert({
-    where: { season_round: { season: 2026, round: 18 } },
-    update: { name: 'Malaysia' },
-    create: { season: 2026, round: 18, name: 'Malaysia' },
+    where: { season_round: { season: 2026, round: 16 } },
+    update: { name: 'Bahrain GP in Malaysia' },
+    create: { season: 2026, round: 16, name: 'Bahrain GP in Malaysia' },
   });
 
   // Current 2026 market snapshot for the Azerbaijan -> Malaysia transition.
