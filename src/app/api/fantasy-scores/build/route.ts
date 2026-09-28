@@ -14,12 +14,11 @@ export async function GET(request: NextRequest) {
       complete: false,
       drivers,
       missingInputs: [
-        'overtakes',
         'driverOfDay',
         'constructorQualifyingTeamwork',
         'constructorPitStopPoints',
       ],
-      note: 'Missing Fantasy-specific inputs are never assumed to be zero.',
+      note: 'Overtakes use the OpenF1 beta feed and carry an explicit quality flag. Missing Fantasy-specific inputs are never assumed to be zero.',
     });
   } catch (error) {
     return NextResponse.json(

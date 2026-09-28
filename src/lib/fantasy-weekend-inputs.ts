@@ -23,6 +23,8 @@ export type WeekendDriverInput = {
   raceStartPosition: number | null;
   raceFinishPosition: number | null;
   fastestLap: boolean;
+  overtakes: number;
+  overtakeDataQuality: 'openf1-beta';
   dnf: boolean;
 };
 
@@ -34,11 +36,12 @@ export async function buildFantasyWeekendInputs(meetingKey: number) {
 
   const raceKey = Number(race.session_key);
   const qualifyingKey = Number(qualifying.session_key);
-  const [drivers, raceResults, qualifyingResults, laps] = await Promise.all([
+  const [drivers, raceResults, qualifyingResults, laps, overtakes] = await Promise.all([
     openF1('drivers', { session_key: raceKey }),
     openF1('session_result', { session_key: raceKey }),
     openF1('session_result', { session_key: qualifyingKey }),
     openF1('laps', { session_key: raceKey }),
+    openF1('overtakes', { session_key: raceKey }),
   ]);
 
   const fastestByDriver = new Map<number, number>();
@@ -63,6 +66,8 @@ export async function buildFantasyWeekendInputs(meetingKey: number) {
       raceStartPosition: raceResult?.grid_position == null ? null : Number(raceResult.grid_position),
       raceFinishPosition: raceResult?.position == null ? null : Number(raceResult.position),
       fastestLap: fastestByDriver.get(number) === fastest,
+      overtakes: overtakes.filter((o) => Number(o.overtaking_driver_number) === number).length,
+      overtakeDataQuality: 'openf1-beta',
       dnf: Boolean(raceResult?.dnf || raceResult?.dns || raceResult?.dsq),
     } satisfies WeekendDriverInput;
   });
