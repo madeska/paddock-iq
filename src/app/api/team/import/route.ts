@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AssetType, ChipStatus } from '@prisma/client';
-import { prisma } from '../../../lib/prisma';
+import { prisma } from '../../../../lib/prisma';
 
 type TeamImport = {
   user:{email:string;name?:string};
