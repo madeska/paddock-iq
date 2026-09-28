@@ -53,6 +53,7 @@ model Asset {
   code         String
   name         String
   type         AssetType
+  active       Boolean           @default(true)
   prices       PriceHistory[]
   predictions  AssetPrediction[]
   slots        TeamSlot[]
