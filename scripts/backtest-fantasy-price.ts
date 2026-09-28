@@ -52,8 +52,11 @@ async function main(){
  const history=new Map<string,Obs[]>();
  const evaluations:{round:number;key:string;ppm:number;oldPrice:number;actual:number;predicted:number;correct:boolean}[]=[];
 
+ const feeds=new Map<number,Row[]>();
+ for(let round=1;round<=16;round++)feeds.set(round,await fetchRound(round));
+
  for(let round=1;round<=15;round++){
-  const rows=await fetchRound(round);
+  const rows=feeds.get(round)!;
   const teamMap=new Map<string,string>();
   for(const row of rows){
    if(row.PositionName!=='DRIVER'||row.TeamId==null)continue;
@@ -67,7 +70,7 @@ async function main(){
    const points=Number(row.GamedayPoints),oldPrice=Number(row.OldPlayerValue),newPrice=Number(row.Value);
    if(!Number.isFinite(points)||!Number.isFinite(oldPrice)||!Number.isFinite(newPrice)||oldPrice<=0)continue;
 
-   const obs:Obs={round,key,points,oldPrice,newPrice,actualDelta:round2(newPrice-oldPrice)};
+   const obs:Obs={round,key,points,oldPrice,newPrice,actualDelta:0};
    const list=history.get(key)??[];
    list.push(obs);
    history.set(key,list);
@@ -76,12 +79,27 @@ async function main(){
    const last3=list.slice(-3);
    if(last3[2].round!==round||last3[1].round!==round-1||last3[0].round!==round-2)continue;
 
+   const nextRows=feeds.get(round+1)??[];
+   const nextTeamMap=new Map<string,string>();
+   for(const nextRow of nextRows){
+    if(nextRow.PositionName!=='DRIVER'||nextRow.TeamId==null)continue;
+    const c=CONSTRUCTOR_CODES[String(nextRow.TeamName??'').toUpperCase()];
+    if(c)nextTeamMap.set(String(nextRow.TeamId),c);
+   }
+   const nextRow=nextRows.find(r=>nameKey(r,nextTeamMap)===key);
+   const nextPrice=Number(nextRow?.Value);
+   if(!Number.isFinite(nextPrice)||nextPrice<=0)continue;
+
+   const currentPrice=newPrice;
+   const actual=round2(nextPrice-currentPrice);
    const sum=last3.reduce((s,x)=>s+x.points,0);
-   const ppm=sum/(3*oldPrice);
-   const predicted=expectedDelta(ppm,oldPrice);
+   const ppm=sum/(3*currentPrice);
+   let predicted=expectedDelta(ppm,currentPrice);
+   if(currentPrice<=3&&predicted<0)predicted=0;
+
    evaluations.push({
-    round,key,ppm,oldPrice,actual:obs.actualDelta,predicted,
-    correct:Math.abs(obs.actualDelta-predicted)<.01,
+    round,key,ppm,oldPrice:currentPrice,actual,predicted,
+    correct:Math.abs(actual-predicted)<.01,
    });
   }
  }
