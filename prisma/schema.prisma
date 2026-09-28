@@ -152,6 +152,10 @@ model AssetPrediction {
   expectedPoints     Float?
   expectedPriceDelta Float?
   probabilityRise    Float?
+  probabilityFlat    Float?
+  probabilityFall    Float?
+  confidence         Float?
+  source             String?
   modelVersion       String
   createdAt          DateTime   @default(now())
 
