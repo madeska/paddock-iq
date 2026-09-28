@@ -1,44 +1,28 @@
-const URL='https://fantasy.formula1.com/feeds/drivers/16_en.json';
+const BASE='https://fantasy.formula1.com/feeds/drivers';
 
-function keys(value:unknown){
- return value&&typeof value==='object'&&!Array.isArray(value)?Object.keys(value as Record<string,unknown>):[];
-}
-
-function preview(value:unknown,depth=0):unknown{
- if(depth>5)return '[max-depth]';
- if(Array.isArray(value))return value.slice(0,3).map(v=>preview(v,depth+1));
- if(value&&typeof value==='object'){
-  const out:Record<string,unknown>={};
-  for(const [k,v] of Object.entries(value as Record<string,unknown>).slice(0,40))out[k]=preview(v,depth+1);
-  return out;
- }
- return value;
+async function fetchRound(round:number){
+ const url=BASE+'/'+round+'_en.json';
+ const response=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!response.ok)return {round,status:response.status,items:[] as any[]};
+ const json=await response.json() as any;
+ const items=Array.isArray(json?.Data?.Value)?json.Data.Value:[];
+ return {round,status:response.status,items};
 }
 
 async function main(){
- const response=await fetch(URL,{headers:{'user-agent':'Mozilla/5.0'}});
- if(!response.ok)throw new Error('Feed request failed: '+response.status);
- const json=await response.json() as any;
+ for(const round of [1,2,14,15,16]){
+  const data=await fetchRound(round);
+  const drivers=data.items.filter((x:any)=>x.PositionName==='DRIVER');
+  const constructors=data.items.filter((x:any)=>x.PositionName==='CONSTRUCTOR');
+  const ant=drivers.find((x:any)=>x.DriverTLA==='ANT'||x.PlayerId==='11161');
+  const ver=drivers.find((x:any)=>x.DriverTLA==='VER');
+  const mer=constructors.find((x:any)=>String(x.TeamName).toUpperCase().includes('MERCEDES'));
 
- console.log('top keys:',keys(json));
- console.log('Data keys:',keys(json?.Data));
-
- const players=json?.Data?.players ?? json?.Data?.Players ?? json?.players;
- console.log('players keys:',keys(players));
-
- const popup=players?.['player-popup'];
- const statView=players?.['stat-view'];
-
- console.log('player-popup ids:',keys(popup).slice(0,30));
- console.log('stat-view ids:',keys(statView).slice(0,30));
-
- const antonelli=popup?.['11161'] ?? statView?.['11161'];
- console.log('\nANTONELLI 11161\n');
- console.log(JSON.stringify(preview(antonelli),null,2));
-
- if(!antonelli){
-  console.log('\nDATA PREVIEW\n');
-  console.log(JSON.stringify(preview(json?.Data),null,2));
+  console.log('\nROUND',round,'status',data.status,'items',data.items.length,'drivers',drivers.length,'constructors',constructors.length);
+  if(ant)console.log('ANT',{PlayerId:ant.PlayerId,GamedayPoints:ant.GamedayPoints,OverallPpints:ant.OverallPpints,OldPlayerValue:ant.OldPlayerValue,Value:ant.Value});
+  if(ver)console.log('VER',{PlayerId:ver.PlayerId,GamedayPoints:ver.GamedayPoints,OverallPpints:ver.OverallPpints,OldPlayerValue:ver.OldPlayerValue,Value:ver.Value});
+  if(mer)console.log('MER',{PlayerId:mer.PlayerId,GamedayPoints:mer.GamedayPoints,OverallPpints:mer.OverallPpints,OldPlayerValue:mer.OldPlayerValue,Value:mer.Value});
+  else console.log('constructor sample: none in this feed');
  }
 }
 
