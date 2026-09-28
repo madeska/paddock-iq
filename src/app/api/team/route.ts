@@ -25,7 +25,7 @@ export async function GET(request:NextRequest){
    grandPrix:true,
    slots:{include:{asset:{include:{
     prices:{orderBy:{recordedAt:'desc'},take:1},
-    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:'price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1}:{where:{modelVersion:'price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1},
+    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:'xpts-fantasy-weighted5-v1 + price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1}:{where:{modelVersion:'xpts-fantasy-weighted5-v1 + price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1},
     fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}
