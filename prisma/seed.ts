@@ -75,14 +75,21 @@ async function main() {
     });
   }
 
+  const teamCodes = new Set(['VER','ANT','HUL','PER','BOT','MER','FER']);
+  const teamAssetIds = assetRows.filter(row => teamCodes.has(row.code)).map(row => row.id);
+  await prisma.teamSlot.deleteMany({where:{snapshotId:snapshot.id,assetId:{notIn:teamAssetIds}}});
+
   for (let i = 0; i < assetRows.length; i++) {
     const row = assetRows[i];
     const price = assets[i][3];
-    await prisma.teamSlot.upsert({
-      where: { snapshotId_assetId: { snapshotId: snapshot.id, assetId: row.id } },
-      update: { isDoubled: row.code === 'VER' },
-      create: { snapshotId: snapshot.id, assetId: row.id, isDoubled: row.code === 'VER' },
-    });
+
+    if (teamCodes.has(row.code)) {
+      await prisma.teamSlot.upsert({
+        where: { snapshotId_assetId: { snapshotId: snapshot.id, assetId: row.id } },
+        update: { isDoubled: row.code === 'VER' },
+        create: { snapshotId: snapshot.id, assetId: row.id, isDoubled: row.code === 'VER' },
+      });
+    }
 
     const existingPrice = await prisma.priceHistory.findFirst({
       where: { assetId: row.id, grandPrixId: gp.id, source: 'Market snapshot 2026-09-29' },
