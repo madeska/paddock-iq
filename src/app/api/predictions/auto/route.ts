@@ -51,13 +51,17 @@ export async function POST(request:NextRequest){
     const match=Object.entries(aliases).find(([,market])=>market===asset.name)?.[0];
     const xs=match?teamPoints.get(match):undefined;
     if(xs?.length)pts=Math.round((xs.reduce((a,b)=>a+b,0)+5)*10)/10;
+    // OpenF1 team naming can differ from our market names. Never leave the optimizer
+    // with a partial prediction set: use a conservative market-prior fallback.
+    if(pts==null)pts=Math.round((12+clamp((current-3)/30,0,1)*48)*10)/10;
    }
-   if(pts==null)continue;
+   if(pts==null)pts=Math.round((5+clamp((current-3)/25,0,1)*25)*10)/10;
    const previous=asset.prices[1]?Number(asset.prices[1].price):current;
    const p=predictPrice({currentPrice:current,previousPrice:previous,expectedPoints:pts});
    const row=await prisma.assetPrediction.create({data:{assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,expectedPriceDelta:p.expectedDelta,probabilityRise:p.probabilityRise,probabilityFlat:p.probabilityFlat,probabilityFall:p.probabilityFall,confidence:Math.min(p.confidence,0.55),source:'Paddock IQ + OpenF1 recent-form heuristic',modelVersion:'xpts-openf1-v0.1'}});
    created.push({code:asset.code,expectedPoints:pts,expectedDelta:p.expectedDelta,id:row.id});
   }
-  return NextResponse.json({ok:true,created:created.length,sourceSession:sessionKey,predictions:created,warning:'Experimental v0.1 projection. Uses latest completed OpenF1 race form plus a market-price prior; it is not an official F1 Fantasy projection.'});
+  const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
+  return NextResponse.json({ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,sourceSession:sessionKey,predictions:created,warning:'Experimental v0.1 projection. Uses latest completed OpenF1 race form plus a market-price prior; it is not an official F1 Fantasy projection.'});
  }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500})}
 }
