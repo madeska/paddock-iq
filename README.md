@@ -46,3 +46,12 @@ Prices are in millions. Enter prices and model forecasts for all 7 current asset
 - Added `prisma/seed.ts` to seed the Panass 2026 snapshot, seven owned assets, screenshot prices, free transfers, chip states and initial price history.
 - Added `npm run db:seed` and `npm run db:studio`.
 - This branch still does not fetch live F1 Fantasy prices automatically. Database setup is the next required environment step.
+
+
+## v0.7 market and prediction layer
+- Added `GET /api/market?season=2026&round=18` to expose database-backed asset prices and latest predictions.
+- Added `GET/POST /api/predictions` for generating and reading price-change predictions.
+- Added a transparent heuristic price model in `src/lib/price-predictor.ts` using recent price momentum plus expected fantasy-points input.
+- Prediction rows now persist rise/flat/fall probabilities, confidence, source and model version.
+- The heuristic is intentionally labeled as non-official. F1 Fantasy Tools publicly describes Budget Builder as using required point ranges and simulated price-change odds, so Paddock IQ follows the same *product idea* without copying a proprietary formula or dataset.
+- Current database still contains only the seven screenshot-seeded owned assets. Full market ingestion is the next step.
