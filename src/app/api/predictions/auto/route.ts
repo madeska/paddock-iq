@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
-import { predictPrice } from '../../../../lib/price-predictor';
+import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 
 type OFDriver={driver_number:number;name_acronym:string;team_name:string};
 type OFResult={driver_number:number;position:number;dnf?:boolean;dns?:boolean;dsq?:boolean};
@@ -28,7 +28,7 @@ export async function POST(request:NextRequest){
   }));
   const latestDrivers=raceData[0].drivers;
   const latestByCode=new Map(latestDrivers.map(d=>[d.name_acronym,d]));
-  const assets=await prisma.asset.findMany({where:{season,active:true},include:{prices:{orderBy:{recordedAt:'desc'},take:2}}});
+  const assets=await prisma.asset.findMany({where:{season,active:true},include:{prices:{orderBy:{recordedAt:'desc'},take:2},fantasyScores:{where:{grandPrix:{round:{lt:round}}},orderBy:{grandPrix:{round:'desc'}},take:2}}});
   const driverXPts=new Map<string,number>(); const teamPoints=new Map<string,number[]>();
   const weights=[1,.82,.67,.55,.45];
 
@@ -68,12 +68,14 @@ export async function POST(request:NextRequest){
     if(pts==null)pts=Math.round((12+clamp((current-3)/30,0,1)*48)*10)/10;
    }
    if(pts==null)pts=Math.round((5+clamp((current-3)/25,0,1)*25)*10)/10;
-   const previous=asset.prices[1]?Number(asset.prices[1].price):current;
-   const p=predictPrice({currentPrice:current,previousPrice:previous,expectedPoints:pts});
-   const row=await prisma.assetPrediction.create({data:{assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,expectedPriceDelta:p.expectedDelta,probabilityRise:p.probabilityRise,probabilityFlat:p.probabilityFlat,probabilityFall:p.probabilityFall,confidence:Math.min(p.confidence,0.55),source:'Paddock IQ + OpenF1 rolling 5-race form',modelVersion:'xpts-openf1-v1.0'}});
-   created.push({code:asset.code,expectedPoints:pts,expectedDelta:p.expectedDelta,id:row.id});
+   const scores=asset.fantasyScores.map(s=>s.points);
+   const price=scores.length===2?predictFantasyPrice({currentPrice:current,previousFantasyPoints:[scores[1],scores[0]],expectedPoints:pts}):null;
+   const rise=price?price.probabilities.smallRise+price.probabilities.maxRise:null;
+   const fall=price?price.probabilities.smallFall+price.probabilities.maxFall:null;
+   const row=await prisma.assetPrediction.create({data:{assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,expectedPriceDelta:price?.expectedDelta??null,probabilityRise:rise,probabilityFlat:0,probabilityFall:fall,probabilityMaxRise:price?.probabilities.maxRise??null,probabilitySmallRise:price?.probabilities.smallRise??null,probabilitySmallFall:price?.probabilities.smallFall??null,probabilityMaxFall:price?.probabilities.maxFall??null,requiredPointsMaxRise:price?.thresholds.maxRiseAt??null,requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,confidence:price?Math.min(.55,.25+scores.length*.15):null,source:price?'Paddock IQ xPts + rolling-3 Fantasy PPM':'Paddock IQ xPts; price model awaiting 2 actual Fantasy scores',modelVersion:price?'price-probability-v0.2':'xpts-openf1-v1.0'}});
+   created.push({code:asset.code,expectedPoints:pts,expectedDelta:price?.expectedDelta??null,priceReady:Boolean(price),id:row.id});
   }
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
-  return NextResponse.json({ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,sourceSessions:completed.map(s=>s.session_key),predictions:created,warning:'Experimental v1.0 projection. Uses recency-weighted results from up to five completed OpenF1 races, reliability and a market-price prior; it is not an official F1 Fantasy projection.'});
+  return NextResponse.json({ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,sourceSessions:completed.map(s=>s.session_key),predictions:created,warning:'xPts remain experimental. Price probabilities are generated only when two actual prior F1 Fantasy scores are stored; missing history returns null rather than a heuristic delta.'});
  }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500})}
 }
