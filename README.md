@@ -38,3 +38,11 @@ Prices are in millions. Enter prices and model forecasts for all 7 current asset
 - Export/import a JSON backup for moving between devices. Import validates the top-level format; treat imported data as untrusted, do not upload secrets.
 - Lock selected assets to exclude them from sell recommendations. Prisma chip status now includes LOCKED.
 - This is not database-backed user synchronization: Neon credentials and a deployment are still needed for that. No verified live Fantasy API integration or price forecast is claimed.
+
+
+## v0.6 database foundation
+- Added a shared Prisma client in `src/lib/prisma.ts`.
+- Added `GET /api/db/health` to verify the configured PostgreSQL/Neon connection and report row counts.
+- Added `prisma/seed.ts` to seed the Panass 2026 snapshot, seven owned assets, screenshot prices, free transfers, chip states and initial price history.
+- Added `npm run db:seed` and `npm run db:studio`.
+- This branch still does not fetch live F1 Fantasy prices automatically. Database setup is the next required environment step.
