@@ -1,37 +1,24 @@
-import { chromium } from 'playwright';
+const URL='https://fantasy.formula1.com/feeds/v2/statistics/driverconstructors_4.json';
 
-const URL='https://fantasy.formula1.com/en/statistics/details?tab=driver&filter=fPoints';
+function summarize(value:unknown,depth=0):unknown{
+ if(depth>3)return typeof value;
+ if(Array.isArray(value))return {type:'array',length:value.length,sample:value.slice(0,2).map(v=>summarize(v,depth+1))};
+ if(value&&typeof value==='object'){
+  const obj=value as Record<string,unknown>;
+  const out:Record<string,unknown>={};
+  for(const [key,val] of Object.entries(obj).slice(0,30))out[key]=summarize(val,depth+1);
+  return out;
+ }
+ return value;
+}
 
 async function main(){
- const browser=await chromium.launch({headless:true});
- try{
-  const page=await browser.newPage();
-  const seen=new Set<string>();
-
-  page.on('response',async(response)=>{
-   const url=response.url();
-   const type=response.request().resourceType();
-   if(!['xhr','fetch'].includes(type))return;
-   if(seen.has(url))return;
-   seen.add(url);
-
-   const contentType=response.headers()['content-type']||'';
-   let summary='';
-   if(contentType.includes('json')){
-    try{
-     const json=await response.json();
-     if(Array.isArray(json))summary='array['+json.length+']';
-     else if(json&&typeof json==='object')summary='keys='+Object.keys(json).slice(0,20).join(',');
-    }catch{}
-   }
-   console.log(response.status(),type,url,summary);
-  });
-
-  await page.goto(URL,{waitUntil:'networkidle',timeout:60000});
-  await page.waitForTimeout(5000);
- }finally{
-  await browser.close();
- }
+ const response=await fetch(URL,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!response.ok)throw new Error('Feed request failed: '+response.status);
+ const json=await response.json();
+ console.log('URL:',URL);
+ console.log('Top-level keys:',Object.keys(json as Record<string,unknown>));
+ console.log(JSON.stringify(summarize(json),null,2));
 }
 
 main().catch(error=>{console.error(error);process.exitCode=1});
