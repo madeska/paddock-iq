@@ -1,4 +1,7 @@
 import {chromium,Page} from 'playwright';
+import {loadEnvConfig} from '@next/env';
+
+loadEnvConfig(process.cwd());
 
 const BASE='https://fantasy.formula1.com/en/statistics/details';
 const app=process.env.PADDOCK_IQ_URL||'http://localhost:3000';
