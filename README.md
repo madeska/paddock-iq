@@ -63,3 +63,10 @@ Prices are in millions. Enter prices and model forecasts for all 7 current asset
 - Import provenance is persisted through the `source` field.
 - Example payload: `examples/market-import.example.json`.
 - No live Fantasy price feed is assumed. Use only verified current market data; do not invent missing prices.
+
+
+## v0.9 official F1 Fantasy connector
+- Added a server-only connector for the official F1 Fantasy API at `fantasy-api.formula1.com/partner_games/f1`.
+- `GET /api/fantasy/sync?season=2026` currently performs a safe discovery fetch of `/{season}/players` and returns only a small sample.
+- Authentication is read only from `F1_FANTASY_TOKEN` in the server environment. Never commit a real token.
+- The importer intentionally does **not** map upstream fields into Paddock IQ yet. We first inspect the real 2026 payload shape, then add a typed adapter so an upstream schema assumption cannot corrupt market prices.
