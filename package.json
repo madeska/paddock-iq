@@ -13,7 +13,8 @@
     "fantasy:sync": "tsx scripts/sync-fantasy-statistics.ts",
     "fantasy:probe": "tsx scripts/probe-fantasy-network.ts",
     "fantasy:backtest-price": "tsx scripts/backtest-fantasy-price.ts",
-    "fantasy:backtest-xpts": "tsx scripts/backtest-xpts.ts"
+    "fantasy:backtest-xpts": "tsx scripts/backtest-xpts.ts",
+    "fantasy:backtest-xpts-robust": "tsx scripts/backtest-xpts-robust.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
