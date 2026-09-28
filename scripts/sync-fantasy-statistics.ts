@@ -23,6 +23,7 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
  return out;
 }
 
+async function main(){
 const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1200}});
@@ -32,3 +33,7 @@ try{
  const result=await response.json();if(!response.ok)throw new Error(JSON.stringify(result));
  console.log(JSON.stringify({drivers:drivers.length,constructors:constructors.length,...result},null,2));
 }finally{await browser.close()}
+
+}
+
+main().catch((error)=>{console.error(error);process.exitCode=1});
