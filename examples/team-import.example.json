@@ -1,0 +1,19 @@
+{
+  "user": {"email": "driver@example.com", "name": "Example Driver"},
+  "team": {"name": "My Team", "season": 2026},
+  "round": 18,
+  "grandPrixName": "Malaysia",
+  "cashBalance": 2.4,
+  "freeTransfers": 2,
+  "totalPoints": 3918,
+  "assets": [
+    {"code":"VER","type":"DRIVER","isDoubled":true},
+    {"code":"ANT","type":"DRIVER"},
+    {"code":"HUL","type":"DRIVER"},
+    {"code":"PER","type":"DRIVER"},
+    {"code":"BOT","type":"DRIVER"},
+    {"code":"MER","type":"CONSTRUCTOR"},
+    {"code":"FER","type":"CONSTRUCTOR"}
+  ],
+  "chips": {"WC":"USED","LL":"USED","AP":"USED","NN":"USED","DRS":"USED","FF":"LOCKED"}
+}
