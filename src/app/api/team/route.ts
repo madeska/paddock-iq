@@ -25,7 +25,7 @@ export async function GET(request:NextRequest){
    grandPrix:true,
    slots:{include:{asset:{include:{
     prices:{orderBy:{recordedAt:'desc'},take:1},
-    predictions:{orderBy:{createdAt:'desc'},take:1},
+    predictions:targetGp?{where:{grandPrixId:targetGp.id},orderBy:{createdAt:'desc'},take:1}:{orderBy:{createdAt:'desc'},take:1},
     fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}
@@ -57,7 +57,7 @@ export async function GET(request:NextRequest){
     return {
      code:s.asset.code,name:s.asset.name,type:s.asset.type,isDoubled:s.isDoubled,
      price:s.asset.prices[0]?Number(s.asset.prices[0].price):null,
-     expectedPoints:p?.expectedPoints??null,expectedDelta:p?.expectedPriceDelta??null,
+     expectedPoints:p?.expectedPoints??null,expectedDelta:p?.expectedPriceDelta??null,modelVersion:p?.modelVersion??null,
      probabilityMaxRise:p?.probabilityMaxRise??null,probabilitySmallRise:p?.probabilitySmallRise??null,
      probabilitySmallFall:p?.probabilitySmallFall??null,probabilityMaxFall:p?.probabilityMaxFall??null,probabilityFlat:p?.probabilityFlat??null,
      requiredPointsMaxRise:p?.requiredPointsMaxRise??null,requiredPointsSmallRise:p?.requiredPointsSmallRise??null,
