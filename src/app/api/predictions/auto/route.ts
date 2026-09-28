@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 
-const weights=[1,.82,.67,.55,.45];
+const EWMA_ALPHA=.25;
 
-const weighted5=(scores:number[])=>{
- const recent=scores.slice(0,5);
- if(!recent.length)return null;
- const ws=weights.slice(0,recent.length);
- const total=ws.reduce((a,b)=>a+b,0);
- return recent.reduce((sum,score,index)=>sum+score*ws[index],0)/total;
+const ewma=(scoresNewestFirst:number[])=>{
+ const chronological=[...scoresNewestFirst].reverse();
+ if(!chronological.length)return null;
+ let value=chronological[0];
+ for(const score of chronological.slice(1))value=EWMA_ALPHA*score+(1-EWMA_ALPHA)*value;
+ return value;
 };
 
 const sampleStdDev=(scores:number[])=>{
@@ -45,7 +45,7 @@ export async function POST(request:NextRequest){
    if(current==null)continue;
 
    const scores=asset.fantasyScores.map(s=>s.points);
-   const rawXPts=weighted5(scores);
+   const rawXPts=ewma(scores);
    if(rawXPts==null)continue;
    const pts=Math.round(rawXPts*10)/10;
 
@@ -81,8 +81,8 @@ export async function POST(request:NextRequest){
      requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,
      requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
      confidence:Math.min(.8,.35+scores.length*.09),
-     source:price?'Official F1 Fantasy rolling weighted-5 xPts + validated rolling-3 PPM price model':'Official F1 Fantasy rolling weighted-5 xPts',
-     modelVersion:price?'xpts-fantasy-weighted5-v1 + price-probability-v0.3-floor-aware':'xpts-fantasy-weighted5-v1'
+     source:price?'Official F1 Fantasy EWMA(0.25) xPts + validated rolling-3 PPM price model':'Official F1 Fantasy EWMA(0.25) xPts',
+     modelVersion:price?'xpts-fantasy-ewma025-v1 + price-probability-v0.3-floor-aware':'xpts-fantasy-ewma025-v1'
     }
    });
 
@@ -104,10 +104,10 @@ export async function POST(request:NextRequest){
    created:created.length,
    totalAssets:assets.length,
    missing,
-   model:'xpts-fantasy-weighted5-v1',
-   weights,
+   model:'xpts-fantasy-ewma025-v1',
+   alpha:EWMA_ALPHA,
    predictions:created,
-   warning:'xPts are a recency-weighted baseline from the last five official F1 Fantasy round scores. Track/session-specific modifiers are not yet included.'
+   warning:'xPts use EWMA alpha 0.25 over official F1 Fantasy round scores. Track/session-specific modifiers are not yet included.'
   });
  }catch(error){
   return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500});
