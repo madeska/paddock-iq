@@ -1,180 +1,149 @@
-import {chromium,Page,Locator} from 'playwright';
-import {loadEnvConfig} from '@next/env';
+import { AssetType, PrismaClient } from '@prisma/client';
+import { loadEnvConfig } from '@next/env';
 
 loadEnvConfig(process.cwd());
 
-const BASE='https://fantasy.formula1.com/en/statistics/details';
-const app=process.env.PADDOCK_IQ_URL||'http://localhost:3000';
-const key=process.env.MARKET_ADMIN_KEY;
-if(!key)throw new Error('MARKET_ADMIN_KEY is required');
+const prisma=new PrismaClient();
+const SEASON=2026;
+const BASE='https://fantasy.formula1.com/feeds/drivers';
 
-const DRIVER_CODES:Record<string,string>={
- NORRIS:'NOR',PIASTRI:'PIA',VERSTAPPEN:'VER',RUSSELL:'RUS',HAMILTON:'HAM',LECLERC:'LEC',
- ANTONELLI:'ANT',HADJAR:'HAD',GASLY:'GAS',COLAPINTO:'COL',LAWSON:'LAW',SAINZ:'SAI',
- OCON:'OCO',BORTOLETO:'BOR',LINDBLAD:'LIN',ALONSO:'ALO',ALBON:'ALB',BEARMAN:'BEA',
- HULKENBERG:'HUL',HÜLKENBERG:'HUL',BOTTAS:'BOT',PEREZ:'PER',PÉREZ:'PER',STROLL:'STR'
+type FeedRow={
+ PlayerId?:string|number;
+ PositionName?:string;
+ DriverTLA?:string;
+ TeamId?:string|number;
+ TeamName?:string;
+ FUllName?:string;
+ DisplayName?:string;
+ GamedayPoints?:string|number|null;
 };
+
 const CONSTRUCTOR_CODES:Record<string,string>={
- 'MCLAREN':'MCL','RED BULL':'RBR','RED BULL RACING':'RBR','FERRARI':'FER','MERCEDES':'MER',
- 'ASTON MARTIN':'AST','ALPINE':'ALP','HAAS':'HAS','HAAS F1 TEAM':'HAS','WILLIAMS':'WIL',
- 'RACING BULLS':'RB','RB':'RB','AUDI':'AUD','AUDI REVOLUT F1 TEAM':'AUD','CADILLAC':'CAD',
- 'CADILLAC FORMULA 1 TEAM':'CAD'
+ 'MCLAREN':'MCL',
+ 'RED BULL':'RBR',
+ 'RED BULL RACING':'RBR',
+ 'FERRARI':'FER',
+ 'MERCEDES':'MER',
+ 'ASTON MARTIN':'AST',
+ 'ALPINE':'ALP',
+ 'HAAS':'HAS',
+ 'HAAS F1 TEAM':'HAS',
+ 'WILLIAMS':'WIL',
+ 'RACING BULLS':'RB',
+ 'RB':'RB',
+ 'AUDI':'AUD',
+ 'AUDI REVOLUT F1 TEAM':'AUD',
+ 'CADILLAC':'CAD',
+ 'CADILLAC FORMULA 1 TEAM':'CAD',
 };
 
-async function consent(page:Page){
- const frame=page.locator('iframe[title="SP Consent Message"], iframe[id^="sp_message_iframe_"]').first();
- if(await frame.count()){
-  const body=frame.contentFrame();
-  const essential=body.getByRole('button',{name:/Essential only cookies/i}).or(body.getByText(/Essential only cookies/i)).first();
-  await essential.click({timeout:5000}).catch(async()=>{
-   const anyButton=body.locator('button').filter({hasText:/Essential|Reject|Necessary/i}).first();
-   await anyButton.click({timeout:3000}).catch(()=>{});
-  });
-  await page.locator('[id^="sp_message_container_"]').waitFor({state:'detached',timeout:5000}).catch(()=>{});
-  await page.waitForTimeout(500);
- }
+function constructorCode(name:unknown){
+ const upper=String(name??'').trim().toUpperCase();
+ return CONSTRUCTOR_CODES[upper]??null;
 }
 
-function matchCode(text:string,map:Record<string,string>){
- const upper=text.toUpperCase();
- return Object.entries(map).sort((a,b)=>b[0].length-a[0].length).find(([name])=>upper.includes(name))?.[1]??null;
-}
-
-async function popupVisible(page:Page,timeout=700){
- return page.locator('.si-popup__container').waitFor({state:'visible',timeout}).then(()=>true).catch(()=>false);
-}
-
-async function openDetails(page:Page,cell:Locator){
- await cell.click({timeout:1500}).catch(async()=>{await cell.click({force:true,timeout:800}).catch(()=>{})});
- if(await popupVisible(page,900))return 0;
- const candidates=[cell.locator('xpath=..'),cell.locator('xpath=../..'),cell.locator('xpath=../../..')];
- for(let level=0;level<candidates.length;level++){
-  const target=candidates[level];
-  if(!await target.count())continue;
-  await target.click({timeout:2500}).catch(async()=>{await target.click({force:true,timeout:1500}).catch(()=>{})});
-  if(await popupVisible(page))return level+1;
-  await target.evaluate((el:any)=>el.click?.()).catch(()=>{});
-  if(await popupVisible(page))return level+1;
- }
- return -1;
-}
-
-async function popupRaces(page:Page){
- await page.waitForSelector('.si-popup__container',{timeout:10000});
- const popup=page.locator('.si-popup__container');
- await popup.locator('.si-accordion__box').first().waitFor({state:'visible',timeout:5000}).catch(()=>{});
- await popup.locator('.si-totalPts__counts em').first().waitFor({state:'visible',timeout:3000}).catch(()=>{});
- const boxes=popup.locator('.si-accordion__box');
- const count=await boxes.count();
- const races:{round:string,raceName:string,totalPoints:number}[]=[];
- let round=0;
- for(let i=0;i<count;i++){
-  const box=boxes.nth(i);
-  const raceName=(await box.locator('.si-league__card-title span').first().textContent().catch(()=>null))?.trim();
-  const pointsText=(await box.locator('.si-totalPts__counts em').first().textContent().catch(()=>null))?.trim();
-  if(!raceName||raceName.toLowerCase()==='season')continue;
-  round++;
-  const points=Number((pointsText??'').replace(/[^0-9-]/g,''));
-  if(Number.isFinite(points))races.push({round:String(round),raceName,totalPoints:points});
- }
- return races;
-}
-
-async function closePopup(page:Page){
- const popup=page.locator('.si-popup__container');
- if(!await popup.count())return true;
- const close=page.locator('.si-popup__close').first();
- if(await close.count()){
-  await close.click({timeout:1500}).catch(async()=>{await close.evaluate((el:any)=>el.click?.()).catch(()=>{})});
- }
- if(await popup.waitFor({state:'hidden',timeout:1800}).then(()=>true).catch(()=>false))return true;
- await page.keyboard.press('Escape').catch(()=>{});
- return popup.waitFor({state:'hidden',timeout:1200}).then(()=>true).catch(()=>false);
-}
-
-async function loadTab(page:Page,tab:'driver'|'constructor'){
- await page.goto(BASE+'?tab='+tab+'&filter=fPoints',{waitUntil:'networkidle',timeout:60000});
- await consent(page);
- await page.waitForSelector('.si-main__container',{timeout:30000});
- const items=page.locator('div[class*="si-stats__list-item"]');
- await items.first().waitFor({state:'visible',timeout:10000});
- await page.waitForFunction((selector)=>document.querySelectorAll(selector).length>0,'div[class*="si-stats__list-item"]',{timeout:10000});
-}
-
-async function scrape(page:Page,tab:'driver'|'constructor'){
- await loadTab(page,tab);
-
- let itemCount=await page.locator('div[class*="si-stats__list-item"]').count();
- const group=tab==='driver'?4:3;
- const map=tab==='driver'?DRIVER_CODES:CONSTRUCTOR_CODES;
- const assets:{abbreviation:string;races:{round:string;raceName:string;totalPoints:number}[]}[]=[];
-
- console.log(`[${tab}] list items: ${itemCount}`);
- for(let i=0;i+group-1<itemCount;i+=group){
-  let liveItems=page.locator('div[class*="si-stats__list-item"]');
-  if(await liveItems.count()<=i){
-   await loadTab(page,tab);
-   liveItems=page.locator('div[class*="si-stats__list-item"]');
-   itemCount=await liveItems.count();
-  }
-  const primary=liveItems.nth(i);
-  await primary.waitFor({state:'visible',timeout:5000}).catch(async()=>{await loadTab(page,tab)});
-  liveItems=page.locator('div[class*="si-stats__list-item"]');
-  const freshPrimary=liveItems.nth(i);
-  const text=((await freshPrimary.textContent({timeout:5000}))??'').trim();
-  const code=matchCode(text,map);
-  if(!code)continue;
-  console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
-  let success=false;
-  for(let attempt=1;attempt<=2&&!success;attempt++){
-   try{
-    const closed=await closePopup(page);
-    if(!closed){
-     console.warn(`[${tab}] ${code}: stale popup would not close; reloading tab`);
-     await loadTab(page,tab);
-    }
-    let liveItems=page.locator('div[class*="si-stats__list-item"]');
-    if(await liveItems.count()<=i){await loadTab(page,tab);liveItems=page.locator('div[class*="si-stats__list-item"]')}
-    const livePrimary=liveItems.nth(i);
-    const openedAt=await openDetails(page,livePrimary);
-    if(openedAt<0)throw new Error('Details popup did not open');
-    const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent().catch(()=>''))||'').trim();
-    if(!popupName)throw new Error('Popup opened without player/constructor name');
-    const expectedNames=tab==='driver'?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k):Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
-    const normalizedName=popupName.toUpperCase();
-    if(!expectedNames.some(name=>normalizedName.includes(name))){
-     if(attempt===1){
-      console.warn(`[${tab}] ${code}: stale popup ${popupName}; reloading and retrying`);
-      await loadTab(page,tab);
-      continue;
-     }
-     throw new Error(`Popup identity mismatch after retry: expected ${code}, got ${popupName}`);
-    }
-    console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
-    const races=await popupRaces(page);
-    if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`);success=true}
-   }catch(error){
-    if(attempt===2)console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error);
-   }finally{
-    await closePopup(page);
-   }
-  }
- }
- console.log(`[${tab}] parsed assets: ${assets.length}`);
- return assets;
+async function fetchRound(round:number){
+ const url=BASE+'/'+round+'_en.json?buster='+Date.now();
+ const response=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 Paddock-IQ'}});
+ if(response.status===404)return null;
+ if(!response.ok)throw new Error('Round '+round+' feed failed: HTTP '+response.status);
+ const json=await response.json() as any;
+ const rows=Array.isArray(json?.Data?.Value)?json.Data.Value as FeedRow[]:[];
+ if(!rows.length)throw new Error('Round '+round+' feed returned no players');
+ return rows;
 }
 
 async function main(){
- const browser=await chromium.launch({headless:true});
- try{
-  const page=await browser.newPage({viewport:{width:1440,height:1200}});
-  const drivers=await scrape(page,'driver');
-  const constructors=await scrape(page,'constructor');
-  if(!drivers.length&&!constructors.length)throw new Error('Official Statistics UI returned no parsable assets. See list-item diagnostics above.');
-  const response=await fetch(app+'/api/fantasy-scores/statistics-import',{method:'POST',headers:{'content-type':'application/json','x-market-admin-key':key},body:JSON.stringify({season:2026,data:[...drivers,...constructors]})});
-  const result=await response.json();if(!response.ok)throw new Error(JSON.stringify(result));
-  console.log(JSON.stringify({drivers:drivers.length,constructors:constructors.length,...result},null,2));
- }finally{await browser.close()}
+ const assets=await prisma.asset.findMany({where:{season:SEASON}});
+ const byKey=new Map(assets.map(a=>[a.type+':'+a.code,a]));
+ let saved=0;
+ const skipped=new Set<string>();
+ const completedRounds:number[]=[];
+
+ for(let round=1;round<=30;round++){
+  const rows=await fetchRound(round);
+  if(!rows)break;
+
+  const points=rows
+   .map(row=>Number(row.GamedayPoints))
+   .filter(Number.isFinite);
+
+  const completed=points.some(value=>value!==0);
+  if(!completed){
+   console.log('Round '+round+': all GamedayPoints are 0 -> upcoming/not completed, stopping');
+   break;
+  }
+
+  const teamIdToCode=new Map<string,string>();
+  for(const row of rows){
+   if(row.PositionName!=='DRIVER')continue;
+   const code=constructorCode(row.TeamName);
+   if(code&&row.TeamId!=null)teamIdToCode.set(String(row.TeamId),code);
+  }
+
+  let gp=await prisma.grandPrix.findUnique({where:{season_round:{season:SEASON,round}}});
+  if(!gp){
+   gp=await prisma.grandPrix.create({data:{season:SEASON,round,name:'Round '+round}});
+  }
+
+  let roundSaved=0;
+  for(const row of rows){
+   const value=Number(row.GamedayPoints);
+   if(!Number.isFinite(value))continue;
+
+   let type:AssetType;
+   let code:string|null=null;
+
+   if(row.PositionName==='DRIVER'){
+    type=AssetType.DRIVER;
+    code=String(row.DriverTLA??'').trim().toUpperCase()||null;
+   }else if(row.PositionName==='CONSTRUCTOR'){
+    type=AssetType.CONSTRUCTOR;
+    code=teamIdToCode.get(String(row.PlayerId??''))??
+      constructorCode(row.TeamName)??constructorCode(row.FUllName)??constructorCode(row.DisplayName);
+   }else{
+    continue;
+   }
+
+   if(!code)continue;
+   const asset=byKey.get(type+':'+code);
+   if(!asset){skipped.add(type+':'+code);continue}
+
+   await prisma.fantasyRoundScore.upsert({
+    where:{assetId_grandPrixId:{assetId:asset.id,grandPrixId:gp.id}},
+    update:{points:value,source:'Official F1 Fantasy round feed'},
+    create:{assetId:asset.id,grandPrixId:gp.id,points:value,source:'Official F1 Fantasy round feed'},
+   });
+   saved++;
+   roundSaved++;
+  }
+
+  completedRounds.push(round);
+  console.log('Round '+round+': '+roundSaved+' scores saved');
+ }
+
+ if(!completedRounds.length)throw new Error('No completed Fantasy rounds found');
+
+ const latest=Math.max(...completedRounds);
+ const futureGps=await prisma.grandPrix.findMany({
+  where:{season:SEASON,round:{gt:latest}},
+  select:{id:true},
+ });
+ if(futureGps.length){
+  await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:{in:futureGps.map(g=>g.id)}}});
+ }
+
+ console.log(JSON.stringify({
+  ok:true,
+  season:SEASON,
+  rounds:completedRounds.length,
+  latestCompletedRound:latest,
+  saved,
+  skipped:[...skipped],
+  source:'Official F1 Fantasy /feeds/drivers/{round}_en.json',
+ },null,2));
 }
 
-main().catch((error)=>{console.error(error);process.exitCode=1});
+main()
+ .catch(error=>{console.error(error);process.exitCode=1})
+ .finally(async()=>{await prisma.$disconnect()});
