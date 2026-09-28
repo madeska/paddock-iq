@@ -6,7 +6,7 @@ import { type Mode } from '../../lib/optimizer';
 type Score = { round: number; name: string; points: number };
 type Asset = {
   code: string; name: string; type: string; isDoubled: boolean;
-  price: number | null; expectedPoints: number | null; expectedDelta: number | null;
+  price: number | null; expectedPoints: number | null; expectedDelta: number | null; modelVersion: string | null;
   probabilityMaxRise: number | null; probabilitySmallRise: number | null;
   probabilitySmallFall: number | null; probabilityMaxFall: number | null; probabilityFlat: number | null;
   requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null;
@@ -121,7 +121,7 @@ export default function MyTeam() {
               <td><b>{asset.code}</b> · {asset.name}{asset.isDoubled ? ' · 2×' : ''}<br/><small>{asset.type}</small></td>
               <td>{asset.price == null ? '—' : '$' + asset.price + 'M'}</td>
               <td>{asset.recentFantasyScores.length ? asset.recentFantasyScores.map((score) => <span key={score.round}>R{score.round}: <b>{score.points}</b><br/></span>) : '—'}</td>
-              <td>{asset.expectedPoints ?? '—'}</td>
+              <td>{asset.expectedPoints ?? '—'}{asset.modelVersion ? <><br/><small>{asset.modelVersion}</small></> : null}</td>
               <td>{fmtDelta(asset.expectedDelta)}</td>
               <td>{asset.mostLikelyDelta == null ? '—' : fmtDelta(asset.mostLikelyDelta) + ' · ' + pct(asset.mostLikelyProbability)}</td>
               <td><small>Max ↑ {pct(asset.probabilityMaxRise)}<br/>Small ↑ {pct(asset.probabilitySmallRise)}<br/>Small ↓ {pct(asset.probabilitySmallFall)}<br/>Max ↓ {pct(asset.probabilityMaxFall)}<br/>Flat {pct(asset.probabilityFlat)}</small></td>

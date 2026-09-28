@@ -72,6 +72,7 @@ export async function POST(request:NextRequest){
    const price=scores.length===2?predictFantasyPrice({currentPrice:current,previousFantasyPoints:[scores[1],scores[0]],expectedPoints:pts}):null;
    const rise=price?price.probabilities.smallRise+price.probabilities.maxRise:null;
    const fall=price?(price.effectiveDeltas.smallFall<0?price.probabilities.smallFall:0)+(price.effectiveDeltas.maxFall<0?price.probabilities.maxFall:0):null;
+   await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const row=await prisma.assetPrediction.create({data:{assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,expectedPriceDelta:price?.expectedDelta??null,probabilityRise:rise,probabilityFlat:price?.probabilityFlat??null,probabilityFall:fall,probabilityMaxRise:price?.probabilities.maxRise??null,probabilitySmallRise:price?.probabilities.smallRise??null,probabilitySmallFall:price?.probabilities.smallFall??null,probabilityMaxFall:price?.probabilities.maxFall??null,requiredPointsMaxRise:price?.thresholds.maxRiseAt??null,requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,confidence:price?Math.min(.55,.25+scores.length*.15):null,source:price?'Paddock IQ xPts + rolling-3 Fantasy PPM':'Paddock IQ xPts; price model awaiting 2 actual Fantasy scores',modelVersion:price?'price-probability-v0.3-floor-aware':'xpts-openf1-v1.0'}});
    created.push({code:asset.code,expectedPoints:pts,expectedDelta:price?.expectedDelta??null,priceReady:Boolean(price),id:row.id});
   }
