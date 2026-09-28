@@ -1,53 +1,45 @@
-const PAGE='https://fantasy.formula1.com/en/statistics/details?tab=driver&filter=fPoints';
-const ORIGIN='https://fantasy.formula1.com';
+const URL='https://fantasy.formula1.com/feeds/drivers/16_en.json';
 
-function absolute(src:string){
- try{return new URL(src,ORIGIN).toString()}catch{return null}
+function keys(value:unknown){
+ return value&&typeof value==='object'&&!Array.isArray(value)?Object.keys(value as Record<string,unknown>):[];
 }
 
-function snippets(text:string,needle:string,radius=220){
- const out:string[]=[];
- const lower=text.toLowerCase(),n=needle.toLowerCase();
- let pos=0;
- while((pos=lower.indexOf(n,pos))>=0&&out.length<12){
-  out.push(text.slice(Math.max(0,pos-radius),Math.min(text.length,pos+n.length+radius)).replace(/\s+/g,' '));
-  pos+=n.length;
+function preview(value:unknown,depth=0):unknown{
+ if(depth>5)return '[max-depth]';
+ if(Array.isArray(value))return value.slice(0,3).map(v=>preview(v,depth+1));
+ if(value&&typeof value==='object'){
+  const out:Record<string,unknown>={};
+  for(const [k,v] of Object.entries(value as Record<string,unknown>).slice(0,40))out[k]=preview(v,depth+1);
+  return out;
  }
- return out;
+ return value;
 }
 
 async function main(){
- const htmlRes=await fetch(PAGE,{headers:{'user-agent':'Mozilla/5.0'}});
- if(!htmlRes.ok)throw new Error('Page fetch failed: '+htmlRes.status);
- const html=await htmlRes.text();
+ const response=await fetch(URL,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!response.ok)throw new Error('Feed request failed: '+response.status);
+ const json=await response.json() as any;
 
- const scripts=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)]
-  .map(m=>absolute(m[1]))
-  .filter((x):x is string=>Boolean(x));
- console.log('scripts:',scripts.length);
+ console.log('top keys:',keys(json));
+ console.log('Data keys:',keys(json?.Data));
 
- const needles=['driverconstructors','/feeds/','playerid','statistics','breakdown','accordion','statvalue'];
- let hits=0;
+ const players=json?.Data?.players ?? json?.Data?.Players ?? json?.players;
+ console.log('players keys:',keys(players));
 
- for(const url of [...new Set(scripts)]){
-  let text='';
-  try{
-   const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}});
-   if(!r.ok)continue;
-   text=await r.text();
-  }catch{continue}
+ const popup=players?.['player-popup'];
+ const statView=players?.['stat-view'];
 
-  const matched=needles.filter(n=>text.toLowerCase().includes(n.toLowerCase()));
-  if(!matched.length)continue;
-  hits++;
-  console.log('\nBUNDLE',url);
-  console.log('MATCHES',matched.join(', '));
-  for(const needle of matched){
-   for(const s of snippets(text,needle,260).slice(0,4))console.log('\n['+needle+']',s);
-  }
+ console.log('player-popup ids:',keys(popup).slice(0,30));
+ console.log('stat-view ids:',keys(statView).slice(0,30));
+
+ const antonelli=popup?.['11161'] ?? statView?.['11161'];
+ console.log('\nANTONELLI 11161\n');
+ console.log(JSON.stringify(preview(antonelli),null,2));
+
+ if(!antonelli){
+  console.log('\nDATA PREVIEW\n');
+  console.log(JSON.stringify(preview(json?.Data),null,2));
  }
-
- console.log('\nmatched bundles:',hits);
 }
 
 main().catch(error=>{console.error(error);process.exitCode=1});
