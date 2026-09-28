@@ -54,6 +54,7 @@ async function popupRaces(page:Page){
 }
 
 async function closePopup(page:Page){
+ await page.locator('.si-popup__container').waitFor({state:'visible',timeout:500}).catch(()=>{});
  const close=page.locator('.si-popup__container button, .si-popup__close, [class*="popup-close"]').filter({hasText:/close|×/i}).first();
  if(await close.count())await close.click({timeout:1500}).catch(()=>{});
  if(await page.locator('.si-popup__container').count())await page.keyboard.press('Escape').catch(()=>{});
@@ -79,8 +80,9 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
   const text=((await primary.textContent())??'').trim();
   const code=matchCode(text,map);
   if(!code)continue;
+  console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
   try{
-   await primary.click();
+   await primary.click({timeout:5000}).catch(async()=>{await primary.click({force:true,timeout:3000})});
    const races=await popupRaces(page);
    if(!raceOrder.length&&races.length)raceOrder=races.map(r=>r.raceName);
    const normalized=races.map(r=>({round:String(raceOrder.indexOf(r.raceName)+1),...r})).filter(r=>r.round!=='0');
