@@ -9,7 +9,7 @@ export async function GET(request:NextRequest) {
   if (!gp) return NextResponse.json({error:'Grand Prix not found'}, {status:404});
 
   const assets = await prisma.asset.findMany({
-    where:{season},
+    where:{season,active:true},
     include:{
       prices:{orderBy:{recordedAt:'desc'},take:1},
       predictions:{where:{grandPrixId:gp.id},orderBy:{createdAt:'desc'},take:1},
