@@ -1,59 +1,53 @@
-import { chromium } from 'playwright';
+const PAGE='https://fantasy.formula1.com/en/statistics/details?tab=driver&filter=fPoints';
+const ORIGIN='https://fantasy.formula1.com';
 
-const URL='https://fantasy.formula1.com/en/statistics/details?tab=driver&filter=fPoints';
+function absolute(src:string){
+ try{return new URL(src,ORIGIN).toString()}catch{return null}
+}
 
-async function consent(page:any){
- const frame=page.locator('iframe[title="SP Consent Message"], iframe[id^="sp_message_iframe_"]').first();
- if(await frame.count()){
-  const body=frame.contentFrame();
-  const button=body.getByRole('button',{name:/Essential only cookies/i}).or(body.getByText(/Essential only cookies/i)).first();
-  await button.click({timeout:5000}).catch(()=>{});
-  await page.locator('[id^="sp_message_container_"]').waitFor({state:'detached',timeout:5000}).catch(()=>{});
+function snippets(text:string,needle:string,radius=220){
+ const out:string[]=[];
+ const lower=text.toLowerCase(),n=needle.toLowerCase();
+ let pos=0;
+ while((pos=lower.indexOf(n,pos))>=0&&out.length<12){
+  out.push(text.slice(Math.max(0,pos-radius),Math.min(text.length,pos+n.length+radius)).replace(/\s+/g,' '));
+  pos+=n.length;
  }
+ return out;
 }
 
 async function main(){
- const browser=await chromium.launch({headless:true});
- try{
-  const page=await browser.newPage({viewport:{width:1440,height:1200}});
-  const seen=new Set<string>();
+ const htmlRes=await fetch(PAGE,{headers:{'user-agent':'Mozilla/5.0'}});
+ if(!htmlRes.ok)throw new Error('Page fetch failed: '+htmlRes.status);
+ const html=await htmlRes.text();
 
-  await page.goto(URL,{waitUntil:'networkidle',timeout:60000});
-  await consent(page);
-  await page.waitForSelector('.si-main__container',{timeout:30000});
+ const scripts=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)]
+  .map(m=>absolute(m[1]))
+  .filter((x):x is string=>Boolean(x));
+ console.log('scripts:',scripts.length);
 
-  page.on('response',async(response)=>{
-   const req=response.request();
-   if(!['xhr','fetch'].includes(req.resourceType()))return;
-   const url=response.url();
-   if(seen.has(url))return;
-   seen.add(url);
-   const ct=response.headers()['content-type']||'';
-   let shape='';
-   if(ct.includes('json')){
-    try{
-     const json=await response.json();
-     shape=Array.isArray(json)?'array['+json.length+']':json&&typeof json==='object'?'keys='+Object.keys(json).slice(0,30).join(','):'';
-    }catch{}
-   }
-   console.log(response.status(),req.method(),url,shape);
-  });
+ const needles=['driverconstructors','/feeds/','playerid','statistics','breakdown','accordion','statvalue'];
+ let hits=0;
 
-  const items=page.locator('div[class*="si-stats__list-item"]');
-  const count=await items.count();
-  for(let i=0;i<count;i++){
-   const item=items.nth(i);
-   const text=((await item.textContent())||'').trim();
-   if(!text.toUpperCase().includes('ANTONELLI'))continue;
-   console.log('Clicking Antonelli row at item',i);
-   await item.click({timeout:2000}).catch(async()=>item.locator('xpath=..').click({force:true}));
-   await page.locator('.si-popup__container').waitFor({state:'visible',timeout:10000});
-   await page.waitForTimeout(5000);
-   break;
+ for(const url of [...new Set(scripts)]){
+  let text='';
+  try{
+   const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0'}});
+   if(!r.ok)continue;
+   text=await r.text();
+  }catch{continue}
+
+  const matched=needles.filter(n=>text.toLowerCase().includes(n.toLowerCase()));
+  if(!matched.length)continue;
+  hits++;
+  console.log('\nBUNDLE',url);
+  console.log('MATCHES',matched.join(', '));
+  for(const needle of matched){
+   for(const s of snippets(text,needle,260).slice(0,4))console.log('\n['+needle+']',s);
   }
- }finally{
-  await browser.close();
  }
+
+ console.log('\nmatched bundles:',hits);
 }
 
 main().catch(error=>{console.error(error);process.exitCode=1});
