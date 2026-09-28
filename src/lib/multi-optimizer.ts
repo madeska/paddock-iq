@@ -11,7 +11,7 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
  const results:Scenario[]=[];
  function visit(start:number,outs:Asset[],ins:Asset[],spent:number,pts:number,delta:number){
   const count=outs.length;const accounting=transferAccounting(freeTransfers,count,penaltyPerExtra);const penalty=accounting.penalty;
-  if(spent<=cash+1e-8)results.push({out:outs.map(a=>a.code),incoming:ins.map(a=>a.code),transfers:count,penalty,netPointsGain:pts-penalty,projectedValueGain:delta,cashRemaining:cash-spent,projectedNextFreeTransfers:accounting.projectedNext,score:scoreProposal(pts-penalty,delta,mode,weight)});
+  if(spent<=cash+1e-8){const remaining=Math.max(0,cash-spent);results.push({out:outs.map(a=>a.code),incoming:ins.map(a=>a.code),transfers:count,penalty,netPointsGain:pts-penalty,projectedValueGain:delta,cashRemaining:remaining,projectedNextFreeTransfers:accounting.projectedNext,score:scoreProposal(pts-penalty,delta,mode,weight)});}
   if(count>=Math.min(3,maxChanges))return;
   for(let i=start;i<current.length;i++){
    const out=current[i];if(locked.includes(out.code))continue;
