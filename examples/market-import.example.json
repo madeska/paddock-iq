@@ -1,0 +1,9 @@
+{
+  "season": 2026,
+  "round": 18,
+  "source": "manual market import",
+  "assets": [
+    {"code":"NOR","name":"Lando Norris","type":"DRIVER","price":0},
+    {"code":"MCL","name":"McLaren","type":"CONSTRUCTOR","price":0}
+  ]
+}
