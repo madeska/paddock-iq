@@ -4,6 +4,7 @@ import { predictPrice } from '../../../../lib/price-predictor';
 
 type OFDriver={driver_number:number;name_acronym:string;team_name:string};
 type OFResult={driver_number:number;position:number;dnf?:boolean;dns?:boolean;dsq?:boolean};
+const asArray=<T,>(value:unknown):T[]=>Array.isArray(value)?value:[];
 
 const clamp=(n:number,min:number,max:number)=>Math.max(min,Math.min(max,n));
 
@@ -23,7 +24,7 @@ export async function POST(request:NextRequest){
     fetch('https://api.openf1.org/v1/drivers?session_key='+session.session_key,{signal:AbortSignal.timeout(12000)}).then(r=>r.json()) as Promise<OFDriver[]>,
     fetch('https://api.openf1.org/v1/session_result?session_key='+session.session_key,{signal:AbortSignal.timeout(12000)}).then(r=>r.json()) as Promise<OFResult[]>
    ]);
-   return {session,index,drivers,results};
+   return {session,index,drivers:asArray<OFDriver>(drivers),results:asArray<OFResult>(results)};
   }));
   const latestDrivers=raceData[0].drivers;
   const latestByCode=new Map(latestDrivers.map(d=>[d.name_acronym,d]));
