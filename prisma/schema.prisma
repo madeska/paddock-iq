@@ -55,6 +55,7 @@ model Asset {
   type         AssetType
   active       Boolean           @default(true)
   prices       PriceHistory[]
+  fantasyScores FantasyRoundScore[]
   predictions  AssetPrediction[]
   slots        TeamSlot[]
   transfersOut Transfer[]        @relation("Out")
@@ -71,6 +72,7 @@ model GrandPrix {
   deadline    DateTime?
   snapshots   TeamSnapshot[]
   prices      PriceHistory[]
+  fantasyScores FantasyRoundScore[]
   predictions AssetPrediction[]
   chipUses    ChipUsage[]
   scenarios   StrategyScenario[]
@@ -183,4 +185,18 @@ model StrategyScenario {
   projectedValueDelta Float?
   transfersJson       Json?
   createdAt           DateTime     @default(now())
+}
+
+model FantasyRoundScore {
+  id          String    @id @default(cuid())
+  assetId     String
+  asset       Asset     @relation(fields: [assetId], references: [id])
+  grandPrixId String
+  grandPrix   GrandPrix @relation(fields: [grandPrixId], references: [id])
+  points      Float
+  source      String
+  recordedAt  DateTime  @default(now())
+
+  @@unique([assetId, grandPrixId])
+  @@index([grandPrixId])
 }
