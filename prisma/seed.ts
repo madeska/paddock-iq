@@ -57,9 +57,13 @@ async function main() {
   }
 
   let snapshot = await prisma.teamSnapshot.findFirst({
-    where: { teamId: team.id, grandPrixId: gp.id },
+    where: { teamId: team.id },
     orderBy: { capturedAt: 'desc' },
   });
+
+  if (snapshot && snapshot.grandPrixId !== gp.id) {
+    snapshot = await prisma.teamSnapshot.update({where:{id:snapshot.id},data:{grandPrixId:gp.id}});
+  }
 
   if (!snapshot) {
     snapshot = await prisma.teamSnapshot.create({
