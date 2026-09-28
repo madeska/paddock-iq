@@ -96,22 +96,32 @@ async function loadTab(page:Page,tab:'driver'|'constructor'){
  await page.goto(BASE+'?tab='+tab+'&filter=fPoints',{waitUntil:'networkidle',timeout:60000});
  await consent(page);
  await page.waitForSelector('.si-main__container',{timeout:30000});
- await page.waitForTimeout(500);
+ const items=page.locator('div[class*="si-stats__list-item"]');
+ await items.first().waitFor({state:'visible',timeout:10000});
+ await page.waitForFunction((selector)=>document.querySelectorAll(selector).length>0,'div[class*="si-stats__list-item"]',{timeout:10000});
 }
 
 async function scrape(page:Page,tab:'driver'|'constructor'){
  await loadTab(page,tab);
 
- const items=page.locator('div[class*="si-stats__list-item"]');
- const itemCount=await items.count();
+ let itemCount=await page.locator('div[class*="si-stats__list-item"]').count();
  const group=tab==='driver'?4:3;
  const map=tab==='driver'?DRIVER_CODES:CONSTRUCTOR_CODES;
  const assets:{abbreviation:string;races:{round:string;raceName:string;totalPoints:number}[]}[]=[];
 
  console.log(`[${tab}] list items: ${itemCount}`);
  for(let i=0;i+group-1<itemCount;i+=group){
-  const primary=items.nth(i);
-  const text=((await primary.textContent())??'').trim();
+  let liveItems=page.locator('div[class*="si-stats__list-item"]');
+  if(await liveItems.count()<=i){
+   await loadTab(page,tab);
+   liveItems=page.locator('div[class*="si-stats__list-item"]');
+   itemCount=await liveItems.count();
+  }
+  const primary=liveItems.nth(i);
+  await primary.waitFor({state:'visible',timeout:5000}).catch(async()=>{await loadTab(page,tab)});
+  liveItems=page.locator('div[class*="si-stats__list-item"]');
+  const freshPrimary=liveItems.nth(i);
+  const text=((await freshPrimary.textContent({timeout:5000}))??'').trim();
   const code=matchCode(text,map);
   if(!code)continue;
   console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
@@ -123,7 +133,8 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
      console.warn(`[${tab}] ${code}: stale popup would not close; reloading tab`);
      await loadTab(page,tab);
     }
-    const liveItems=page.locator('div[class*="si-stats__list-item"]');
+    let liveItems=page.locator('div[class*="si-stats__list-item"]');
+    if(await liveItems.count()<=i){await loadTab(page,tab);liveItems=page.locator('div[class*="si-stats__list-item"]')}
     const livePrimary=liveItems.nth(i);
     const openedAt=await openDetails(page,livePrimary);
     if(openedAt<0)throw new Error('Details popup did not open');
