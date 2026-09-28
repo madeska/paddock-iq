@@ -22,5 +22,5 @@ export function normalizeFantasyStatistics(payload:unknown){
   const entry=byRound.get(round)??{raceName:String(race.raceName??`Round ${round}`),scores:{}};
   entry.scores[asset.code]=points;if(!entry.raceName&&race.raceName)entry.raceName=String(race.raceName);byRound.set(round,entry);
  }
- return [...byRound.entries()].sort((a,b)=>a[0]-b[0]).map(([round,entry])=>({round,raceName:entry.raceName,scores:entry.scores}));
+ return [...byRound.entries()].sort((a,b)=>a[0]-b[0]).map(([round,entry])=>({round,raceName:entry.raceName,scores:entry.scores})).filter(r=>Object.values(r.scores).some(points=>points!==0));
 }
