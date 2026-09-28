@@ -40,26 +40,27 @@ function matchCode(text:string,map:Record<string,string>){
  return Object.entries(map).sort((a,b)=>b[0].length-a[0].length).find(([name])=>upper.includes(name))?.[1]??null;
 }
 
-async function popupVisible(page:Page,timeout=1200){
+async function popupVisible(page:Page,timeout=700){
  return page.locator('.si-popup__container').waitFor({state:'visible',timeout}).then(()=>true).catch(()=>false);
 }
 
 async function openDetails(page:Page,cell:Locator){
- const candidates=[cell,cell.locator('xpath=..'),cell.locator('xpath=../..'),cell.locator('xpath=../../..')];
+ await cell.click({timeout:1500}).catch(async()=>{await cell.click({force:true,timeout:800}).catch(()=>{})});
+ if(await popupVisible(page,900))return 0;
+ const candidates=[cell.locator('xpath=..'),cell.locator('xpath=../..'),cell.locator('xpath=../../..')];
  for(let level=0;level<candidates.length;level++){
   const target=candidates[level];
   if(!await target.count())continue;
   await target.click({timeout:2500}).catch(async()=>{await target.click({force:true,timeout:1500}).catch(()=>{})});
-  if(await popupVisible(page))return level;
+  if(await popupVisible(page))return level+1;
   await target.evaluate((el:any)=>el.click?.()).catch(()=>{});
-  if(await popupVisible(page))return level;
+  if(await popupVisible(page))return level+1;
  }
  return -1;
 }
 
 async function popupRaces(page:Page){
  await page.waitForSelector('.si-popup__container',{timeout:10000});
- await page.waitForTimeout(700);
  const popup=page.locator('.si-popup__container');
  const boxes=popup.locator('.si-accordion__box');
  const count=await boxes.count();
@@ -80,14 +81,13 @@ async function closePopup(page:Page){
  const close=page.locator('.si-popup__container button, .si-popup__close, [class*="popup-close"]').filter({hasText:/close|×/i}).first();
  if(await close.count())await close.click({timeout:1500}).catch(()=>{});
  if(await page.locator('.si-popup__container').count())await page.keyboard.press('Escape').catch(()=>{});
- await page.waitForTimeout(250);
 }
 
 async function scrape(page:Page,tab:'driver'|'constructor'){
  await page.goto(BASE+'?tab='+tab+'&filter=fPoints',{waitUntil:'networkidle',timeout:60000});
  await consent(page);
  await page.waitForSelector('.si-main__container',{timeout:30000});
- await page.waitForTimeout(2500);
+ await page.waitForTimeout(600);
 
  const items=page.locator('div[class*="si-stats__list-item"]');
  const itemCount=await items.count();
