@@ -22,11 +22,16 @@ const CONSTRUCTOR_CODES:Record<string,string>={
 };
 
 async function consent(page:Page){
- const frame=page.locator('#sp_message_iframe_1336275');
+ const frame=page.locator('iframe[title="SP Consent Message"], iframe[id^="sp_message_iframe_"]').first();
  if(await frame.count()){
-  const button=frame.contentFrame().getByRole('button',{name:/Essential only cookies/i});
-  await button.click({timeout:3000}).catch(()=>{});
-  await page.waitForTimeout(1000);
+  const body=frame.contentFrame();
+  const essential=body.getByRole('button',{name:/Essential only cookies/i}).or(body.getByText(/Essential only cookies/i)).first();
+  await essential.click({timeout:5000}).catch(async()=>{
+   const anyButton=body.locator('button').filter({hasText:/Essential|Reject|Necessary/i}).first();
+   await anyButton.click({timeout:3000}).catch(()=>{});
+  });
+  await page.locator('[id^="sp_message_container_"]').waitFor({state:'detached',timeout:5000}).catch(()=>{});
+  await page.waitForTimeout(500);
  }
 }
 
@@ -54,6 +59,7 @@ async function popupRaces(page:Page){
 }
 
 async function closePopup(page:Page){
+ await page.locator('.si-popup__container').waitFor({state:'visible',timeout:500}).catch(()=>{});
  const close=page.locator('.si-popup__container button, .si-popup__close, [class*="popup-close"]').filter({hasText:/close|×/i}).first();
  if(await close.count())await close.click({timeout:1500}).catch(()=>{});
  if(await page.locator('.si-popup__container').count())await page.keyboard.press('Escape').catch(()=>{});
@@ -79,8 +85,9 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
   const text=((await primary.textContent())??'').trim();
   const code=matchCode(text,map);
   if(!code)continue;
+  console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
   try{
-   await primary.click();
+   await primary.click({timeout:5000}).catch(async()=>{await primary.click({force:true,timeout:3000})});
    const races=await popupRaces(page);
    if(!raceOrder.length&&races.length)raceOrder=races.map(r=>r.raceName);
    const normalized=races.map(r=>({round:String(raceOrder.indexOf(r.raceName)+1),...r})).filter(r=>r.round!=='0');
