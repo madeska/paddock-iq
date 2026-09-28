@@ -81,10 +81,14 @@ async function popupRaces(page:Page){
 }
 
 async function closePopup(page:Page){
- await page.locator('.si-popup__container').waitFor({state:'visible',timeout:500}).catch(()=>{});
- const close=page.locator('.si-popup__container button, .si-popup__close, [class*="popup-close"]').filter({hasText:/close|×/i}).first();
- if(await close.count())await close.click({timeout:1500}).catch(()=>{});
- if(await page.locator('.si-popup__container').count())await page.keyboard.press('Escape').catch(()=>{});
+ const popup=page.locator('.si-popup__container');
+ if(!await popup.count())return;
+ const close=page.locator('.si-popup__close').first();
+ if(await close.count())await close.click({timeout:2000}).catch(async()=>{await close.click({force:true,timeout:1000}).catch(()=>{})});
+ await popup.waitFor({state:'hidden',timeout:2500}).catch(async()=>{
+  await page.keyboard.press('Escape').catch(()=>{});
+  await popup.waitFor({state:'hidden',timeout:1500}).catch(()=>{});
+ });
 }
 
 async function scrape(page:Page,tab:'driver'|'constructor'){
@@ -107,12 +111,18 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
   if(!code)continue;
   console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
   try{
+   await closePopup(page);
    const openedAt=await openDetails(page,primary);
    if(openedAt<0){
     const html=(await primary.evaluate((el:any)=>el.parentElement?.outerHTML?.slice(0,1200)??el.outerHTML?.slice(0,1200))).replace(/\s+/g,' ');
     throw new Error('Details popup did not open. parent='+html);
    }
    console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
+   const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent().catch(()=>''))||'').trim();
+   if(!popupName)throw new Error('Popup opened without player/constructor name');
+   const expectedNames=tab==='driver'?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k):Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
+   const normalizedName=popupName.toUpperCase();
+   if(!expectedNames.some(name=>normalizedName.includes(name)))throw new Error(`Popup identity mismatch: expected ${code}, got ${popupName}`);
    const races=await popupRaces(page);
    if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`)}
   }catch(error){console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error)}
