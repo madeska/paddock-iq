@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
-import { predictPrice } from '../../../../lib/price-predictor';
+import { prisma } from '../../../lib/prisma';
+import { predictPrice } from '../../../lib/price-predictor';
 
 export async function GET(request: NextRequest) {
   const season = Number(request.nextUrl.searchParams.get('season') ?? 2026);
