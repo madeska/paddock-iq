@@ -1,8 +1,150 @@
-'use client';import {useState} from 'react';import {type Mode} from '../../lib/optimizer';
-type Score={round:number;name:string;points:number};type Asset={code:string;name:string;type:string;isDoubled:boolean;price:number|null;expectedPoints:number|null;expectedDelta:number|null;probabilityMaxRise:number|null;probabilitySmallRise:number|null;probabilitySmallFall:number|null;probabilityMaxFall:number|null;requiredPointsMaxRise:number|null;requiredPointsSmallRise:number|null;mostLikelyDelta:number|null;mostLikelyProbability:number|null;recentFantasyScores:Score[]};type Data={user:{name:string|null;email:string};teams:{id:string;name:string}[];team:{name:string;season:number};snapshot:{grandPrix:{round:number;name:string};cashBalance:number|null;freeTransfers:number|null;totalPoints:number|null;assets:Asset[];chips:{code:string;status:string}[]}};const pct=(v:number|null)=>v==null?'—':Math.round(v*100)+'%';const fmtDelta=(v:number|null)=>v==null?'—':(v>0?'+':'')+v.toFixed(2)+'M';
-export default function MyTeam(){const [email,setEmail]=useState(''),[data,setData]=useState<Data|null>(null),[status,setStatus]=useState(''),[mode,setMode]=useState<Mode>('balanced'),[recs,setRecs]=useState<any[]>([]);
-async function load(){setStatus('Loading…');try{const r=await fetch('/api/team?email='+encodeURIComponent(email));const j=await r.json();if(!r.ok)throw Error(j.error||'Load failed');setData(j);setStatus('')}catch(e){setData(null);setStatus(e instanceof Error?e.message:'Load failed')}}
-async function generatePredictions(){if(!data)return;setStatus('Generating xPts + price probabilities…');try{const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season:data.team.season,round:data.snapshot.grandPrix.round})});const j=await r.json();if(!r.ok)throw Error(j.error||'Prediction failed');setStatus('Generated '+j.created+' predictions. Reloading team…');await load()}catch(e){setStatus(e instanceof Error?e.message:'Prediction failed')}}
-async function optimize(){if(!data)return;setStatus('Calculating…');try{const mr=await fetch('/api/market?season='+data.team.season+'&round='+data.snapshot.grandPrix.round),m=await mr.json();if(!mr.ok)throw Error(m.error||'Market unavailable');const current=data.snapshot.assets.map(a=>({code:a.code,type:a.type,price:a.price,expectedPoints:a.expectedPoints,expectedDelta:a.expectedDelta}));const owned=new Set(current.map(a=>a.code));const market=m.assets.filter((a:any)=>!owned.has(a.code));if([...current,...market].some((a:any)=>a.price==null||a.expectedPoints==null||a.expectedDelta==null))throw Error('Complete market prices and predictions first.');const rr=await fetch('/api/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current,market,cash:data.snapshot.cashBalance??0,freeTransfers:data.snapshot.freeTransfers??0,mode,maxChanges:3})}),j=await rr.json();if(!rr.ok)throw Error(j.error||'Optimization failed');const scenarios=Array.isArray(j.scenarios)?j.scenarios:Array.isArray(j.proposals)?j.proposals:Array.isArray(j)?j:[];setRecs(scenarios);setStatus(scenarios.length?'':'No valid transfer scenarios found.')}catch(e){setRecs([]);setStatus(e instanceof Error?e.message:'Optimization failed')}}
-return <main><header><span className="eyebrow">PADDOCK IQ · DATABASE TEAM</span><h1>My Team</h1><p>Loads the latest saved team snapshot from Paddock IQ instead of the hardcoded Panass dataset.</p></header><section><div className="inputs"><label>Paddock IQ email<input type="email" value={email} onChange={e=>setEmail(e.target.value)}/></label></div><button onClick={load}>Load my team</button> <a href="/team/import">Create / update team</a><p className="notice">{status}</p></section>{data&&<><section><h2>{data.team.name} · {data.team.season}</h2><div className="stats"><article><small>GP</small><strong>{data.snapshot.grandPrix.name}</strong></article><article><small>Points</small><strong>{data.snapshot.totalPoints??'—'}</strong></article><article><small>Cash</small><strong>{data.snapshot.cashBalance==null?'—':'$'+data.snapshot.cashBalance+'M'}</strong></article><article><small>Free transfers</small><strong>{data.snapshot.freeTransfers??'—'}</strong></article></div></section><section><h2>Lineup</h2><div className="tablewrap"><table><thead><tr><th>Asset</th><th>Price</th><th>Last 2 actual</th><th>xPts</th><th>Expected Δ</th><th>Most likely</th><th>Price probabilities</th><th>Rise thresholds</th></tr></thead><tbody>{data.snapshot.assets.map(a=><tr key={a.code}><td><b>{a.code}</b> · {a.name}{a.isDoubled?' · 2×':''}<br/><small>{a.type}</small></td><td>{a.price==null?'—':'</div></section><section><h2>Strategy optimizer</h2><p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p><div className="tabs">{(['points','balanced','budget'] as Mode[]).map(x=><button key={x} className={mode===x?'active':''} onClick={()=>setMode(x)}>{x}</button>)}</div><button onClick={optimize}>Generate recommendations</button>{recs.length>0&&<div className="tablewrap"><table><thead><tr><th>Sell</th><th>Buy</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead><tbody>{recs.slice(0,10).map((x:any,i:number)=><tr key={i}><td>{x.out.join(', ')||'Keep'}</td><td>{x.incoming.join(', ')||'—'}</td><td>{x.netPointsGain.toFixed(1)}</td><td>{x.projectedValueGain.toFixed(2)}</td><td>{x.penalty}</td><td>${x.cashRemaining.toFixed(1)}M</td><td>{x.projectedNextFreeTransfers}</td></tr>)}</tbody></table></div>}</section><section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map(c=><span key={c.code}>{c.code} <b>{c.status}</b></span>)}</div></section></>}</main>}
-+a.price+'M'}</td><td>{a.recentFantasyScores.length?a.recentFantasyScores.map(s=><span key={s.round}>R{s.round}: <b>{s.points}</b><br/></span>):'—'}</td><td>{a.expectedPoints??'—'}</td><td>{fmtDelta(a.expectedDelta)}</td><td>{a.mostLikelyDelta==null?'—':fmtDelta(a.mostLikelyDelta)+' · '+pct(a.mostLikelyProbability)}</td><td><small>Max ↑ {pct(a.probabilityMaxRise)}<br/>Small ↑ {pct(a.probabilitySmallRise)}<br/>Small ↓ {pct(a.probabilitySmallFall)}<br/>Max ↓ {pct(a.probabilityMaxFall)}</small></td><td><small>Small ↑: {a.requiredPointsSmallRise==null?'—':a.requiredPointsSmallRise.toFixed(1)+' pts'}<br/>Max ↑: {a.requiredPointsMaxRise==null?'—':a.requiredPointsMaxRise.toFixed(1)+' pts'}</small></td></tr>)}</tbody></table></div></section><section><h2>Strategy optimizer</h2><p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p><div className="tabs">{(['points','balanced','budget'] as Mode[]).map(x=><button key={x} className={mode===x?'active':''} onClick={()=>setMode(x)}>{x}</button>)}</div><button onClick={optimize}>Generate recommendations</button>{recs.length>0&&<div className="tablewrap"><table><thead><tr><th>Sell</th><th>Buy</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead><tbody>{recs.slice(0,10).map((x:any,i:number)=><tr key={i}><td>{x.out.join(', ')||'Keep'}</td><td>{x.incoming.join(', ')||'—'}</td><td>{x.netPointsGain.toFixed(1)}</td><td>{x.projectedValueGain.toFixed(2)}</td><td>{x.penalty}</td><td>${x.cashRemaining.toFixed(1)}M</td><td>{x.projectedNextFreeTransfers}</td></tr>)}</tbody></table></div>}</section><section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map(c=><span key={c.code}>{c.code} <b>{c.status}</b></span>)}</div></section></>}</main>}
+'use client';
+
+import { useState } from 'react';
+import { type Mode } from '../../lib/optimizer';
+
+type Score = { round: number; name: string; points: number };
+type Asset = {
+  code: string; name: string; type: string; isDoubled: boolean;
+  price: number | null; expectedPoints: number | null; expectedDelta: number | null;
+  probabilityMaxRise: number | null; probabilitySmallRise: number | null;
+  probabilitySmallFall: number | null; probabilityMaxFall: number | null;
+  requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null;
+  mostLikelyDelta: number | null; mostLikelyProbability: number | null;
+  recentFantasyScores: Score[];
+};
+type Data = {
+  user: { name: string | null; email: string };
+  teams: { id: string; name: string }[];
+  team: { name: string; season: number };
+  snapshot: {
+    grandPrix: { round: number; name: string };
+    cashBalance: number | null; freeTransfers: number | null; totalPoints: number | null;
+    assets: Asset[]; chips: { code: string; status: string }[];
+  };
+};
+
+const pct = (value: number | null) => value == null ? '—' : Math.round(value * 100) + '%';
+const fmtDelta = (value: number | null) => value == null ? '—' : (value > 0 ? '+' : '') + value.toFixed(2) + 'M';
+
+export default function MyTeam() {
+  const [email, setEmail] = useState('');
+  const [data, setData] = useState<Data | null>(null);
+  const [status, setStatus] = useState('');
+  const [mode, setMode] = useState<Mode>('balanced');
+  const [recs, setRecs] = useState<any[]>([]);
+
+  async function load() {
+    setStatus('Loading…');
+    try {
+      const response = await fetch('/api/team?email=' + encodeURIComponent(email));
+      const json = await response.json();
+      if (!response.ok) throw Error(json.error || 'Load failed');
+      setData(json); setStatus('');
+    } catch (error) {
+      setData(null); setStatus(error instanceof Error ? error.message : 'Load failed');
+    }
+  }
+
+  async function generatePredictions() {
+    if (!data) return;
+    setStatus('Generating xPts + price probabilities…');
+    try {
+      const response = await fetch('/api/predictions/auto', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ season: data.team.season, round: data.snapshot.grandPrix.round }),
+      });
+      const json = await response.json();
+      if (!response.ok) throw Error(json.error || 'Prediction failed');
+      setStatus('Generated ' + json.created + ' predictions. Reloading team…');
+      await load();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Prediction failed');
+    }
+  }
+
+  async function optimize() {
+    if (!data) return;
+    setStatus('Calculating…');
+    try {
+      const marketResponse = await fetch('/api/market?season=' + data.team.season + '&round=' + data.snapshot.grandPrix.round);
+      const marketJson = await marketResponse.json();
+      if (!marketResponse.ok) throw Error(marketJson.error || 'Market unavailable');
+      const current = data.snapshot.assets.map((asset) => ({
+        code: asset.code, type: asset.type, price: asset.price,
+        expectedPoints: asset.expectedPoints, expectedDelta: asset.expectedDelta,
+      }));
+      const owned = new Set(current.map((asset) => asset.code));
+      const market = marketJson.assets.filter((asset: any) => !owned.has(asset.code));
+      if ([...current, ...market].some((asset: any) => asset.price == null || asset.expectedPoints == null || asset.expectedDelta == null))
+        throw Error('Complete market prices and predictions first.');
+      const response = await fetch('/api/optimize', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, maxChanges: 3 }),
+      });
+      const json = await response.json();
+      if (!response.ok) throw Error(json.error || 'Optimization failed');
+      const scenarios = Array.isArray(json.scenarios) ? json.scenarios : Array.isArray(json.proposals) ? json.proposals : Array.isArray(json) ? json : [];
+      setRecs(scenarios); setStatus(scenarios.length ? '' : 'No valid transfer scenarios found.');
+    } catch (error) {
+      setRecs([]); setStatus(error instanceof Error ? error.message : 'Optimization failed');
+    }
+  }
+
+  return (
+    <main>
+      <header>
+        <span className="eyebrow">PADDOCK IQ · DATABASE TEAM</span>
+        <h1>My Team</h1>
+        <p>Actual F1 Fantasy history + Paddock IQ projections.</p>
+      </header>
+      <section>
+        <div className="inputs"><label>Paddock IQ email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label></div>
+        <button onClick={load}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
+        <p className="notice">{status}</p>
+      </section>
+      {data && <>
+        <section>
+          <h2>{data.team.name} · {data.team.season}</h2>
+          <div className="stats">
+            <article><small>GP</small><strong>{data.snapshot.grandPrix.name}</strong></article>
+            <article><small>Points</small><strong>{data.snapshot.totalPoints ?? '—'}</strong></article>
+            <article><small>Cash</small><strong>{data.snapshot.cashBalance == null ? '—' : '$' + data.snapshot.cashBalance + 'M'}</strong></article>
+            <article><small>Free transfers</small><strong>{data.snapshot.freeTransfers ?? '—'}</strong></article>
+          </div>
+        </section>
+        <section>
+          <h2>Lineup</h2>
+          <div className="tablewrap"><table>
+            <thead><tr><th>Asset</th><th>Price</th><th>Last 2 actual</th><th>xPts</th><th>Expected Δ</th><th>Most likely</th><th>Price probabilities</th><th>Rise thresholds</th></tr></thead>
+            <tbody>{data.snapshot.assets.map((asset) => <tr key={asset.code}>
+              <td><b>{asset.code}</b> · {asset.name}{asset.isDoubled ? ' · 2×' : ''}<br/><small>{asset.type}</small></td>
+              <td>{asset.price == null ? '—' : '$' + asset.price + 'M'}</td>
+              <td>{asset.recentFantasyScores.length ? asset.recentFantasyScores.map((score) => <span key={score.round}>R{score.round}: <b>{score.points}</b><br/></span>) : '—'}</td>
+              <td>{asset.expectedPoints ?? '—'}</td>
+              <td>{fmtDelta(asset.expectedDelta)}</td>
+              <td>{asset.mostLikelyDelta == null ? '—' : fmtDelta(asset.mostLikelyDelta) + ' · ' + pct(asset.mostLikelyProbability)}</td>
+              <td><small>Max ↑ {pct(asset.probabilityMaxRise)}<br/>Small ↑ {pct(asset.probabilitySmallRise)}<br/>Small ↓ {pct(asset.probabilitySmallFall)}<br/>Max ↓ {pct(asset.probabilityMaxFall)}</small></td>
+              <td><small>Small ↑: {asset.requiredPointsSmallRise == null ? '—' : asset.requiredPointsSmallRise.toFixed(1) + ' pts'}<br/>Max ↑: {asset.requiredPointsMaxRise == null ? '—' : asset.requiredPointsMaxRise.toFixed(1) + ' pts'}</small></td>
+            </tr>)}</tbody>
+          </table></div>
+        </section>
+        <section>
+          <h2>Strategy optimizer</h2>
+          <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
+          <div className="tabs">{(['points','balanced','budget'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
+          <button onClick={optimize}>Generate recommendations</button>
+          {recs.length > 0 && <div className="tablewrap"><table>
+            <thead><tr><th>Sell</th><th>Buy</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
+              <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
+              <td>{scenario.netPointsGain.toFixed(1)}</td><td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
+              <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
+            </tr>)}</tbody>
+          </table></div>}
+        </section>
+        <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
+      </>}
+    </main>
+  );
+}
