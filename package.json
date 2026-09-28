@@ -1,1 +1,32 @@
-{"name":"f1-strategy-assistant","version":"0.5.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","db:generate":"prisma generate","db:migrate":"prisma migrate dev"},"dependencies":{"next":"^15.5.0","react":"^19.0.0","react-dom":"^19.0.0","@prisma/client":"^6.19.3","lucide-react":"^0.468.0"},"devDependencies":{"typescript":"^5.7.0","@types/node":"^22.0.0","@types/react":"^19.0.0","@types/react-dom":"^19.0.0","prisma":"^6.19.3"}}
+{
+  "name": "f1-strategy-assistant",
+  "version": "0.6.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@prisma/client": "^6.19.3",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.19.2"
+  }
+}

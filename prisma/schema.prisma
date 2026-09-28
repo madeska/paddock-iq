@@ -1,16 +1,174 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
-enum AssetType { DRIVER CONSTRUCTOR }
-enum ChipStatus { AVAILABLE USED LOCKED UNKNOWN }
-enum StrategyMode { POINTS BALANCED BUDGET CUSTOM }
-model User { id String @id @default(cuid()) email String? @unique name String? teams FantasyTeam[] }
-model FantasyTeam { id String @id @default(cuid()) userId String user User @relation(fields:[userId],references:[id]) name String season Int externalId String? snapshots TeamSnapshot[] chipUses ChipUsage[] scenarios StrategyScenario[] @@unique([userId,season,name]) }
-model Asset { id String @id @default(cuid()) season Int code String name String type AssetType prices PriceHistory[] predictions AssetPrediction[] slots TeamSlot[] transfersOut Transfer[] @relation("Out") transfersIn Transfer[] @relation("In") @@unique([season,code,type]) }
-model GrandPrix { id String @id @default(cuid()) season Int round Int name String deadline DateTime? snapshots TeamSnapshot[] prices PriceHistory[] predictions AssetPrediction[] chipUses ChipUsage[] scenarios StrategyScenario[] @@unique([season,round]) }
-model TeamSnapshot { id String @id @default(cuid()) teamId String team FantasyTeam @relation(fields:[teamId],references:[id]) grandPrixId String grandPrix GrandPrix @relation(fields:[grandPrixId],references:[id]) capturedAt DateTime @default(now()) squadValue Decimal? @db.Decimal(8,2) bankValue Decimal? @db.Decimal(8,2) cashBalance Decimal? @db.Decimal(8,2) freeTransfers Int? totalPoints Int? slots TeamSlot[] transfers Transfer[] @@index([teamId,grandPrixId]) }
-model TeamSlot { id String @id @default(cuid()) snapshotId String snapshot TeamSnapshot @relation(fields:[snapshotId],references:[id]) assetId String asset Asset @relation(fields:[assetId],references:[id]) isDoubled Boolean @default(false) @@unique([snapshotId,assetId]) }
-model Transfer { id String @id @default(cuid()) snapshotId String snapshot TeamSnapshot @relation(fields:[snapshotId],references:[id]) outId String out Asset @relation("Out",fields:[outId],references:[id]) inId String incoming Asset @relation("In",fields:[inId],references:[id]) penaltyPoints Int @default(0) confirmed Boolean @default(false) }
-model ChipUsage { id String @id @default(cuid()) teamId String team FantasyTeam @relation(fields:[teamId],references:[id]) grandPrixId String? grandPrix GrandPrix? @relation(fields:[grandPrixId],references:[id]) chipCode String status ChipStatus @default(UNKNOWN) @@unique([teamId,chipCode]) }
-model PriceHistory { id String @id @default(cuid()) assetId String asset Asset @relation(fields:[assetId],references:[id]) grandPrixId String grandPrix GrandPrix @relation(fields:[grandPrixId],references:[id]) price Decimal @db.Decimal(8,2) recordedAt DateTime @default(now()) source String @@index([assetId,recordedAt]) }
-model AssetPrediction { id String @id @default(cuid()) assetId String asset Asset @relation(fields:[assetId],references:[id]) grandPrixId String grandPrix GrandPrix @relation(fields:[grandPrixId],references:[id]) expectedPoints Float? expectedPriceDelta Float? probabilityRise Float? modelVersion String createdAt DateTime @default(now()) @@index([assetId,grandPrixId]) }
-model StrategyScenario { id String @id @default(cuid()) teamId String team FantasyTeam @relation(fields:[teamId],references:[id]) grandPrixId String grandPrix GrandPrix @relation(fields:[grandPrixId],references:[id]) mode StrategyMode pointsWeight Float budgetWeight Float projectedPoints Float? projectedValueDelta Float? transfersJson Json? createdAt DateTime @default(now()) }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetType {
+  DRIVER
+  CONSTRUCTOR
+}
+
+enum ChipStatus {
+  AVAILABLE
+  USED
+  LOCKED
+  UNKNOWN
+}
+
+enum StrategyMode {
+  POINTS
+  BALANCED
+  BUDGET
+  CUSTOM
+}
+
+model User {
+  id    String        @id @default(cuid())
+  email String?       @unique
+  name  String?
+  teams FantasyTeam[]
+}
+
+model FantasyTeam {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id])
+  name       String
+  season     Int
+  externalId String?
+  snapshots  TeamSnapshot[]
+  chipUses   ChipUsage[]
+  scenarios  StrategyScenario[]
+
+  @@unique([userId, season, name])
+}
+
+model Asset {
+  id           String            @id @default(cuid())
+  season       Int
+  code         String
+  name         String
+  type         AssetType
+  prices       PriceHistory[]
+  predictions  AssetPrediction[]
+  slots        TeamSlot[]
+  transfersOut Transfer[]        @relation("Out")
+  transfersIn  Transfer[]        @relation("In")
+
+  @@unique([season, code, type])
+}
+
+model GrandPrix {
+  id          String             @id @default(cuid())
+  season      Int
+  round       Int
+  name        String
+  deadline    DateTime?
+  snapshots   TeamSnapshot[]
+  prices      PriceHistory[]
+  predictions AssetPrediction[]
+  chipUses    ChipUsage[]
+  scenarios   StrategyScenario[]
+
+  @@unique([season, round])
+}
+
+model TeamSnapshot {
+  id            String      @id @default(cuid())
+  teamId        String
+  team          FantasyTeam @relation(fields: [teamId], references: [id])
+  grandPrixId   String
+  grandPrix     GrandPrix   @relation(fields: [grandPrixId], references: [id])
+  capturedAt    DateTime    @default(now())
+  squadValue    Decimal?    @db.Decimal(8, 2)
+  bankValue     Decimal?    @db.Decimal(8, 2)
+  cashBalance   Decimal?    @db.Decimal(8, 2)
+  freeTransfers Int?
+  totalPoints   Int?
+  slots         TeamSlot[]
+  transfers     Transfer[]
+
+  @@index([teamId, grandPrixId])
+}
+
+model TeamSlot {
+  id         String       @id @default(cuid())
+  snapshotId String
+  snapshot   TeamSnapshot @relation(fields: [snapshotId], references: [id])
+  assetId    String
+  asset      Asset        @relation(fields: [assetId], references: [id])
+  isDoubled  Boolean      @default(false)
+
+  @@unique([snapshotId, assetId])
+}
+
+model Transfer {
+  id            String       @id @default(cuid())
+  snapshotId    String
+  snapshot      TeamSnapshot @relation(fields: [snapshotId], references: [id])
+  outId         String
+  out           Asset        @relation("Out", fields: [outId], references: [id])
+  inId          String
+  incoming      Asset        @relation("In", fields: [inId], references: [id])
+  penaltyPoints Int          @default(0)
+  confirmed     Boolean      @default(false)
+}
+
+model ChipUsage {
+  id          String        @id @default(cuid())
+  teamId      String
+  team        FantasyTeam   @relation(fields: [teamId], references: [id])
+  grandPrixId String?
+  grandPrix   GrandPrix?    @relation(fields: [grandPrixId], references: [id])
+  chipCode    String
+  status      ChipStatus    @default(UNKNOWN)
+
+  @@unique([teamId, chipCode])
+}
+
+model PriceHistory {
+  id          String     @id @default(cuid())
+  assetId     String
+  asset       Asset      @relation(fields: [assetId], references: [id])
+  grandPrixId String
+  grandPrix   GrandPrix  @relation(fields: [grandPrixId], references: [id])
+  price       Decimal    @db.Decimal(8, 2)
+  recordedAt  DateTime   @default(now())
+  source      String
+
+  @@index([assetId, recordedAt])
+}
+
+model AssetPrediction {
+  id                 String     @id @default(cuid())
+  assetId            String
+  asset              Asset      @relation(fields: [assetId], references: [id])
+  grandPrixId        String
+  grandPrix          GrandPrix  @relation(fields: [grandPrixId], references: [id])
+  expectedPoints     Float?
+  expectedPriceDelta Float?
+  probabilityRise    Float?
+  modelVersion       String
+  createdAt          DateTime   @default(now())
+
+  @@index([assetId, grandPrixId])
+}
+
+model StrategyScenario {
+  id                  String       @id @default(cuid())
+  teamId              String
+  team                FantasyTeam  @relation(fields: [teamId], references: [id])
+  grandPrixId         String
+  grandPrix           GrandPrix    @relation(fields: [grandPrixId], references: [id])
+  mode                StrategyMode
+  pointsWeight        Float
+  budgetWeight        Float
+  projectedPoints     Float?
+  projectedValueDelta Float?
+  transfersJson       Json?
+  createdAt           DateTime     @default(now())
+}
