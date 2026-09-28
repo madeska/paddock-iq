@@ -55,3 +55,11 @@ Prices are in millions. Enter prices and model forecasts for all 7 current asset
 - Prediction rows now persist rise/flat/fall probabilities, confidence, source and model version.
 - The heuristic is intentionally labeled as non-official. F1 Fantasy Tools publicly describes Budget Builder as using required point ranges and simulated price-change odds, so Paddock IQ follows the same *product idea* without copying a proprietary formula or dataset.
 - Current database still contains only the seven screenshot-seeded owned assets. Full market ingestion is the next step.
+
+
+## v0.8 full-market ingestion foundation
+- Added `POST /api/market/import` for validated bulk import of drivers and constructors with current prices.
+- The endpoint upserts assets by `season + code + type` and appends a `PriceHistory` row only when the price differs from the latest stored value for that Grand Prix.
+- Import provenance is persisted through the `source` field.
+- Example payload: `examples/market-import.example.json`.
+- No live Fantasy price feed is assumed. Use only verified current market data; do not invent missing prices.
