@@ -82,20 +82,25 @@ async function popupRaces(page:Page){
 
 async function closePopup(page:Page){
  const popup=page.locator('.si-popup__container');
- if(!await popup.count())return;
+ if(!await popup.count())return true;
  const close=page.locator('.si-popup__close').first();
- if(await close.count())await close.click({timeout:2000}).catch(async()=>{await close.click({force:true,timeout:1000}).catch(()=>{})});
- await popup.waitFor({state:'hidden',timeout:2500}).catch(async()=>{
-  await page.keyboard.press('Escape').catch(()=>{});
-  await popup.waitFor({state:'hidden',timeout:1500}).catch(()=>{});
- });
+ if(await close.count()){
+  await close.click({timeout:1500}).catch(async()=>{await close.evaluate((el:any)=>el.click?.()).catch(()=>{})});
+ }
+ if(await popup.waitFor({state:'hidden',timeout:1800}).then(()=>true).catch(()=>false))return true;
+ await page.keyboard.press('Escape').catch(()=>{});
+ return popup.waitFor({state:'hidden',timeout:1200}).then(()=>true).catch(()=>false);
 }
 
-async function scrape(page:Page,tab:'driver'|'constructor'){
+async function loadTab(page:Page,tab:'driver'|'constructor'){
  await page.goto(BASE+'?tab='+tab+'&filter=fPoints',{waitUntil:'networkidle',timeout:60000});
  await consent(page);
  await page.waitForSelector('.si-main__container',{timeout:30000});
- await page.waitForTimeout(600);
+ await page.waitForTimeout(500);
+}
+
+async function scrape(page:Page,tab:'driver'|'constructor'){
+ await loadTab(page,tab);
 
  const items=page.locator('div[class*="si-stats__list-item"]');
  const itemCount=await items.count();
@@ -110,23 +115,39 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
   const code=matchCode(text,map);
   if(!code)continue;
   console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
-  try{
-   await closePopup(page);
-   const openedAt=await openDetails(page,primary);
-   if(openedAt<0){
-    const html=(await primary.evaluate((el:any)=>el.parentElement?.outerHTML?.slice(0,1200)??el.outerHTML?.slice(0,1200))).replace(/\s+/g,' ');
-    throw new Error('Details popup did not open. parent='+html);
+  let success=false;
+  for(let attempt=1;attempt<=2&&!success;attempt++){
+   try{
+    const closed=await closePopup(page);
+    if(!closed){
+     console.warn(`[${tab}] ${code}: stale popup would not close; reloading tab`);
+     await loadTab(page,tab);
+    }
+    const liveItems=page.locator('div[class*="si-stats__list-item"]');
+    const livePrimary=liveItems.nth(i);
+    const openedAt=await openDetails(page,livePrimary);
+    if(openedAt<0)throw new Error('Details popup did not open');
+    const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent().catch(()=>''))||'').trim();
+    if(!popupName)throw new Error('Popup opened without player/constructor name');
+    const expectedNames=tab==='driver'?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k):Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
+    const normalizedName=popupName.toUpperCase();
+    if(!expectedNames.some(name=>normalizedName.includes(name))){
+     if(attempt===1){
+      console.warn(`[${tab}] ${code}: stale popup ${popupName}; reloading and retrying`);
+      await loadTab(page,tab);
+      continue;
+     }
+     throw new Error(`Popup identity mismatch after retry: expected ${code}, got ${popupName}`);
+    }
+    console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
+    const races=await popupRaces(page);
+    if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`);success=true}
+   }catch(error){
+    if(attempt===2)console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error);
+   }finally{
+    await closePopup(page);
    }
-   console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
-   const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent().catch(()=>''))||'').trim();
-   if(!popupName)throw new Error('Popup opened without player/constructor name');
-   const expectedNames=tab==='driver'?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k):Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
-   const normalizedName=popupName.toUpperCase();
-   if(!expectedNames.some(name=>normalizedName.includes(name)))throw new Error(`Popup identity mismatch: expected ${code}, got ${popupName}`);
-   const races=await popupRaces(page);
-   if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`)}
-  }catch(error){console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error)}
-  finally{await closePopup(page)}
+  }
  }
  console.log(`[${tab}] parsed assets: ${assets.length}`);
  return assets;
