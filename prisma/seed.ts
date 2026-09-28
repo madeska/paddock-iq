@@ -21,6 +21,8 @@ async function main() {
     create: { season: 2026, round: 16, name: 'Bahrain GP in Malaysia' },
   });
 
+  await prisma.fantasyRoundScore.deleteMany({where:{grandPrix:{season:2026,round:{gte:16}}}});
+
   // Current 2026 market snapshot for the Azerbaijan -> Malaysia transition.
   // Prices refreshed 2026-09-29. Price predictions are intentionally NOT imported.
   const assets = [
