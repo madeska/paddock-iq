@@ -11,7 +11,7 @@ export default function TeamImportPage(){
  const [drivers,setDrivers]=useState(['','','','','']); const [constructors,setConstructors]=useState(['','']);
  const [doubled,setDoubled]=useState(''); const [status,setStatus]=useState('Loading market…');
 
- useEffect(()=>{fetch('/api/market?season=2026&round=18').then(async r=>{const j=await r.json();if(!r.ok)throw Error(j.error||'Market unavailable');setMarket(j.assets);setStatus('');}).catch(e=>setStatus(e.message))},[]);
+ useEffect(()=>{fetch('/api/market?season=2026&round=18').then(async r=>{const text=await r.text();let j:any={};try{j=text?JSON.parse(text):{}}catch{throw Error('Market API returned an invalid response. Restart the dev server and try again.')}if(!r.ok)throw Error(j.error||('Market unavailable ('+r.status+')'));const assets=Array.isArray(j.assets)?j.assets:[];setMarket(assets);setStatus(assets.length?'':'Shared market is empty. Run npm run db:seed, then refresh this page.');}).catch(e=>setStatus(e instanceof Error?e.message:'Market unavailable'))},[]);
  const driverMarket=market.filter(a=>a.type==='DRIVER'); const constructorMarket=market.filter(a=>a.type==='CONSTRUCTOR');
  function change(setter:(v:string[])=>void,arr:string[],i:number,v:string){const n=[...arr];n[i]=v;setter(n);if(i<5&&doubled&&!n.includes(doubled))setDoubled('')}
  async function submit(e:React.FormEvent){e.preventDefault();setStatus('Saving…');
@@ -20,7 +20,7 @@ export default function TeamImportPage(){
   try{const r=await fetch('/api/team/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
    user:{email,name:name||undefined},team:{name:teamName,season:2026},round:18,grandPrixName:'Malaysia',
    cashBalance:cash===''?undefined:Number(cash),freeTransfers:free===''?undefined:Number(free),totalPoints:points===''?undefined:Number(points),assets
-  })});const j=await r.json();if(!r.ok)throw Error(j.error||'Import failed');setStatus('Team saved. Snapshot '+j.snapshotId)}
+  })});const text=await r.text();let j:any={};try{j=text?JSON.parse(text):{}}catch{throw Error('Team API returned an invalid response.')}if(!r.ok)throw Error(j.error||('Import failed ('+r.status+')'));setStatus('Team saved. Snapshot '+j.snapshotId)}
   catch(e){setStatus(e instanceof Error?e.message:'Import failed')}
  }
  const select=(items:MarketAsset[],value:string,onChange:(v:string)=>void)=><select required value={value} onChange={e=>onChange(e.target.value)}><option value="">Select…</option>{items.map(a=><option key={a.code} value={a.code}>{a.code} · {a.name}{a.price!=null?' · $'+a.price+'M':''}</option>)}</select>;
