@@ -4,7 +4,7 @@ export async function POST(req:NextRequest){try{
  const body=await req.json(),season=Number(body.season||2026),rounds=normalizeFantasyStatistics(body.data);
  if(!rounds.length)return NextResponse.json({error:'No race-by-race Fantasy statistics found'},{status:400});
  const assets=await prisma.asset.findMany({where:{season}}),byCode=new Map(assets.map(a=>[a.code,a]));let saved=0;const skipped:string[]=[];
- for(const r of rounds){const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:r.round}}});if(!gp){skipped.push('round:'+r.round);continue}
+ for(const r of rounds){const gp=await prisma.grandPrix.upsert({where:{season_round:{season,round:r.round}},update:{name:r.raceName||`Round ${r.round}`},create:{season,round:r.round,name:r.raceName||`Round ${r.round}`}})
   for(const [code,points] of Object.entries(r.scores)){const a=byCode.get(code);if(!a){skipped.push(code);continue}
    await prisma.fantasyRoundScore.upsert({where:{assetId_grandPrixId:{assetId:a.id,grandPrixId:gp.id}},update:{points,source:'Official F1 Fantasy Statistics'},create:{assetId:a.id,grandPrixId:gp.id,points,source:'Official F1 Fantasy Statistics'}});saved++;
   }}

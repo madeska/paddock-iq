@@ -15,12 +15,12 @@ export function normalizeFantasyStatistics(payload:unknown){
  };
  visit(payload);
 
- const byRound=new Map<number,Record<string,number>>();
+ const byRound=new Map<number,{raceName:string;scores:Record<string,number>}>();
  for(const asset of assets)for(const race of asset.races){
   const round=Number(race.round),points=Number(race.totalPoints);
   if(!round||!Number.isFinite(points))continue;
-  const scores=byRound.get(round)??{};
-  scores[asset.code]=points;byRound.set(round,scores);
+  const entry=byRound.get(round)??{raceName:String(race.raceName??`Round ${round}`),scores:{}};
+  entry.scores[asset.code]=points;if(!entry.raceName&&race.raceName)entry.raceName=String(race.raceName);byRound.set(round,entry);
  }
- return [...byRound.entries()].sort((a,b)=>a[0]-b[0]).map(([round,scores])=>({round,scores}));
+ return [...byRound.entries()].sort((a,b)=>a[0]-b[0]).map(([round,entry])=>({round,raceName:entry.raceName,scores:entry.scores}));
 }
