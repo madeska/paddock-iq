@@ -2,81 +2,114 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 
-type OFDriver={driver_number:number;name_acronym:string;team_name:string};
-type OFResult={driver_number:number;position:number;dnf?:boolean;dns?:boolean;dsq?:boolean};
-const asArray=<T,>(value:unknown):T[]=>Array.isArray(value)?value:[];
+const weights=[1,.82,.67,.55,.45];
 
-const clamp=(n:number,min:number,max:number)=>Math.max(min,Math.min(max,n));
+const weighted5=(scores:number[])=>{
+ const recent=scores.slice(0,5);
+ if(!recent.length)return null;
+ const ws=weights.slice(0,recent.length);
+ const total=ws.reduce((a,b)=>a+b,0);
+ return recent.reduce((sum,score,index)=>sum+score*ws[index],0)/total;
+};
+
+const sampleStdDev=(scores:number[])=>{
+ if(scores.length<2)return undefined;
+ const mean=scores.reduce((a,b)=>a+b,0)/scores.length;
+ const variance=scores.reduce((sum,x)=>sum+(x-mean)**2,0)/(scores.length-1);
+ return Math.sqrt(variance);
+};
 
 export async function POST(request:NextRequest){
  try{
   const body=await request.json().catch(()=>({}));
-  const season=Number(body.season??2026), round=Number(body.round??18);
+  const season=Number(body.season??2026),round=Number(body.round??16);
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
-  const sessions=await fetch('https://api.openf1.org/v1/sessions?year='+season+'&session_name=Race',{signal:AbortSignal.timeout(12000)}).then(r=>r.json()) as any[];
-  const completed=sessions.filter(s=>new Date(s.date_end)<new Date()).sort((a,b)=>+new Date(b.date_end)-+new Date(a.date_end)).slice(0,5);
-  if(!completed.length)throw Error('No completed OpenF1 race found');
-
-  const raceData=await Promise.all(completed.map(async(session,index)=>{
-   const [drivers,results]=await Promise.all([
-    fetch('https://api.openf1.org/v1/drivers?session_key='+session.session_key,{signal:AbortSignal.timeout(12000)}).then(r=>r.json()) as Promise<OFDriver[]>,
-    fetch('https://api.openf1.org/v1/session_result?session_key='+session.session_key,{signal:AbortSignal.timeout(12000)}).then(r=>r.json()) as Promise<OFResult[]>
-   ]);
-   return {session,index,drivers:asArray<OFDriver>(drivers),results:asArray<OFResult>(results)};
-  }));
-  const latestDrivers=raceData[0].drivers;
-  const latestByCode=new Map(latestDrivers.map(d=>[d.name_acronym,d]));
-  const assets=await prisma.asset.findMany({where:{season,active:true},include:{prices:{orderBy:{recordedAt:'desc'},take:2},fantasyScores:{where:{grandPrix:{round:{lt:round}}},orderBy:{grandPrix:{round:'desc'}},take:2}}});
-  const driverXPts=new Map<string,number>(); const teamPoints=new Map<string,number[]>();
-  const weights=[1,.82,.67,.55,.45];
-
-  for(const a of assets.filter(a=>a.type==='DRIVER')){
-   const observations:{form:number;reliability:number;weight:number}[]=[];
-   for(const race of raceData){
-    const d=race.drivers.find(x=>x.name_acronym===a.code);if(!d)continue;
-    const result=race.results.find(x=>x.driver_number===d.driver_number);if(!result)continue;
-    observations.push({form:clamp((22-result.position)/21,0,1),reliability:(result.dnf||result.dns||result.dsq)?0:1,weight:weights[race.index]??.4});
+  const assets=await prisma.asset.findMany({
+   where:{season,active:true},
+   include:{
+    prices:{orderBy:{recordedAt:'desc'},take:1},
+    fantasyScores:{
+     where:{grandPrix:{round:{lt:round}}},
+     orderBy:{grandPrix:{round:'desc'}},
+     take:5,
+     include:{grandPrix:true}
+    }
    }
-   const price=a.prices[0]?Number(a.prices[0].price):3;
-   const pricePrior=clamp((price-3)/25,0,1);
-   const totalW=observations.reduce((s,o)=>s+o.weight,0);
-   const form=totalW?observations.reduce((s,o)=>s+o.form*o.weight,0)/totalW:.35;
-   const reliability=totalW?observations.reduce((s,o)=>s+o.reliability*o.weight,0)/totalW:.8;
-   const sampleConfidence=clamp(observations.length/5,.2,1);
-   const x=Math.round(clamp(4+32*(.60*form+.25*pricePrior+.15*reliability)*(.9+.1*sampleConfidence),-5,45)*10)/10;
-   driverXPts.set(a.code,x);
-   const latest=latestByCode.get(a.code);
-   if(latest){const arr=teamPoints.get(latest.team_name)||[];arr.push(x);teamPoints.set(latest.team_name,arr)}
-  }
-  const aliases:Record<string,string>={
-   'Red Bull Racing':'Red Bull Racing','Racing Bulls':'Racing Bulls','Mercedes':'Mercedes','Ferrari':'Ferrari','McLaren':'McLaren',
-   'Alpine':'Alpine','Williams':'Williams','Haas F1 Team':'Haas F1 Team','Audi':'Audi Revolut F1 Team','Aston Martin':'Aston Martin','Cadillac':'Cadillac Formula 1 Team'
-  };
+  });
+
   const created=[];
   for(const asset of assets){
-   const current=asset.prices[0]?Number(asset.prices[0].price):null;if(current==null)continue;
-   let pts:number|null=null;
-   if(asset.type==='DRIVER')pts=driverXPts.get(asset.code)??null;
-   else{
-    const match=Object.entries(aliases).find(([,market])=>market===asset.name)?.[0];
-    const xs=match?teamPoints.get(match):undefined;
-    if(xs?.length)pts=Math.round((xs.reduce((a,b)=>a+b,0)+5)*10)/10;
-    // OpenF1 team naming can differ from our market names. Never leave the optimizer
-    // with a partial prediction set: use a conservative market-prior fallback.
-    if(pts==null)pts=Math.round((12+clamp((current-3)/30,0,1)*48)*10)/10;
-   }
-   if(pts==null)pts=Math.round((5+clamp((current-3)/25,0,1)*25)*10)/10;
+   const current=asset.prices[0]?Number(asset.prices[0].price):null;
+   if(current==null)continue;
+
    const scores=asset.fantasyScores.map(s=>s.points);
-   const price=scores.length===2?predictFantasyPrice({currentPrice:current,previousFantasyPoints:[scores[1],scores[0]],expectedPoints:pts}):null;
+   const rawXPts=weighted5(scores);
+   if(rawXPts==null)continue;
+   const pts=Math.round(rawXPts*10)/10;
+
+   const previousTwo=scores.slice(0,2);
+   const sd=sampleStdDev(scores);
+   const price=previousTwo.length===2?predictFantasyPrice({
+    currentPrice:current,
+    previousFantasyPoints:[previousTwo[1],previousTwo[0]],
+    expectedPoints:pts,
+    pointsStdDev:sd
+   }):null;
+
    const rise=price?price.probabilities.smallRise+price.probabilities.maxRise:null;
-   const fall=price?(price.effectiveDeltas.smallFall<0?price.probabilities.smallFall:0)+(price.effectiveDeltas.maxFall<0?price.probabilities.maxFall:0):null;
+   const fall=price?
+    (price.effectiveDeltas.smallFall<0?price.probabilities.smallFall:0)+
+    (price.effectiveDeltas.maxFall<0?price.probabilities.maxFall:0):null;
+
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
-   const row=await prisma.assetPrediction.create({data:{assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,expectedPriceDelta:price?.expectedDelta??null,probabilityRise:rise,probabilityFlat:price?.probabilityFlat??null,probabilityFall:fall,probabilityMaxRise:price?.probabilities.maxRise??null,probabilitySmallRise:price?.probabilities.smallRise??null,probabilitySmallFall:price?.probabilities.smallFall??null,probabilityMaxFall:price?.probabilities.maxFall??null,requiredPointsMaxRise:price?.thresholds.maxRiseAt??null,requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,confidence:price?Math.min(.55,.25+scores.length*.15):null,source:price?'Paddock IQ xPts + rolling-3 Fantasy PPM':'Paddock IQ xPts; price model awaiting 2 actual Fantasy scores',modelVersion:price?'price-probability-v0.3-floor-aware':'xpts-openf1-v1.0'}});
-   created.push({code:asset.code,expectedPoints:pts,expectedDelta:price?.expectedDelta??null,priceReady:Boolean(price),id:row.id});
+   const row=await prisma.assetPrediction.create({
+    data:{
+     assetId:asset.id,
+     grandPrixId:gp.id,
+     expectedPoints:pts,
+     expectedPriceDelta:price?.expectedDelta??null,
+     probabilityRise:rise,
+     probabilityFlat:price?.probabilityFlat??null,
+     probabilityFall:fall,
+     probabilityMaxRise:price?.probabilities.maxRise??null,
+     probabilitySmallRise:price?.probabilities.smallRise??null,
+     probabilitySmallFall:price?.probabilities.smallFall??null,
+     probabilityMaxFall:price?.probabilities.maxFall??null,
+     requiredPointsMaxRise:price?.thresholds.maxRiseAt??null,
+     requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,
+     requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
+     confidence:Math.min(.8,.35+scores.length*.09),
+     source:price?'Official F1 Fantasy rolling weighted-5 xPts + validated rolling-3 PPM price model':'Official F1 Fantasy rolling weighted-5 xPts',
+     modelVersion:price?'xpts-fantasy-weighted5-v1 + price-probability-v0.3-floor-aware':'xpts-fantasy-weighted5-v1'
+    }
+   });
+
+   created.push({
+    code:asset.code,
+    type:asset.type,
+    expectedPoints:pts,
+    expectedDelta:price?.expectedDelta??null,
+    history:scores,
+    historyStdDev:sd==null?null:Math.round(sd*10)/10,
+    priceReady:Boolean(price),
+    id:row.id
+   });
   }
+
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
-  return NextResponse.json({ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,sourceSessions:completed.map(s=>s.session_key),predictions:created,warning:'xPts remain experimental. Price probabilities are generated only when two actual prior F1 Fantasy scores are stored; missing history returns null rather than a heuristic delta.'});
- }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500})}
+  return NextResponse.json({
+   ok:missing.length===0,
+   created:created.length,
+   totalAssets:assets.length,
+   missing,
+   model:'xpts-fantasy-weighted5-v1',
+   weights,
+   predictions:created,
+   warning:'xPts are a recency-weighted baseline from the last five official F1 Fantasy round scores. Track/session-specific modifiers are not yet included.'
+  });
+ }catch(error){
+  return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500});
+ }
 }
