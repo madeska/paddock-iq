@@ -154,6 +154,13 @@ model AssetPrediction {
   probabilityRise    Float?
   probabilityFlat    Float?
   probabilityFall    Float?
+  probabilityMaxRise Float?
+  probabilitySmallRise Float?
+  probabilitySmallFall Float?
+  probabilityMaxFall Float?
+  requiredPointsMaxRise Float?
+  requiredPointsSmallRise Float?
+  requiredPointsAvoidMaxFall Float?
   confidence         Float?
   source             String?
   modelVersion       String
