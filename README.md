@@ -63,3 +63,12 @@ Prices are in millions. Enter prices and model forecasts for all 7 current asset
 - Import provenance is persisted through the `source` field.
 - Example payload: `examples/market-import.example.json`.
 - No live Fantasy price feed is assumed. Use only verified current market data; do not invent missing prices.
+
+
+## v0.9 multi-user team import
+- Added `POST /api/team/import` for creating/updating a Paddock IQ user/team and recording a new GP snapshot.
+- Validates exactly five drivers and two constructors and rejects duplicates.
+- Team imports reference the shared market by asset code; unknown assets are rejected so user imports cannot silently create fake market data.
+- Chip state, cash, free transfers and total points can be stored with each user's team context.
+- Example payload: `examples/team-import.example.json`.
+- This is the data layer for multi-user support; production authentication/authorization is still required before exposing personal team data publicly.
