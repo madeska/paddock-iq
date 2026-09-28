@@ -8,7 +8,7 @@ type Asset = {
   code: string; name: string; type: string; isDoubled: boolean;
   price: number | null; expectedPoints: number | null; expectedDelta: number | null;
   probabilityMaxRise: number | null; probabilitySmallRise: number | null;
-  probabilitySmallFall: number | null; probabilityMaxFall: number | null;
+  probabilitySmallFall: number | null; probabilityMaxFall: number | null; probabilityFlat: number | null;
   requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null;
   mostLikelyDelta: number | null; mostLikelyProbability: number | null;
   recentFantasyScores: Score[];
@@ -124,7 +124,7 @@ export default function MyTeam() {
               <td>{asset.expectedPoints ?? '—'}</td>
               <td>{fmtDelta(asset.expectedDelta)}</td>
               <td>{asset.mostLikelyDelta == null ? '—' : fmtDelta(asset.mostLikelyDelta) + ' · ' + pct(asset.mostLikelyProbability)}</td>
-              <td><small>Max ↑ {pct(asset.probabilityMaxRise)}<br/>Small ↑ {pct(asset.probabilitySmallRise)}<br/>Small ↓ {pct(asset.probabilitySmallFall)}<br/>Max ↓ {pct(asset.probabilityMaxFall)}</small></td>
+              <td><small>Max ↑ {pct(asset.probabilityMaxRise)}<br/>Small ↑ {pct(asset.probabilitySmallRise)}<br/>Small ↓ {pct(asset.probabilitySmallFall)}<br/>Max ↓ {pct(asset.probabilityMaxFall)}<br/>Flat {pct(asset.probabilityFlat)}</small></td>
               <td><small>Small ↑: {asset.requiredPointsSmallRise == null ? '—' : asset.requiredPointsSmallRise.toFixed(1) + ' pts'}<br/>Max ↑: {asset.requiredPointsMaxRise == null ? '—' : asset.requiredPointsMaxRise.toFixed(1) + ' pts'}</small></td>
             </tr>)}</tbody>
           </table></div>
