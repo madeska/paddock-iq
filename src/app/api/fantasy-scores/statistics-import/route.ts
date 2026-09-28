@@ -1,0 +1,12 @@
+import {NextRequest,NextResponse} from 'next/server';import {prisma} from '../../../../lib/prisma';import {normalizeFantasyStatistics} from '../../../../lib/fantasy-statistics-normalizer';
+export async function POST(req:NextRequest){try{
+ const key=req.headers.get('x-market-admin-key');if(!process.env.MARKET_ADMIN_KEY||key!==process.env.MARKET_ADMIN_KEY)return NextResponse.json({error:'Unauthorized'},{status:401});
+ const body=await req.json(),season=Number(body.season||2026),rounds=normalizeFantasyStatistics(body.data);
+ if(!rounds.length)return NextResponse.json({error:'No race-by-race Fantasy statistics found'},{status:400});
+ const assets=await prisma.asset.findMany({where:{season}}),byCode=new Map(assets.map(a=>[a.code,a]));let saved=0;const skipped:string[]=[];
+ for(const r of rounds){const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:r.round}}});if(!gp){skipped.push('round:'+r.round);continue}
+  for(const [code,points] of Object.entries(r.scores)){const a=byCode.get(code);if(!a){skipped.push(code);continue}
+   await prisma.fantasyRoundScore.upsert({where:{assetId_grandPrixId:{assetId:a.id,grandPrixId:gp.id}},update:{points,source:'Official F1 Fantasy Statistics'},create:{assetId:a.id,grandPrixId:gp.id,points,source:'Official F1 Fantasy Statistics'}});saved++;
+  }}
+ return NextResponse.json({ok:true,saved,rounds:rounds.length,skipped:[...new Set(skipped)]});
+}catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Import failed'},{status:500})}}
