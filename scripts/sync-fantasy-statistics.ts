@@ -40,6 +40,23 @@ function matchCode(text:string,map:Record<string,string>){
  return Object.entries(map).sort((a,b)=>b[0].length-a[0].length).find(([name])=>upper.includes(name))?.[1]??null;
 }
 
+async function popupVisible(page:Page,timeout=1200){
+ return page.locator('.si-popup__container').waitFor({state:'visible',timeout}).then(()=>true).catch(()=>false);
+}
+
+async function openDetails(page:Page,cell:Locator){
+ const candidates=[cell,cell.locator('xpath=..'),cell.locator('xpath=../..'),cell.locator('xpath=../../..')];
+ for(let level=0;level<candidates.length;level++){
+  const target=candidates[level];
+  if(!await target.count())continue;
+  await target.click({timeout:2500}).catch(async()=>{await target.click({force:true,timeout:1500}).catch(()=>{})});
+  if(await popupVisible(page))return level;
+  await target.evaluate((el:any)=>el.click?.()).catch(()=>{});
+  if(await popupVisible(page))return level;
+ }
+ return -1;
+}
+
 async function popupRaces(page:Page){
  await page.waitForSelector('.si-popup__container',{timeout:10000});
  await page.waitForTimeout(700);
@@ -87,7 +104,12 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
   if(!code)continue;
   console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
   try{
-   await primary.click({timeout:5000}).catch(async()=>{await primary.click({force:true,timeout:3000})});
+   const openedAt=await openDetails(page,primary);
+   if(openedAt<0){
+    const html=(await primary.evaluate((el:any)=>el.parentElement?.outerHTML?.slice(0,1200)??el.outerHTML?.slice(0,1200))).replace(/\s+/g,' ');
+    throw new Error('Details popup did not open. parent='+html);
+   }
+   console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
    const races=await popupRaces(page);
    if(!raceOrder.length&&races.length)raceOrder=races.map(r=>r.raceName);
    const normalized=races.map(r=>({round:String(raceOrder.indexOf(r.raceName)+1),...r})).filter(r=>r.round!=='0');
