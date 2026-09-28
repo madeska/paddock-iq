@@ -28,7 +28,7 @@ export async function POST(request:NextRequest){
   }));
   const latestDrivers=raceData[0].drivers;
   const latestByCode=new Map(latestDrivers.map(d=>[d.name_acronym,d]));
-  const assets=await prisma.asset.findMany({where:{season},include:{prices:{orderBy:{recordedAt:'desc'},take:2}}});
+  const assets=await prisma.asset.findMany({where:{season,active:true},include:{prices:{orderBy:{recordedAt:'desc'},take:2}}});
   const driverXPts=new Map<string,number>(); const teamPoints=new Map<string,number[]>();
   const weights=[1,.82,.67,.55,.45];
 
