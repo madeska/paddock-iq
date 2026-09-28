@@ -22,11 +22,16 @@ const CONSTRUCTOR_CODES:Record<string,string>={
 };
 
 async function consent(page:Page){
- const frame=page.locator('#sp_message_iframe_1336275');
+ const frame=page.locator('iframe[title="SP Consent Message"], iframe[id^="sp_message_iframe_"]').first();
  if(await frame.count()){
-  const button=frame.contentFrame().getByRole('button',{name:/Essential only cookies/i});
-  await button.click({timeout:3000}).catch(()=>{});
-  await page.waitForTimeout(1000);
+  const body=frame.contentFrame();
+  const essential=body.getByRole('button',{name:/Essential only cookies/i}).or(body.getByText(/Essential only cookies/i)).first();
+  await essential.click({timeout:5000}).catch(async()=>{
+   const anyButton=body.locator('button').filter({hasText:/Essential|Reject|Necessary/i}).first();
+   await anyButton.click({timeout:3000}).catch(()=>{});
+  });
+  await page.locator('[id^="sp_message_container_"]').waitFor({state:'detached',timeout:5000}).catch(()=>{});
+  await page.waitForTimeout(500);
  }
 }
 
