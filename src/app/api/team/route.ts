@@ -46,8 +46,11 @@ export async function GET(request:NextRequest){
     const p=s.asset.predictions[0];
     const currentRound=targetGp?.round??snapshot.grandPrix.round;
     const history=s.asset.fantasyScores.filter(x=>x.grandPrix.round<currentRound).slice(0,2);
-    const probs=p?[p.probabilityMaxRise,p.probabilitySmallRise,p.probabilitySmallFall,p.probabilityMaxFall]:[null,null,null,null];
-    const deltas=s.asset.prices[0]&&Number(s.asset.prices[0].price)>=18.5?[.3,.1,-.1,-.3]:[.6,.2,-.2,-.6];
+    const probs=p?[p.probabilityMaxRise,p.probabilitySmallRise,p.probabilitySmallFall,p.probabilityMaxFall,p.probabilityFlat]:[null,null,null,null,null];
+    const currentPrice=s.asset.prices[0]?Number(s.asset.prices[0].price):null;
+    const base=currentPrice!==null&&currentPrice>=18.5?[.3,.1,-.1,-.3]:[.6,.2,-.2,-.6];
+    const floorDelta=currentPrice===null?-Infinity:Math.round((3-currentPrice)*100)/100;
+    const deltas=[base[0],base[1],Math.max(base[2],floorDelta),Math.max(base[3],floorDelta),0];
     let mostLikelyDelta:number|null=null,mostLikelyProbability:number|null=null;
     const valid=probs.map((v,i)=>({v:v??-1,i})).filter(x=>x.v>=0);
     if(valid.length){const best=valid.reduce((a,b)=>b.v>a.v?b:a);mostLikelyDelta=deltas[best.i];mostLikelyProbability=best.v}
@@ -56,7 +59,7 @@ export async function GET(request:NextRequest){
      price:s.asset.prices[0]?Number(s.asset.prices[0].price):null,
      expectedPoints:p?.expectedPoints??null,expectedDelta:p?.expectedPriceDelta??null,
      probabilityMaxRise:p?.probabilityMaxRise??null,probabilitySmallRise:p?.probabilitySmallRise??null,
-     probabilitySmallFall:p?.probabilitySmallFall??null,probabilityMaxFall:p?.probabilityMaxFall??null,
+     probabilitySmallFall:p?.probabilitySmallFall??null,probabilityMaxFall:p?.probabilityMaxFall??null,probabilityFlat:p?.probabilityFlat??null,
      requiredPointsMaxRise:p?.requiredPointsMaxRise??null,requiredPointsSmallRise:p?.requiredPointsSmallRise??null,
      requiredPointsAvoidMaxFall:p?.requiredPointsAvoidMaxFall??null,
      mostLikelyDelta,mostLikelyProbability,
