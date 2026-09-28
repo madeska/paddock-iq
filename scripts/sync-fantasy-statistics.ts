@@ -1,4 +1,4 @@
-import {chromium,Page,Locator} from 'playwright';
+import {chromium,Page,Locator,BrowserContext} from 'playwright';
 import {loadEnvConfig} from '@next/env';
 
 loadEnvConfig(process.cwd());
@@ -101,80 +101,118 @@ async function loadTab(page:Page,tab:'driver'|'constructor'){
  await page.waitForFunction((selector)=>document.querySelectorAll(selector).length>0,'div[class*="si-stats__list-item"]',{timeout:10000});
 }
 
-async function scrape(page:Page,tab:'driver'|'constructor'){
- await loadTab(page,tab);
+async function freshTab(context:BrowserContext,tab:'driver'|'constructor'){
+ const page=await context.newPage();
+ try{
+  await loadTab(page,tab);
+  return page;
+ }catch(error){
+  await page.close().catch(()=>{});
+  throw error;
+ }
+}
 
+async function scrape(context:BrowserContext,tab:'driver'|'constructor'){
+ let page=await freshTab(context,tab);
  let itemCount=await page.locator('div[class*="si-stats__list-item"]').count();
  const group=tab==='driver'?4:3;
  const map=tab==='driver'?DRIVER_CODES:CONSTRUCTOR_CODES;
  const assets:{abbreviation:string;races:{round:string;raceName:string;totalPoints:number}[]}[]=[];
 
+ async function resetPage(){
+  await page.close().catch(()=>{});
+  page=await freshTab(context,tab);
+ }
+
  console.log(`[${tab}] list items: ${itemCount}`);
  for(let i=0;i+group-1<itemCount;i+=group){
-  let liveItems=page.locator('div[class*="si-stats__list-item"]');
-  if(await liveItems.count()<=i){
-   await loadTab(page,tab);
-   liveItems=page.locator('div[class*="si-stats__list-item"]');
-   itemCount=await liveItems.count();
-  }
-  const primary=liveItems.nth(i);
-  await primary.waitFor({state:'visible',timeout:5000}).catch(async()=>{await loadTab(page,tab)});
-  liveItems=page.locator('div[class*="si-stats__list-item"]');
-  const freshPrimary=liveItems.nth(i);
-  const text=((await freshPrimary.textContent({timeout:5000}))??'').trim();
-  const code=matchCode(text,map);
-  if(!code)continue;
-  console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
-  let success=false;
-  for(let attempt=1;attempt<=2&&!success;attempt++){
-   try{
-    const closed=await closePopup(page);
-    if(!closed){
-     console.warn(`[${tab}] ${code}: stale popup would not close; reloading tab`);
-     await loadTab(page,tab);
-    }
-    let liveItems=page.locator('div[class*="si-stats__list-item"]');
-    if(await liveItems.count()<=i){await loadTab(page,tab);liveItems=page.locator('div[class*="si-stats__list-item"]')}
-    const livePrimary=liveItems.nth(i);
-    const openedAt=await openDetails(page,livePrimary);
-    if(openedAt<0)throw new Error('Details popup did not open');
-    const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent().catch(()=>''))||'').trim();
-    if(!popupName)throw new Error('Popup opened without player/constructor name');
-    const expectedNames=tab==='driver'?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k):Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
-    const normalizedName=popupName.toUpperCase();
-    if(!expectedNames.some(name=>normalizedName.includes(name))){
-     if(attempt===1){
-      console.warn(`[${tab}] ${code}: stale popup ${popupName}; reloading and retrying`);
-      await loadTab(page,tab);
-      continue;
+  try{
+   let items=page.locator('div[class*="si-stats__list-item"]');
+   if(await items.count()<=i){await resetPage();items=page.locator('div[class*="si-stats__list-item"]');itemCount=await items.count()}
+   const primary=items.nth(i);
+   await primary.waitFor({state:'visible',timeout:5000});
+   const text=((await primary.textContent({timeout:5000}))??'').trim();
+   const code=matchCode(text,map);
+   if(!code)continue;
+   console.log(`[${tab}] candidate ${code} @ item ${i}/${itemCount}`);
+
+   let success=false;
+   for(let attempt=1;attempt<=2&&!success;attempt++){
+    try{
+     const closed=await closePopup(page);
+     if(!closed){
+      console.warn(`[${tab}] ${code}: stale popup would not close; opening fresh tab`);
+      await resetPage();
      }
-     throw new Error(`Popup identity mismatch after retry: expected ${code}, got ${popupName}`);
+
+     let liveItems=page.locator('div[class*="si-stats__list-item"]');
+     if(await liveItems.count()<=i){await resetPage();liveItems=page.locator('div[class*="si-stats__list-item"]')}
+     const livePrimary=liveItems.nth(i);
+     await livePrimary.waitFor({state:'visible',timeout:5000});
+
+     const openedAt=await openDetails(page,livePrimary);
+     if(openedAt<0)throw new Error('Details popup did not open');
+
+     const popupName=((await page.locator('.si-popup__container .si-player__name').first().textContent({timeout:3000}).catch(()=>''))||'').trim();
+     if(!popupName)throw new Error('Popup opened without player/constructor name');
+
+     const expectedNames=tab==='driver'
+      ?Object.entries(DRIVER_CODES).filter(([,v])=>v===code).map(([k])=>k)
+      :Object.entries(CONSTRUCTOR_CODES).filter(([,v])=>v===code).map(([k])=>k);
+     const normalizedName=popupName.toUpperCase();
+
+     if(!expectedNames.some(name=>normalizedName.includes(name))){
+      if(attempt===1){
+       console.warn(`[${tab}] ${code}: stale popup ${popupName}; opening fresh tab and retrying`);
+       await resetPage();
+       continue;
+      }
+      throw new Error(`Popup identity mismatch after retry: expected ${code}, got ${popupName}`);
+     }
+
+     console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
+     const races=await popupRaces(page);
+     if(races.length){
+      assets.push({abbreviation:code,races});
+      console.log(`[${tab}] ${code}: ${races.length} races`);
+      success=true;
+     }
+    }catch(error){
+     if(attempt===1){
+      console.warn(`[${tab}] ${code}: retrying in fresh tab after ${error instanceof Error?error.message:'unknown error'}`);
+      await resetPage().catch(()=>{});
+     }else{
+      console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error);
+     }
+    }finally{
+     if(success)await closePopup(page);
     }
-    console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
-    const races=await popupRaces(page);
-    if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`);success=true}
-   }catch(error){
-    if(attempt===2)console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error);
-   }finally{
-    await closePopup(page);
    }
+  }catch(error){
+   console.warn(`[${tab}] item ${i}: row recovery failed`,error instanceof Error?error.message:error);
+   await resetPage().catch(()=>{});
   }
  }
+
+ await page.close().catch(()=>{});
  console.log(`[${tab}] parsed assets: ${assets.length}`);
  return assets;
 }
 
 async function main(){
  const browser=await chromium.launch({headless:true});
+ const context=await browser.newContext({viewport:{width:1440,height:1200}});
  try{
-  const page=await browser.newPage({viewport:{width:1440,height:1200}});
-  const drivers=await scrape(page,'driver');
-  const constructors=await scrape(page,'constructor');
-  if(!drivers.length&&!constructors.length)throw new Error('Official Statistics UI returned no parsable assets. See list-item diagnostics above.');
+  const drivers=await scrape(context,'driver');
+  const constructors=await scrape(context,'constructor');
+  if(!drivers.length&&!constructors.length)throw new Error('Official Statistics UI returned no parsable assets. See diagnostics above.');
   const response=await fetch(app+'/api/fantasy-scores/statistics-import',{method:'POST',headers:{'content-type':'application/json','x-market-admin-key':key},body:JSON.stringify({season:2026,data:[...drivers,...constructors]})});
   const result=await response.json();if(!response.ok)throw new Error(JSON.stringify(result));
   console.log(JSON.stringify({drivers:drivers.length,constructors:constructors.length,...result},null,2));
- }finally{await browser.close()}
+ }finally{
+  await context.close().catch(()=>{});
+  await browser.close();
+ }
 }
 
 main().catch((error)=>{console.error(error);process.exitCode=1});
