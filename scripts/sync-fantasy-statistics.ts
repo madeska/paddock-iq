@@ -66,14 +66,16 @@ async function popupRaces(page:Page){
  await popup.locator('.si-totalPts__counts em').first().waitFor({state:'visible',timeout:3000}).catch(()=>{});
  const boxes=popup.locator('.si-accordion__box');
  const count=await boxes.count();
- const races:{raceName:string,totalPoints:number}[]=[];
+ const races:{round:string,raceName:string,totalPoints:number}[]=[];
+ let round=0;
  for(let i=0;i<count;i++){
   const box=boxes.nth(i);
   const raceName=(await box.locator('.si-league__card-title span').first().textContent().catch(()=>null))?.trim();
   const pointsText=(await box.locator('.si-totalPts__counts em').first().textContent().catch(()=>null))?.trim();
   if(!raceName||raceName.toLowerCase()==='season')continue;
+  round++;
   const points=Number((pointsText??'').replace(/[^0-9-]/g,''));
-  if(Number.isFinite(points))races.push({raceName,totalPoints:points});
+  if(Number.isFinite(points))races.push({round:String(round),raceName,totalPoints:points});
  }
  return races;
 }
@@ -96,7 +98,6 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
  const group=tab==='driver'?4:3;
  const map=tab==='driver'?DRIVER_CODES:CONSTRUCTOR_CODES;
  const assets:{abbreviation:string;races:{round:string;raceName:string;totalPoints:number}[]}[]=[];
- let raceOrder:string[]=[];
 
  console.log(`[${tab}] list items: ${itemCount}`);
  for(let i=0;i+group-1<itemCount;i+=group){
@@ -113,9 +114,7 @@ async function scrape(page:Page,tab:'driver'|'constructor'){
    }
    console.log(`[${tab}] ${code}: popup opened at ancestor level ${openedAt}`);
    const races=await popupRaces(page);
-   if(!raceOrder.length&&races.length)raceOrder=races.map(r=>r.raceName);
-   const normalized=races.map(r=>({round:String(raceOrder.indexOf(r.raceName)+1),...r})).filter(r=>r.round!=='0');
-   if(normalized.length){assets.push({abbreviation:code,races:normalized});console.log(`[${tab}] ${code}: ${normalized.length} races`)}
+   if(races.length){assets.push({abbreviation:code,races});console.log(`[${tab}] ${code}: ${races.length} races`)}
   }catch(error){console.warn(`[${tab}] ${code}: popup parse failed`,error instanceof Error?error.message:error)}
   finally{await closePopup(page)}
  }
