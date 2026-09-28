@@ -25,5 +25,10 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
   }
  }
  visit(0,[],[],0,0,0);
- return results.sort((a,b)=>b.score-a.score).slice(0,50);
+ const unique=new Map<string,Scenario>();
+ for(const r of results){
+  const key=r.out.slice().sort().join('|')+'>'+r.incoming.slice().sort().join('|');
+  const prev=unique.get(key);if(!prev||r.score>prev.score)unique.set(key,r);
+ }
+ return [...unique.values()].sort((a,b)=>b.score-a.score).slice(0,50);
 }
