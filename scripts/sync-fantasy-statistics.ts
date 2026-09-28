@@ -70,7 +70,44 @@ async function main(){
 
   const completed=points.some(value=>value!==0);
   if(!completed){
-   console.log('Round '+round+': all GamedayPoints are 0 -> upcoming/not completed, stopping');
+   console.log('Round '+round+': all GamedayPoints are 0 -> upcoming/not completed; syncing current prices');
+   const teamIdToCode=new Map<string,string>();
+   for(const row of rows){
+    if(row.PositionName!=='DRIVER')continue;
+    const code=constructorCode(row.TeamName);
+    if(code&&row.TeamId!=null)teamIdToCode.set(String(row.TeamId),code);
+   }
+
+   let gp=await prisma.grandPrix.findUnique({where:{season_round:{season:SEASON,round}}});
+   if(!gp)gp=await prisma.grandPrix.create({data:{season:SEASON,round,name:'Round '+round}});
+
+   let pricesSaved=0;
+   for(const row of rows){
+    const price=Number((row as any).Value);
+    if(!Number.isFinite(price)||price<=0)continue;
+
+    let type:AssetType;
+    let code:string|null=null;
+    if(row.PositionName==='DRIVER'){
+     type=AssetType.DRIVER;
+     code=String(row.DriverTLA??'').trim().toUpperCase()||null;
+    }else if(row.PositionName==='CONSTRUCTOR'){
+     type=AssetType.CONSTRUCTOR;
+     code=teamIdToCode.get(String(row.PlayerId??''))??
+      constructorCode(row.TeamName)??constructorCode(row.FUllName)??constructorCode(row.DisplayName);
+    }else continue;
+
+    if(!code)continue;
+    const asset=byKey.get(type+':'+code);
+    if(!asset)continue;
+
+    const source='Official F1 Fantasy current round feed';
+    const existing=await prisma.priceHistory.findFirst({where:{assetId:asset.id,grandPrixId:gp.id,source},orderBy:{recordedAt:'desc'}});
+    if(existing)await prisma.priceHistory.update({where:{id:existing.id},data:{price}});
+    else await prisma.priceHistory.create({data:{assetId:asset.id,grandPrixId:gp.id,price,source}});
+    pricesSaved++;
+   }
+   console.log('Round '+round+': '+pricesSaved+' current prices saved');
    break;
   }
 
