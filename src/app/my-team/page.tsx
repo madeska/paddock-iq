@@ -115,6 +115,56 @@ function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:st
 
 const scenarioKey = (scenario:any) => [scenario.out?.join(','),scenario.incoming?.join(','),scenario.recommendedBoost ?? ''].join('>');
 
+type TeamViewAsset = {code:string;type:string;price:number;expectedDelta:number;expectedPoints?:number;horizonPoints?:number[];isDoubled?:boolean};
+type TeamView = {assets:TeamViewAsset[];boost:string|null;price:number;expectedDelta:number;expectedPoints:number;penalty:number};
+
+function buildTeamView(current:any[],market:any[],scenario:any,horizon:boolean):TeamView{
+  const byCode=new Map([...current,...market].map((a:any)=>[a.code,a]));
+  const outgoing=new Set<string>(scenario?.out??[]);
+  const lineupCodes=[
+    ...current.filter((a:any)=>!outgoing.has(a.code)).map((a:any)=>a.code),
+    ...(scenario?.incoming??[])
+  ];
+  const assets=lineupCodes.map((code:string)=>byCode.get(code)).filter(Boolean) as TeamViewAsset[];
+  const price=assets.reduce((s,a)=>s+Number(a.price??0),0);
+  const expectedDelta=assets.reduce((s,a)=>s+Number(a.expectedDelta??0),0);
+  const penalty=Number(scenario?.penalty??0);
+  let expectedPoints=0;
+  if(horizon){
+    const steps=Math.min(3,...assets.map(a=>Array.isArray(a.horizonPoints)?a.horizonPoints.length:0));
+    for(let step=0;step<steps;step++){
+      expectedPoints+=assets.reduce((s,a)=>s+Number(a.horizonPoints?.[step]??0),0);
+      const drivers=assets.filter(a=>a.type==='DRIVER');
+      if(drivers.length)expectedPoints+=Math.max(...drivers.map(a=>Number(a.horizonPoints?.[step]??0)));
+    }
+  }else{
+    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0);
+    const boost=scenario?.recommendedBoost ? byCode.get(scenario.recommendedBoost) : null;
+    expectedPoints+=Number(boost?.expectedPoints??0);
+  }
+  return {assets,boost:scenario?.recommendedBoost??null,price,expectedDelta,expectedPoints:expectedPoints-penalty,penalty};
+}
+
+function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
+  const assets=current as TeamViewAsset[];
+  const price=assets.reduce((s,a)=>s+Number(a.price??0),0);
+  const expectedDelta=assets.reduce((s,a)=>s+Number(a.expectedDelta??0),0);
+  const currentBoost=assets.find(a=>a.type==='DRIVER'&&a.isDoubled)??null;
+  let expectedPoints=0;
+  if(horizon){
+    const steps=Math.min(3,...assets.map(a=>Array.isArray(a.horizonPoints)?a.horizonPoints.length:0));
+    for(let step=0;step<steps;step++){
+      expectedPoints+=assets.reduce((s,a)=>s+Number(a.horizonPoints?.[step]??0),0);
+      const drivers=assets.filter(a=>a.type==='DRIVER');
+      const boost=step===0&&currentBoost?currentBoost:(drivers.length?drivers.reduce((best,a)=>Number(a.horizonPoints?.[step]??-Infinity)>Number(best.horizonPoints?.[step]??-Infinity)?a:best):null);
+      expectedPoints+=Number(boost?.horizonPoints?.[step]??0);
+    }
+  }else{
+    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0)+Number(currentBoost?.expectedPoints??0);
+  }
+  return {assets,boost:currentBoost?.code??null,price,expectedDelta,expectedPoints,penalty:0};
+}
+
 export default function MyTeam() {
   const [email, setEmail] = useState('');
   const [data, setData] = useState<Data | null>(null);
@@ -125,6 +175,7 @@ export default function MyTeam() {
   const [locked, setLocked] = useState<string[]>([]);
   const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
   const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
+  const [currentTeamView, setCurrentTeamView] = useState<TeamView | null>(null);
 
   async function load() {
     setStatus('Loading…');
@@ -190,7 +241,10 @@ export default function MyTeam() {
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Optimization failed');
       const scenarios = Array.isArray(json.scenarios) ? json.scenarios : Array.isArray(json.proposals) ? json.proposals : Array.isArray(json) ? json : [];
-      setRecs(scenarios); setStatus(scenarios.length ? '' : 'No valid transfer scenarios found.');
+      const horizonMode=mode==='horizon';
+      const enriched=scenarios.map((scenario:any)=>({...scenario,teamView:buildTeamView(optimizeCurrent,optimizeMarket,scenario,horizonMode)}));
+      setCurrentTeamView(buildCurrentTeamView(optimizeCurrent,horizonMode));
+      setRecs(enriched); setStatus(enriched.length ? '' : 'No valid transfer scenarios found.');
     } catch (error) {
       setRecs([]); setStatus(error instanceof Error ? error.message : 'Optimization failed');
     }
@@ -252,6 +306,41 @@ export default function MyTeam() {
             <button className={confidenceFilter === 'MEDIUM_PLUS' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
             <button className={confidenceFilter === 'HIGH' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('HIGH')}>High only</button>
           </div>
+          {currentTeamView && <div className={styles.bestTeamsBoard}>
+            <div className={styles.bestTeamsTitle}>
+              <div><h3>Possible teams</h3><small>{mode === 'horizon' ? 'Ranked by 3 GP hold score' : 'Ranked by selected optimizer mode'}</small></div>
+              <span>{visibleRecs.filter((s:any)=>s.transfers>0).length} options</span>
+            </div>
+            <div className={styles.bestTeamsScroll}>
+              <table className={styles.bestTeamsTable}>
+                <thead><tr><th>#</th><th>CR</th><th>x2</th><th>DR</th><th>$</th><th>xΔ$</th><th>{mode === 'horizon' ? '3GP xPts' : 'xPts'}</th></tr></thead>
+                <tbody>
+                  <tr className={styles.currentTeamRow}>
+                    <td>—</td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><span className={styles.boostChip}>{currentTeamView.boost??'—'}</span></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
+                    <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
+                    <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
+                  </tr>
+                  {visibleRecs.filter((s:any)=>s.transfers>0).slice(0,25).map((scenario:any,index:number)=>{
+                    const tv=scenario.teamView as TeamView;
+                    const key=scenarioKey(scenario);
+                    return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>{setHoveredScenario(key);document.getElementById('scenario-'+encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});}}>
+                      <td><strong>{index+1}</strong></td>
+                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                      <td><span className={styles.boostChip}>{tv.boost??'—'}</span></td>
+                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                      <td><strong>{tv.price.toFixed(1)}</strong></td>
+                      <td className={tv.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{tv.expectedDelta>=0?'+':''}{tv.expectedDelta.toFixed(2)}</td>
+                      <td><strong>{tv.expectedPoints.toFixed(1)}</strong>{tv.penalty>0?<small className={styles.teamPenalty}> −{tv.penalty} penalty</small>:null}</td>
+                    </tr>;
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>}
           <div className="stats">{[0,1,2,3].map((count) => {
             const candidates = visibleRecs.filter((scenario:any) => scenario.transfers === count);
             const best = candidates[0];
