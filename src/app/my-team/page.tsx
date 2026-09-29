@@ -194,6 +194,10 @@ export default function MyTeam() {
 
   return (
     <main>
+      <nav style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,marginBottom:18}}>
+        <a href="/" style={{textDecoration:'none'}}>← Market Board</a>
+        <a href="/team/import" style={{textDecoration:'none'}}>Team setup</a>
+      </nav>
       <header>
         <span className="eyebrow">PADDOCK IQ · DATABASE TEAM</span>
         <h1>My Team</h1>
