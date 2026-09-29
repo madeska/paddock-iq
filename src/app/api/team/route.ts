@@ -24,8 +24,8 @@ export async function GET(request:NextRequest){
   include:{
    grandPrix:true,
    slots:{include:{asset:{include:{
-    prices:{orderBy:{recordedAt:'desc'},take:1},
-    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:'xpts-fantasy-hybrid-v1 + price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1}:{where:{modelVersion:'xpts-fantasy-hybrid-v1 + price-probability-v0.3-floor-aware'},orderBy:{createdAt:'desc'},take:1},
+    prices:targetGp?{where:{grandPrixId:targetGp.id},orderBy:{recordedAt:'desc'},take:1}:{orderBy:{recordedAt:'desc'},take:1},
+    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:{in:['xpts-driver-ridge50-v1 + price-probability-v0.3-floor-aware','xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware']}},orderBy:{createdAt:'desc'},take:1}:{orderBy:{createdAt:'desc'},take:1},
     fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}

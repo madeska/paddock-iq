@@ -16,6 +16,7 @@ type FeedRow={
  FUllName?:string;
  DisplayName?:string;
  GamedayPoints?:string|number|null;
+ Value?:string|number|null;
 };
 
 const CONSTRUCTOR_CODES:Record<string,string>={
@@ -151,6 +152,13 @@ async function main(){
     update:{points:value,source:'Official F1 Fantasy round feed'},
     create:{assetId:asset.id,grandPrixId:gp.id,points:value,source:'Official F1 Fantasy round feed'},
    });
+   const price=Number(row.Value);
+   if(Number.isFinite(price)&&price>0){
+    const source='Official F1 Fantasy round feed';
+    const existing=await prisma.priceHistory.findFirst({where:{assetId:asset.id,grandPrixId:gp.id,source}});
+    if(existing)await prisma.priceHistory.update({where:{id:existing.id},data:{price}});
+    else await prisma.priceHistory.create({data:{assetId:asset.id,grandPrixId:gp.id,price,source}});
+   }
    saved++;
    roundSaved++;
   }
