@@ -264,7 +264,7 @@ export default function MyTeam() {
               </small> : null}
             </article>;
           })}</div><div className={`tablewrap ${styles.recommendationTableWrap}`}><table className={styles.recommendationTable}>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>Confidence</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.map((scenario:any,index:number) => {
               const key = scenarioKey(scenario);
               return <tr
@@ -278,6 +278,7 @@ export default function MyTeam() {
                 <td>{scenario.incoming.join(', ') || '—'}</td>
                 <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
                 <td>{scenario.transferPointsGain.toFixed(1)}</td>
+                <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? 'Weakest swap historical hit rate: ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
                 {mode === 'horizon' ? <td>{Array.isArray(scenario.perRoundTransferGain) ? scenario.perRoundTransferGain.map((v:number) => (v > 0 ? '+' : '') + v.toFixed(1)).join(' / ') : '—'}</td> : null}
                 <td>{scenario.projectedValueGain.toFixed(2)}</td>
                 <td>{scenario.penalty}</td>
