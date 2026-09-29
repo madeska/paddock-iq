@@ -66,11 +66,7 @@ function fitRidge(rows:TrainingRow[],lambda=RIDGE_LAMBDA){
 function features(historyChronological:number[],price:number){
  const e=ewmaChronological(historyChronological)??0;
  const season=mean(historyChronological);
- const last=historyChronological.at(-1)??season;
- const mean2=mean(historyChronological.slice(-2));
- const mean3=mean(historyChronological.slice(-3));
- const std5=sampleStdDev(historyChronological.slice(-5));
- return [e,season,last,mean2,mean3,std5,price];
+ return [e,season,price];
 }
 
 export async function POST(request:NextRequest){
@@ -144,7 +140,7 @@ export async function POST(request:NextRequest){
 
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const modelVersion=asset.type==='DRIVER'
-    ?'xpts-driver-ridge50-v1 + price-probability-v0.3-floor-aware'
+    ?'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware'
     :'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware';
 
    const row=await prisma.assetPrediction.create({data:{
@@ -160,7 +156,7 @@ export async function POST(request:NextRequest){
     requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
     source:asset.type==='DRIVER'
-     ?'Walk-forward ridge(50) on official F1 Fantasy history + validated rolling-3 PPM price model'
+     ?'Walk-forward ridge(50) using EWMA, season mean and current price + validated rolling-3 PPM price model'
      :'Official F1 Fantasy constructor hybrid xPts + validated rolling-3 PPM price model',
     modelVersion
    }});
@@ -171,7 +167,7 @@ export async function POST(request:NextRequest){
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
   return NextResponse.json({
    ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,
-   driverModel:'ridge lambda=50: ewma025, seasonMean, last1, mean2, mean3, std5, currentPrice',
+   driverModel:'ridge lambda=50: ewma025, seasonMean, currentPrice',
    constructorModel:'max(-5, EWMA(0.25))',
    driverTrainingRows:driverTraining.length,
    predictions:created
