@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { type Mode } from '../../lib/optimizer';
+import styles from '../market-dashboard.module.css';
 
 type Score = { round: number; name: string; points: number };
 type Asset = {
@@ -9,7 +10,7 @@ type Asset = {
   price: number | null; expectedPoints: number | null; expectedDelta: number | null; modelVersion: string | null;
   probabilityMaxRise: number | null; probabilitySmallRise: number | null;
   probabilitySmallFall: number | null; probabilityMaxFall: number | null; probabilityFlat: number | null;
-  requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null;
+  requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null; requiredPointsAvoidMaxFall: number | null;
   mostLikelyDelta: number | null; mostLikelyProbability: number | null;
   recentFantasyScores: Score[];
 };
@@ -26,6 +27,91 @@ type Data = {
 
 const pct = (value: number | null) => value == null ? '—' : Math.round(value * 100) + '%';
 const fmtDelta = (value: number | null) => value == null ? '—' : (value > 0 ? '+' : '') + value.toFixed(2) + 'M';
+
+const accents: Record<string,string> = {
+  VER:'#2658ff',RUS:'#08c9bd',ANT:'#20d2bf',LEC:'#f04545',HAM:'#ef4438',PIA:'#ff9f1a',NOR:'#ff9c18',
+  HAD:'#263cff',HUL:'#ff592f',LIN:'#5c7df7',BOT:'#777d89',BEA:'#f2f2f2',PER:'#d9d9d9',STR:'#18aa9b',
+  OCO:'#f5f5f5',LAW:'#7289ff',BOR:'#ff4b1f',SAI:'#1678ff',COL:'#ef73c6',ALB:'#237cf2',GAS:'#e36cae',ALO:'#26b7a2',
+  RBR:'#2347ff',FER:'#ef4444',MER:'#20bfc0',MCL:'#ff9c18',ALP:'#d57cac',AUD:'#9b5d35',RB:'#5b77ee',
+  HAS:'#e8e8e8',CAD:'#a9a9a9',WIL:'#2188ff',AST:'#159a89'
+};
+
+function teamBucketProbabilities(asset: Asset) {
+  if (asset.price == null) return new Map<number,number>();
+  const tierA = asset.price >= 18.5;
+  const raw = [
+    { delta: tierA ? -.3 : -.6, p: asset.probabilityMaxFall ?? 0 },
+    { delta: tierA ? -.1 : -.2, p: asset.probabilitySmallFall ?? 0 },
+    { delta: tierA ? .1 : .2, p: asset.probabilitySmallRise ?? 0 },
+    { delta: tierA ? .3 : .6, p: asset.probabilityMaxRise ?? 0 },
+  ];
+  const floorDelta = Math.round((3 - asset.price) * 100) / 100;
+  const out = new Map<number,number>();
+  for (const item of raw) {
+    const d = item.delta < 0 ? Math.max(item.delta, floorDelta) : item.delta;
+    out.set(d, (out.get(d) ?? 0) + item.p);
+  }
+  if ((asset.probabilityFlat ?? 0) > 0 && !out.has(0)) out.set(0, asset.probabilityFlat ?? 0);
+  return out;
+}
+
+function teamThresholdText(asset: Asset, bucket: number) {
+  if (asset.price == null) return '';
+  const tierA = asset.price >= 18.5;
+  if (bucket === (tierA ? -.3 : -.6) && asset.requiredPointsAvoidMaxFall != null) return '≤' + asset.requiredPointsAvoidMaxFall.toFixed(0);
+  if (bucket === (tierA ? -.1 : -.2) && asset.requiredPointsSmallRise != null) return '<' + asset.requiredPointsSmallRise.toFixed(0);
+  if (bucket === (tierA ? .1 : .2) && asset.requiredPointsMaxRise != null) return '<' + asset.requiredPointsMaxRise.toFixed(0);
+  if (bucket === (tierA ? .3 : .6) && asset.requiredPointsMaxRise != null) return '≥' + asset.requiredPointsMaxRise.toFixed(0);
+  return '';
+}
+
+function scoreAt(asset: Asset, round: number) {
+  return asset.recentFantasyScores.find((score) => score.round === round)?.points;
+}
+
+function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:string;tier:'A'|'B';assets:Asset[];round:number;locked:string[];onToggleLock:(code:string)=>void}) {
+  const filtered = assets
+    .filter((asset) => asset.price != null && ((asset.price >= 18.5) === (tier === 'A')))
+    .sort((a,b) => (b.expectedDelta ?? -99) - (a.expectedDelta ?? -99));
+  if (!filtered.length) return null;
+  const buckets = tier === 'A' ? [-.3,-.1,.1,.3] : [-.6,-.2,0,.2,.6];
+
+  return <div className={styles.board}>
+    <div className={styles.tierTitle}><strong>{title} · Tier {tier}</strong><span>{tier === 'A' ? '≥ $18.5M' : '< $18.5M'}</span></div>
+    <div className={styles.scroll}><table className={styles.marketTable}>
+      <thead><tr>
+        <th className={styles.assetCol}>{title === 'Drivers' ? 'DR' : 'CR'}</th>
+        <th>$</th>
+        <th>R{round-2}<small>Pts</small></th>
+        <th>R{round-1}<small>Pts</small></th>
+        <th>R{round}<small>xPts</small></th>
+        {buckets.map((bucket) => <th key={bucket} className={bucket < 0 ? styles.negHead : bucket > 0 ? styles.posHead : styles.flatHead}>{bucket > 0 ? '+' : ''}{bucket.toFixed(1)}<small>Odds (pts)</small></th>)}
+        <th>R{round}<small>xΔ$</small></th>
+      </tr></thead>
+      <tbody>{filtered.map((asset) => {
+        const probs = teamBucketProbabilities(asset);
+        return <tr key={asset.code}>
+          <td className={styles.assetCell}>
+            <span className={styles.code} style={{'--accent':accents[asset.code] ?? '#64748b'} as CSSProperties}>{asset.code}</span>
+            <span className={styles.assetName}>{asset.name}{asset.isDoubled ? ' · 2×' : ''}</span>
+            <button type="button" onClick={() => onToggleLock(asset.code)}>{locked.includes(asset.code) ? 'Unlock' : 'Lock'}</button>
+          </td>
+          <td>{asset.price?.toFixed(1) ?? '—'}</td>
+          <td>{scoreAt(asset,round-2) ?? '—'}</td>
+          <td>{scoreAt(asset,round-1) ?? '—'}</td>
+          <td className={styles.xpts}>{asset.expectedPoints == null ? '—' : asset.expectedPoints.toFixed(1)}</td>
+          {buckets.map((bucket) => {
+            const p = probs.get(bucket) ?? 0;
+            const threshold = teamThresholdText(asset,bucket);
+            return <td key={bucket} className={p >= .7 ? styles.probStrong : p >= .3 ? styles.probMid : styles.probLow}><b>{pct(p)}</b>{threshold && <small>({threshold})</small>}</td>;
+          })}
+          <td className={(asset.expectedDelta ?? 0) >= 0 ? styles.deltaPos : styles.deltaNeg}>{asset.expectedDelta == null ? '—' : (asset.expectedDelta > 0 ? '+' : '') + asset.expectedDelta.toFixed(2)}</td>
+        </tr>;
+      })}</tbody>
+    </table></div>
+  </div>;
+}
+
 
 export default function MyTeam() {
   const [email, setEmail] = useState('');
@@ -129,20 +215,12 @@ export default function MyTeam() {
           </div>
         </section>
         <section>
-          <h2>Lineup</h2>
-          <div className="tablewrap"><table>
-            <thead><tr><th>Asset</th><th>Price</th><th>Last 2 actual</th><th>xPts</th><th>Expected Δ</th><th>Most likely</th><th>Price probabilities</th><th>Rise thresholds</th></tr></thead>
-            <tbody>{data.snapshot.assets.map((asset) => <tr key={asset.code}>
-              <td><b>{asset.code}</b> · {asset.name}{asset.isDoubled ? ' · 2×' : ''}<br/><small>{asset.type}</small><br/><button type="button" onClick={() => setLocked((prev) => prev.includes(asset.code) ? prev.filter((code) => code !== asset.code) : [...prev, asset.code])}>{locked.includes(asset.code) ? 'Unlock' : 'Lock'}</button></td>
-              <td>{asset.price == null ? '—' : '$' + asset.price + 'M'}</td>
-              <td>{asset.recentFantasyScores.length ? asset.recentFantasyScores.map((score) => <span key={score.round}>R{score.round}: <b>{score.points}</b><br/></span>) : '—'}</td>
-              <td>{asset.expectedPoints ?? '—'}{asset.modelVersion ? <><br/><small>{asset.modelVersion}</small></> : null}</td>
-              <td>{fmtDelta(asset.expectedDelta)}</td>
-              <td>{asset.mostLikelyDelta == null ? '—' : fmtDelta(asset.mostLikelyDelta) + ' · ' + pct(asset.mostLikelyProbability)}</td>
-              <td><small>Max ↑ {pct(asset.probabilityMaxRise)}<br/>Small ↑ {pct(asset.probabilitySmallRise)}<br/>Small ↓ {pct(asset.probabilitySmallFall)}<br/>Max ↓ {pct(asset.probabilityMaxFall)}<br/>Flat {pct(asset.probabilityFlat)}</small></td>
-              <td><small>Small ↑: {asset.requiredPointsSmallRise == null ? '—' : asset.requiredPointsSmallRise.toFixed(1) + ' pts'}<br/>Max ↑: {asset.requiredPointsMaxRise == null ? '—' : asset.requiredPointsMaxRise.toFixed(1) + ' pts'}</small></td>
-            </tr>)}</tbody>
-          </table></div>
+          <div className={styles.sectionHeading}><h2>Lineup</h2><span>{data.snapshot.assets.length} assets · same format as Market Board</span></div>
+          <TeamMarketBoard title="Drivers" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
+          <TeamMarketBoard title="Drivers" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
+          <TeamMarketBoard title="Constructors" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
+          <TeamMarketBoard title="Constructors" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
+          <p><small>Forecast model: driver ridge50 / constructor hybrid · price probabilities v0.3 floor-aware.</small></p>
         </section>
         <section>
           <h2>Strategy optimizer</h2>
