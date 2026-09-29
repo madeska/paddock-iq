@@ -18,6 +18,14 @@ type MarketResponse={
  season:number;round:number;grandPrix:string;complete:boolean;incomplete:string[];
  currentModels:string[];assets:MarketAsset[];
 };
+type BuilderTeam={
+ drivers:MarketAsset[];
+ constructors:MarketAsset[];
+ boost:string;
+ price:number;
+ expectedPoints:number;
+ expectedDelta:number;
+};
 
 const accents:Record<string,string>={
  VER:'#2658ff',RUS:'#08c9bd',ANT:'#20d2bf',LEC:'#f04545',HAM:'#ef4438',PIA:'#ff9f1a',NOR:'#ff9c18',
@@ -28,7 +36,6 @@ const accents:Record<string,string>={
 };
 
 const pct=(v:number|null)=>v==null?'—':Math.round(v*100)+'%';
-const money=(v:number|null)=>v==null?'—':'$'+Number(v.toFixed(2))+'M';
 const delta=(v:number|null)=>v==null?'—':(v>0?'+':'')+v.toFixed(2);
 
 function scoreFor(asset:MarketAsset,round:number){
@@ -37,11 +44,11 @@ function scoreFor(asset:MarketAsset,round:number){
 
 function bucketProbabilities(asset:MarketAsset){
  const raw=[
-  {delta:asset.price!=null&&asset.price>=18.5?-.3:-.6,p:asset.probabilityMaxFall??0,key:'maxFall'},
-  {delta:asset.price!=null&&asset.price>=18.5?-.1:-.2,p:asset.probabilitySmallFall??0,key:'smallFall'},
-  {delta:asset.price!=null&&asset.price>=18.5?.1:.2,p:asset.probabilitySmallRise??0,key:'smallRise'},
-  {delta:asset.price!=null&&asset.price>=18.5?.3:.6,p:asset.probabilityMaxRise??0,key:'maxRise'},
- ] as const;
+  {delta:asset.price!=null&&asset.price>=18.5?-.3:-.6,p:asset.probabilityMaxFall??0},
+  {delta:asset.price!=null&&asset.price>=18.5?-.1:-.2,p:asset.probabilitySmallFall??0},
+  {delta:asset.price!=null&&asset.price>=18.5?.1:.2,p:asset.probabilitySmallRise??0},
+  {delta:asset.price!=null&&asset.price>=18.5?.3:.6,p:asset.probabilityMaxRise??0},
+ ];
  const floorDelta=asset.price==null?-Infinity:Math.round((3-asset.price)*100)/100;
  const out=new Map<number,number>();
  for(const item of raw){
@@ -107,11 +114,47 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
  </div>
 }
 
+function generateBudgetTeams(drivers:MarketAsset[],constructors:MarketAsset[],budget:number,limit=50):BuilderTeam[]{
+ const ds=drivers.filter(a=>a.price!=null&&a.expectedPoints!=null&&a.expectedDelta!=null);
+ const cs=constructors.filter(a=>a.price!=null&&a.expectedPoints!=null&&a.expectedDelta!=null);
+ const teams:BuilderTeam[]=[];
+
+ for(let a=0;a<cs.length-1;a++)for(let b=a+1;b<cs.length;b++){
+  const constructorPair=[cs[a],cs[b]];
+  const constructorPrice=(cs[a].price??0)+(cs[b].price??0);
+  const constructorPoints=(cs[a].expectedPoints??0)+(cs[b].expectedPoints??0);
+  const constructorDelta=(cs[a].expectedDelta??0)+(cs[b].expectedDelta??0);
+  if(constructorPrice>budget)continue;
+
+  for(let i=0;i<ds.length-4;i++)
+   for(let j=i+1;j<ds.length-3;j++)
+    for(let k=j+1;k<ds.length-2;k++)
+     for(let l=k+1;l<ds.length-1;l++)
+      for(let m=l+1;m<ds.length;m++){
+       const driverFive=[ds[i],ds[j],ds[k],ds[l],ds[m]];
+       const driverPrice=driverFive.reduce((s,x)=>s+(x.price??0),0);
+       const price=constructorPrice+driverPrice;
+       if(price>budget+1e-9)continue;
+       const boost=driverFive.reduce((best,x)=>(x.expectedPoints??-Infinity)>(best.expectedPoints??-Infinity)?x:best);
+       const expectedPoints=constructorPoints+driverFive.reduce((s,x)=>s+(x.expectedPoints??0),0)+(boost.expectedPoints??0);
+       const expectedDelta=constructorDelta+driverFive.reduce((s,x)=>s+(x.expectedDelta??0),0);
+       teams.push({drivers:driverFive,constructors:constructorPair,boost:boost.code,price,expectedPoints,expectedDelta});
+      }
+ }
+
+ return teams.sort((x,y)=>y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta||y.price-x.price).slice(0,limit);
+}
+
 export default function Home(){
  const [data,setData]=useState<MarketResponse|null>(null);
  const [status,setStatus]=useState('Loading market…');
  const [driverQuery,setDriverQuery]=useState('');
  const [constructorQuery,setConstructorQuery]=useState('');
+ const [builderBudget,setBuilderBudget]=useState(130);
+ const [builderTeams,setBuilderTeams]=useState<BuilderTeam[]>([]);
+ const [builderSort,setBuilderSort]=useState<'XPTS'|'DELTA'>('XPTS');
+ const [builderSortDir,setBuilderSortDir]=useState<'DESC'|'ASC'>('DESC');
+ const [builderStatus,setBuilderStatus]=useState('');
  const season=2026,round=16;
 
  async function load(){
@@ -139,6 +182,28 @@ export default function Home(){
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
+ const visibleBuilderTeams=useMemo(()=>[...builderTeams].sort((a,b)=>{
+  const av=builderSort==='XPTS'?a.expectedPoints:a.expectedDelta;
+  const bv=builderSort==='XPTS'?b.expectedPoints:b.expectedDelta;
+  return builderSortDir==='DESC'?bv-av:av-bv;
+ }),[builderTeams,builderSort,builderSortDir]);
+
+ function buildTeams(){
+  if(!data)return;
+  if(!Number.isFinite(builderBudget)||builderBudget<=0){setBuilderStatus('Enter a valid budget.');setBuilderTeams([]);return}
+  if(!data.complete){setBuilderStatus('Complete market prices and projections first.');setBuilderTeams([]);return}
+  setBuilderStatus('Generating teams…');
+  setTimeout(()=>{
+   const teams=generateBudgetTeams(drivers,constructors,builderBudget,50);
+   setBuilderTeams(teams);
+   setBuilderStatus(teams.length?('Showing top '+teams.length+' teams under $'+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget.');
+  },0);
+ }
+
+ function changeBuilderSort(sort:'XPTS'|'DELTA'){
+  if(sort===builderSort)setBuilderSortDir(prev=>prev==='DESC'?'ASC':'DESC');
+  else{setBuilderSort(sort);setBuilderSortDir('DESC')}
+ }
 
  return <main className={styles.page}>
   <nav className={styles.topbar}>
@@ -165,6 +230,40 @@ export default function Home(){
    <label>Find a driver…<input value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="e.g. VER or Norris"/></label>
    <label>Find a constructor…<input value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="e.g. MER or Ferrari"/></label>
   </section>
+
+  {data&&<section className={styles.teamBuilder}>
+   <div className={styles.teamBuilderHeader}>
+    <div>
+     <span className={styles.kicker}>TEAM BUILDER</span>
+     <h2>Generate teams by budget</h2>
+     <p>Build complete 5-driver + 2-constructor lineups using current Paddock IQ xPts and projected price change.</p>
+    </div>
+    <div className={styles.teamBuilderControls}>
+     <label>Budget, $M<input type="number" min="50" max="200" step="0.1" value={builderBudget} onChange={e=>setBuilderBudget(Number(e.target.value))}/></label>
+     <button type="button" onClick={buildTeams}>Generate teams</button>
+    </div>
+   </div>
+   {builderStatus&&<div className={styles.builderStatus}>{builderStatus}</div>}
+   {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
+    <div className={styles.bestTeamsScroll}>
+     <table className={styles.bestTeamsTable}>
+      <thead><tr>
+       <th>#</th><th>CR</th><th>DR</th><th>$</th>
+       <th><button type="button" className={styles.sortHeaderButton} onClick={()=>changeBuilderSort('DELTA')}>xΔ$ {builderSort==='DELTA'?(builderSortDir==='DESC'?'↓':'↑'):''}</button></th>
+       <th><button type="button" className={styles.sortHeaderButton} onClick={()=>changeBuilderSort('XPTS')}>xPts {builderSort==='XPTS'?(builderSortDir==='DESC'?'↓':'↑'):''}</button></th>
+      </tr></thead>
+      <tbody>{visibleBuilderTeams.slice(0,25).map((team,index)=><tr key={team.constructors.map(a=>a.code).join('-')+'-'+team.drivers.map(a=>a.code).join('-')}>
+       <td><strong>{index+1}</strong></td>
+       <td><div className={styles.teamAssetGroup}>{team.constructors.map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as React.CSSProperties}><b>{a.code}</b><small>{Number(a.expectedPoints??0).toFixed(1)} xPts · {'$'}{Number(a.price??0).toFixed(1)} · {(Number(a.expectedDelta??0)>=0?'+':'')+Number(a.expectedDelta??0).toFixed(2)}</small></span>)}</div></td>
+       <td><div className={styles.teamAssetGroup}>{team.drivers.map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as React.CSSProperties}><b>{a.code}{a.code===team.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{Number(a.expectedPoints??0).toFixed(1)} xPts · {'$'}{Number(a.price??0).toFixed(1)} · {(Number(a.expectedDelta??0)>=0?'+':'')+Number(a.expectedDelta??0).toFixed(2)}</small></span>)}</div></td>
+       <td><strong>{team.price.toFixed(1)}</strong></td>
+       <td className={team.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{team.expectedDelta>=0?'+':''}{team.expectedDelta.toFixed(2)}</td>
+       <td><strong>{team.expectedPoints.toFixed(1)}</strong></td>
+      </tr>)}</tbody>
+     </table>
+    </div>
+   </div>}
+  </section>}
 
   {data&&<div className={styles.grid}>
    <section>
