@@ -176,6 +176,8 @@ export default function MyTeam() {
   const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
   const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
   const [currentTeamView, setCurrentTeamView] = useState<TeamView | null>(null);
+  const [possibleTeamsSort, setPossibleTeamsSort] = useState<'XPTS'|'DELTA'>('XPTS');
+  const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
   async function load() {
     setStatus('Loading…');
@@ -256,6 +258,21 @@ export default function MyTeam() {
     if (confidenceFilter === 'HIGH') return scenario.transferConfidence === 'HIGH';
     return scenario.transferConfidence === 'HIGH' || scenario.transferConfidence === 'MEDIUM';
   });
+  const ownedCodes = new Set(currentTeamView?.assets.map((asset) => asset.code) ?? []);
+  const possibleTeamRows = visibleRecs
+    .filter((scenario:any) => scenario.transfers > 0)
+    .sort((a:any,b:any) => {
+      const av = possibleTeamsSort === 'XPTS' ? Number(a.teamView?.expectedPoints ?? -Infinity) : Number(a.teamView?.expectedDelta ?? -Infinity);
+      const bv = possibleTeamsSort === 'XPTS' ? Number(b.teamView?.expectedPoints ?? -Infinity) : Number(b.teamView?.expectedDelta ?? -Infinity);
+      return possibleTeamsSortDir === 'DESC' ? bv-av : av-bv;
+    });
+  const changePossibleTeamsSort = (sort:'XPTS'|'DELTA') => {
+    if (sort === possibleTeamsSort) setPossibleTeamsSortDir((prev) => prev === 'DESC' ? 'ASC' : 'DESC');
+    else {
+      setPossibleTeamsSort(sort);
+      setPossibleTeamsSortDir('DESC');
+    }
+  };
 
   return (
     <main>
@@ -309,29 +326,34 @@ export default function MyTeam() {
           {currentTeamView && <div className={styles.bestTeamsBoard}>
             <div className={styles.bestTeamsTitle}>
               <div><h3>Possible teams</h3><small>{mode === 'horizon' ? 'Ranked by 3 GP hold score' : 'Ranked by selected optimizer mode'}</small></div>
-              <span>{visibleRecs.filter((s:any)=>s.transfers>0).length} options</span>
+              <span>{possibleTeamRows.length} options</span>
             </div>
             <div className={styles.bestTeamsScroll}>
               <table className={styles.bestTeamsTable}>
-                <thead><tr><th>#</th><th>CR</th><th>x2</th><th>DR</th><th>$</th><th>xΔ$</th><th>{mode === 'horizon' ? '3GP xPts' : 'xPts'}</th></tr></thead>
+                <thead><tr>
+                  <th>#</th>
+                  <th>CR</th>
+                  <th>DR</th>
+                  <th>$</th>
+                  <th><button type="button" className={styles.sortHeaderButton} onClick={() => changePossibleTeamsSort('DELTA')}>xΔ$ {possibleTeamsSort === 'DELTA' ? (possibleTeamsSortDir === 'DESC' ? '↓' : '↑') : ''}</button></th>
+                  <th><button type="button" className={styles.sortHeaderButton} onClick={() => changePossibleTeamsSort('XPTS')}>{mode === 'horizon' ? '3GP xPts' : 'xPts'} {possibleTeamsSort === 'XPTS' ? (possibleTeamsSortDir === 'DESC' ? '↓' : '↑') : ''}</button></th>
+                </tr></thead>
                 <tbody>
                   <tr className={styles.currentTeamRow}>
                     <td>—</td>
-                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                    <td><span className={styles.boostChip}>{currentTeamView.boost??'—'}</span></td>
-                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}{a.code===currentTeamView.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                     <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
                     <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
                     <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
                   </tr>
-                  {visibleRecs.filter((s:any)=>s.transfers>0).slice(0,25).map((scenario:any,index:number)=>{
+                  {possibleTeamRows.slice(0,25).map((scenario:any,index:number)=>{
                     const tv=scenario.teamView as TeamView;
                     const key=scenarioKey(scenario);
                     return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>{setHoveredScenario(key);document.getElementById('scenario-'+encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});}}>
                       <td><strong>{index+1}</strong></td>
-                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                      <td><span className={styles.boostChip}>{tv.boost??'—'}</span></td>
-                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}{a.code===tv.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                       <td><strong>{tv.price.toFixed(1)}</strong></td>
                       <td className={tv.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{tv.expectedDelta>=0?'+':''}{tv.expectedDelta.toFixed(2)}</td>
                       <td><strong>{tv.expectedPoints.toFixed(1)}</strong>{tv.penalty>0?<small className={styles.teamPenalty}> −{tv.penalty} penalty</small>:null}</td>
