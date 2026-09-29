@@ -1,5 +1,5 @@
 import {transferAccounting} from './transfer-rules';
-import {scenarioConfidence,swapConfidence,type TransferConfidence} from './transfer-confidence';
+import {packageConfidence,type TransferConfidence} from './transfer-confidence';
 
 export type HorizonAsset={
  code:string;
@@ -76,7 +76,8 @@ export function optimizeThreeGpHold(
   const transferPointsGain=finalRaw-baselineRaw;
   const boostGain=finalBoost-baselineBoost;
   const netPointsGain=transferPointsGain+boostGain-accounting.penalty;
-  const confidence=scenarioConfidence(outs.map((out,i)=>swapConfidence(out.type,(ins[i].horizonPoints[0]??0)-(out.horizonPoints[0]??0))));
+  const firstRoundTransferEdge=perRoundTransferGain[0]??0;
+  const confidence=packageConfidence(outs.length,firstRoundTransferEdge);
   results.push({
    out:outs.map(a=>a.code),
    incoming:ins.map(a=>a.code),
