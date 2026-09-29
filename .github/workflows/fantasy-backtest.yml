@@ -4,8 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/**"
-      - "src/lib/**"
-      - "src/app/api/predictions/**"
+      - "src/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/fantasy-backtest.yml"
