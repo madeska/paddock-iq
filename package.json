@@ -20,7 +20,8 @@
     "fantasy:backtest-xpts-ridge": "tsx scripts/backtest-xpts-ridge.ts",
     "fantasy:backtest-sprint": "tsx scripts/backtest-sprint-uplift.ts",
     "fantasy:backtest-sprint-asset": "tsx scripts/backtest-sprint-asset.ts",
-    "fantasy:backtest-horizon": "tsx scripts/backtest-horizon-error.ts"
+    "fantasy:backtest-horizon": "tsx scripts/backtest-horizon-error.ts",
+    "fantasy:backtest-constructors": "tsx scripts/backtest-constructor-model.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
