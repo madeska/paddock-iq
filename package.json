@@ -31,7 +31,8 @@
     "fantasy:backtest-constructor-grid": "tsx scripts/backtest-constructor-grid.ts",
     "fantasy:backtest-constructor-blend": "tsx scripts/backtest-constructor-driver-blend.ts",
     "fantasy:backtest-transfer-edge": "tsx scripts/backtest-transfer-edge.ts",
-    "fantasy:backtest-ci": "npm run fantasy:backtest-transfer-edge"
+    "fantasy:backtest-package-edge": "tsx scripts/backtest-package-edge.ts",
+    "fantasy:backtest-ci": "npm run fantasy:backtest-package-edge"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
