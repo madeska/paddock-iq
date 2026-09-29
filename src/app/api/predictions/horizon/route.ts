@@ -113,7 +113,7 @@ export async function GET(request:NextRequest){
     projectedPrice=nextPrice;
    }
 
-   result.push({code:asset.code,name:asset.name,type:asset.type,rounds,totalExpectedPoints:Math.round(rounds.reduce((s,r)=>s+r.expectedPoints,0)*10)/10});
+   result.push({code:asset.code,name:asset.name,type:asset.type,rounds,totalExpectedPoints:Math.round(rounds.reduce((s,r)=>s+r.expectedPoints,0)*10)/10,totalExpectedPriceDelta:Math.round((projectedPrice-Number(startPrice.price))*100)/100});
   }
 
   return NextResponse.json({
