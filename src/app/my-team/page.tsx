@@ -148,7 +148,7 @@ export default function MyTeam() {
           <h2>Strategy optimizer</h2>
           <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
           <div className="tabs">{(['points','balanced','budget','custom','horizon'] as const).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value as Mode | 'horizon')}>{value === 'horizon' ? '3 GP hold' : value}</button>)}</div>
-          {mode === 'horizon' && <p><small>3 GP hold = projected R16–R18 points if you make transfers now and hold the lineup. Future transfers and track/Sprint/weather/news modifiers are not simulated.</small></p>}
+          {mode === 'horizon' && <p><small>3 GP hold = projected R16–R18 points if you make transfers now and hold the lineup. Sprint-format correction is applied; future transfers and circuit/weather/news modifiers are not simulated.</small></p>}
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
