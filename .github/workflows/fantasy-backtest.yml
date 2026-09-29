@@ -30,7 +30,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npx tsc -p tsconfig.ci.json --noEmit
 
       - name: Run selected fantasy backtest
         run: npm run fantasy:backtest-ci
