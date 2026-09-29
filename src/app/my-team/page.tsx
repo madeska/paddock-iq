@@ -257,6 +257,7 @@ export default function MyTeam() {
             const best = candidates[0];
             const headline = !best ? '—'
               : mode === 'budget' ? ((best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M')
+              : mode === 'horizon' ? ((best.netPointsGain >= 0 ? '+' : '') + best.netPointsGain.toFixed(1) + ' net pts')
               : ((best.transferPointsGain >= 0 ? '+' : '') + best.transferPointsGain.toFixed(1) + ' pts');
             const key = best ? scenarioKey(best) : null;
             return <article
@@ -273,13 +274,19 @@ export default function MyTeam() {
               <small>{count} transfer{count === 1 ? '' : 's'}</small>
               <strong>{headline}</strong>
               {best ? <small>
-                {best.out.join(', ') || 'Keep'}{best.incoming.length ? ' → ' + best.incoming.join(', ') : ''}
+                {best.out.join(', ') || 'Keep lineup'}{best.incoming.length ? ' → ' + best.incoming.join(', ') : ''}
+                {mode === 'horizon' && <>
+                  <br/>Transfers {(best.transferPointsGain >= 0 ? '+' : '') + best.transferPointsGain.toFixed(1)}
+                  {' · '}2× {(best.boostGain >= 0 ? '+' : '') + best.boostGain.toFixed(1)}
+                  {' · '}Penalty {best.penalty}
+                  {best.currentBoost && best.recommendedBoost && best.currentBoost !== best.recommendedBoost && <><br/>2× {best.currentBoost} → {best.recommendedBoost}</>}
+                </>}
                 {(mode === 'balanced' || mode === 'custom') && <><br/>Value Δ {(best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M'}</>}
                 <br/>Next FT {best.projectedNextFreeTransfers}
               </small> : null}
             </article>;
           })}</div><div className={`tablewrap ${styles.recommendationTableWrap}`}><table className={styles.recommendationTable}>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>Confidence</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer gain' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>2× gain</th> : null}{mode === 'horizon' ? <th>3GP net gain</th> : null}<th>Confidence</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{visibleRecs.map((scenario:any,index:number) => {
               const key = scenarioKey(scenario);
               return <tr
@@ -293,7 +300,9 @@ export default function MyTeam() {
                 <td>{scenario.incoming.join(', ') || '—'}</td>
                 <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
                 <td>{scenario.transferPointsGain.toFixed(1)}</td>
-                <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? 'Weakest swap historical hit rate: ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
+                {mode === 'horizon' ? <td>{(scenario.boostGain >= 0 ? '+' : '') + scenario.boostGain.toFixed(1)}</td> : null}
+                {mode === 'horizon' ? <td><strong>{(scenario.netPointsGain >= 0 ? '+' : '') + scenario.netPointsGain.toFixed(1)}</strong></td> : null}
+                <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? (mode === 'horizon' ? 'Historical hit rate for optimizer-selected 3GP recommendations with similar net gain: ' : 'Historical hit rate: ') + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
                 {mode === 'horizon' ? <td>{Array.isArray(scenario.perRoundTransferGain) ? scenario.perRoundTransferGain.map((v:number) => (v > 0 ? '+' : '') + v.toFixed(1)).join(' / ') : '—'}</td> : null}
                 <td>{scenario.projectedValueGain.toFixed(2)}</td>
                 <td>{scenario.penalty}</td>
