@@ -6,6 +6,7 @@ const BUDGET=130;
 const FREE_TRANSFERS=2;
 const PENALTY_PER_EXTRA=10;
 const LINEUPS_PER_START=12;
+const CANDIDATE_LINEUPS=6000;
 const START_ROUND=6;
 const END_ROUND=13;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
@@ -114,16 +115,30 @@ function shuffle<T>(xs:T[],rand:()=>number){
  return a;
 }
 
-function makeLineups(assets:AssetProjection[],seed:number,count:number){
+function bestBoostCode(lineup:AssetProjection[],step:number){
+ const drivers=lineup.filter(a=>a.type==='DRIVER');
+ if(!drivers.length)return null;
+ return drivers.reduce((best,a)=>(a.horizonPoints[step]??-Infinity)>(best.horizonPoints[step]??-Infinity)?a:best).code;
+}
+
+function predictedLineupTotal(lineup:AssetProjection[]){
+ let total=0;
+ for(let step=0;step<3;step++){
+  total+=lineup.reduce((s,a)=>s+(a.horizonPoints[step]??0),0);
+  const boost=bestBoostCode(lineup,step);
+  if(boost)total+=lineup.find(a=>a.code===boost)?.horizonPoints[step]??0;
+ }
+ return total;
+}
+
+function makeCompetitiveLineups(assets:AssetProjection[],seed:number,count:number){
  const drivers=assets.filter(a=>a.type==='DRIVER');
  const constructors=assets.filter(a=>a.type==='CONSTRUCTOR');
  const rand=seeded(seed);
- const out:AssetProjection[][]=[];
+ const candidates:{lineup:AssetProjection[];score:number;key:string}[]=[];
  const seen=new Set<string>();
- let attempts=0;
 
- while(out.length<count&&attempts<count*300){
-  attempts++;
+ for(let attempt=0;attempt<CANDIDATE_LINEUPS;attempt++){
   const ds=shuffle(drivers,rand).slice(0,5);
   const cs=shuffle(constructors,rand).slice(0,2);
   if(ds.length!==5||cs.length!==2)continue;
@@ -133,10 +148,25 @@ function makeLineups(assets:AssetProjection[],seed:number,count:number){
   const key=lineup.map(a=>a.code).sort().join('|');
   if(seen.has(key))continue;
   seen.add(key);
-  out.push(lineup);
+  candidates.push({lineup,score:predictedLineupTotal(lineup),key});
  }
 
- return out;
+ candidates.sort((a,b)=>b.score-a.score);
+ const selected:AssetProjection[][]=[];
+ const usedSignatures=new Set<string>();
+
+ for(const candidate of candidates){
+  // Keep the sample strong but avoid twelve nearly-identical teams.
+  const driverSig=candidate.lineup.filter(a=>a.type==='DRIVER').map(a=>a.code).sort().join('|');
+  const constructorSig=candidate.lineup.filter(a=>a.type==='CONSTRUCTOR').map(a=>a.code).sort().join('|');
+  const signature=driverSig+'>'+constructorSig;
+  if(usedSignatures.has(signature))continue;
+  usedSignatures.add(signature);
+  selected.push(candidate.lineup);
+  if(selected.length>=count)break;
+ }
+
+ return selected;
 }
 
 function applyScenario(lineup:AssetProjection[],scenario:HorizonScenario,byCode:Map<string,AssetProjection>){
@@ -144,12 +174,6 @@ function applyScenario(lineup:AssetProjection[],scenario:HorizonScenario,byCode:
  const incoming=scenario.incoming.map(code=>byCode.get(code)).filter((x):x is AssetProjection=>Boolean(x));
  const kept=lineup.filter(a=>!outgoing.has(a.code));
  return [...kept,...incoming];
-}
-
-function bestBoostCode(lineup:AssetProjection[],step:number){
- const drivers=lineup.filter(a=>a.type==='DRIVER');
- if(!drivers.length)return null;
- return drivers.reduce((best,a)=>(a.horizonPoints[step]??-Infinity)>(best.horizonPoints[step]??-Infinity)?a:best).code;
 }
 
 function actualLineupTotal(lineup:AssetProjection[]){
@@ -262,7 +286,7 @@ async function main(){
    });
   }
 
-  const lineups=makeLineups(assets,202600+start,LINEUPS_PER_START);
+  const lineups=makeCompetitiveLineups(assets,202600+start,LINEUPS_PER_START);
   const byCode=new Map(assets.map(a=>[a.code,a]));
   for(const lineup of lineups){
    const cost=lineup.reduce((s,a)=>s+a.price,0);
@@ -291,11 +315,21 @@ async function main(){
  }
 
  console.log('\nRECOMMENDATION BACKTEST — 3 GP HOLD');
- console.log('Synthetic feasible lineups use a fixed $'+BUDGET+'M cap, '+FREE_TRANSFERS+' free transfers, and no hindsight in boost selection.');
+ console.log('Strong synthetic lineups are selected from '+CANDIDATE_LINEUPS+' deterministic feasible candidates per start round under a fixed $'+BUDGET+'M cap; '+FREE_TRANSFERS+' free transfers; no hindsight in boost selection.');
  console.table([summary('ALL',samples)]);
 
  console.log('\nBY TRANSFER COUNT');
  console.table([0,1,2,3].map(n=>summary(String(n)+' transfers',samples.filter(s=>s.scenario.transfers===n))));
+
+ console.log('\nBY PREDICTED NET GAIN');
+ const edgeBins=[
+  {name:'0–5',lo:0,hi:5},
+  {name:'5–10',lo:5,hi:10},
+  {name:'10–20',lo:10,hi:20},
+  {name:'20–40',lo:20,hi:40},
+  {name:'40+',lo:40,hi:Infinity},
+ ];
+ console.table(edgeBins.map(b=>summary(b.name,samples.filter(s=>s.scenario.netPointsGain>=b.lo&&s.scenario.netPointsGain<b.hi))));
 
  console.log('\nBY START WEEKEND');
  console.table([
