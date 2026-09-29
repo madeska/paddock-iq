@@ -239,7 +239,7 @@ export default function MyTeam() {
             const best = candidates[0];
             const headline = !best ? '—'
               : mode === 'budget' ? ((best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M')
-              : ((best.netPointsGain >= 0 ? '+' : '') + best.netPointsGain.toFixed(1) + ' pts');
+              : ((best.transferPointsGain >= 0 ? '+' : '') + best.transferPointsGain.toFixed(1) + ' pts');
             return <article key={count}>
               <small>{count} transfer{count === 1 ? '' : 's'}</small>
               <strong>{headline}</strong>
@@ -250,12 +250,11 @@ export default function MyTeam() {
               </small> : null}
             </article>;
           })}</div><div className="tablewrap"><table>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>{mode === 'horizon' ? '3GP boost pts' : 'Boost pts'}</th><th>{mode === 'horizon' ? 'R16/R17/R18 gain' : 'Net pts'}</th>{mode === 'horizon' ? <th>3GP net pts</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
               <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
-              <td>{scenario.transferPointsGain.toFixed(1)}</td><td>{scenario.boostGain.toFixed(1)}</td>
-              <td>{mode === 'horizon' && Array.isArray(scenario.perRoundGain) ? scenario.perRoundGain.map((v:number) => v.toFixed(1)).join(' / ') : scenario.netPointsGain.toFixed(1)}</td>{mode === 'horizon' ? <td>{scenario.netPointsGain.toFixed(1)}</td> : null}<td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
+              <td>{scenario.transferPointsGain.toFixed(1)}</td>{mode === 'horizon' ? <td>—</td> : null}<td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
               <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
             </tr>)}</tbody>
           </table></div></>}
