@@ -19,8 +19,7 @@ const constructorXPts=(scores:number[])=>{const e=ewma(scores);return e==null?nu
 function features(history:number[],price:number){
  const e=ewma(history)??0;
  const season=mean(history);
- const last=history.at(-1)??season;
- return [e,season,last,mean(history.slice(-2)),mean(history.slice(-3)),std(history.slice(-5)),price];
+ return [e,season,price];
 }
 
 function solve(A:number[][],b:number[]){
@@ -129,7 +128,7 @@ export async function GET(request:NextRequest){
   return NextResponse.json({
    season,startRound,length,
    model:'sprint-aware-horizon-v1',
-   driverModel:'ridge50 recursively using projected history/price + validated Sprint correction',
+   driverModel:'ridge50 using EWMA, season mean and price; recursive history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
    horizonErrorCalibration:HORIZON_ERROR,
