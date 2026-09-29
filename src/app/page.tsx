@@ -1,17 +1,187 @@
 'use client';
+
 import {useEffect,useMemo,useState} from 'react';
-import {type Asset, type Mode} from '../lib/optimizer';
-import {optimizeTransfers} from '../lib/multi-optimizer';
-import {panassSnapshot,panassAssets} from '../lib/panass';
-const initial=[{code:'VER',name:'Verstappen',type:'DRIVER',pts:86},{code:'ANT',name:'Antonelli',type:'DRIVER',pts:28},{code:'HUL',name:'Hülkenberg',type:'DRIVER',pts:15},{code:'PER',name:'Pérez',type:'DRIVER',pts:11},{code:'BOT',name:'Bottas',type:'DRIVER',pts:6},{code:'MER',name:'Mercedes',type:'CONSTRUCTOR',pts:88},{code:'FER',name:'Ferrari',type:'CONSTRUCTOR',pts:45}] as const;
-const chips=[['WC','USED · R5'],['LL','USED · R2'],['FF','LOCKED'],['AP','USED · R9'],['NN','USED · R4'],['DRS','USED · R13']];
-export default function Home(){const [mode,setMode]=useState<Mode>('balanced');const [weight,setWeight]=useState(60);const [free,setFree]=useState('2');const [cash,setCash]=useState('2.4');const [assets,setAssets]=useState<Asset[]>(panassAssets);const [market,setMarket]=useState<Asset[]>([]);const [marketInput,setMarketInput]=useState('');const [forecasted,setForecasted]=useState<string[]>([]);const [locked,setLocked]=useState<string[]>([]);const [hydrated,setHydrated]=useState(false);const [saveStatus,setSaveStatus]=useState('');
- useEffect(()=>{try{const raw=localStorage.getItem('paddock-iq-workspace-v1');if(raw){const data=JSON.parse(raw);if(data.version===1){if(Array.isArray(data.assets)&&data.assets.length===7)setAssets(data.assets);if(Array.isArray(data.market))setMarket(data.market);if(Array.isArray(data.forecasted))setForecasted(data.forecasted);if(Array.isArray(data.locked))setLocked(data.locked);if(['points','balanced','budget','custom'].includes(data.mode))setMode(data.mode);if(Number.isFinite(data.weight))setWeight(data.weight);if(typeof data.free==='string')setFree(data.free);if(typeof data.cash==='string')setCash(data.cash);}}}catch{setSaveStatus('Saved workspace could not be loaded.');}setHydrated(true)},[]);
- useEffect(()=>{if(!hydrated)return;try{localStorage.setItem('paddock-iq-workspace-v1',JSON.stringify({version:1,assets,market,forecasted,locked,mode,weight,free,cash}));setSaveStatus('Saved on this device');}catch{setSaveStatus('Browser storage unavailable');}},[hydrated,assets,market,forecasted,locked,mode,weight,free,cash]);
- function exportWorkspace(){const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),assets,market,forecasted,locked,mode,weight,free,cash,source:'manual screenshot and user forecasts'},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='paddock-iq-workspace.json';link.click();URL.revokeObjectURL(url)}
- async function importWorkspace(file:File|undefined){if(!file)return;try{const data=JSON.parse(await file.text());if(data.version!==1||!Array.isArray(data.assets)||data.assets.length!==7||!Array.isArray(data.market)||!Array.isArray(data.forecasted)||!Array.isArray(data.locked)||!['points','balanced','budget','custom'].includes(data.mode)||!Number.isFinite(data.weight)||data.weight<0||data.weight>100||typeof data.free!=='string'||typeof data.cash!=='string')throw Error('Invalid workspace');setAssets(data.assets);setMarket(data.market);setForecasted(data.forecasted);setLocked(data.locked);setMode(data.mode);setWeight(data.weight);setFree(data.free);setCash(data.cash);setSaveStatus('Workspace imported');}catch{setSaveStatus('Invalid workspace file');}}
- const ready=assets.every(a=>a.price>0&&forecasted.includes(a.code+':expectedPoints')&&forecasted.includes(a.code+':expectedDelta'))&&market.length>0&&free!=='';
- const proposals=useMemo(()=>ready?optimizeTransfers(assets,market,Number(cash),Number(free),mode,weight/100,10,3,locked):[],[ready,assets,market,cash,free,mode,weight,locked]);
- function edit(code:string,field:'price'|'expectedPoints'|'expectedDelta',value:string){if(field!=='price')setForecasted(old=>value.trim()===''?old.filter(x=>x!==code+':'+field):[...new Set([...old,code+':'+field])]);setAssets(old=>old.map(a=>a.code===code?{...a,[field]:value.trim()===''?0:Number(value)}:a))}
- function importMarket(){try{const rows=JSON.parse(marketInput);if(!Array.isArray(rows)||!rows.every(a=>typeof a.code==='string'&&['DRIVER','CONSTRUCTOR'].includes(a.type)&&['price','expectedPoints','expectedDelta'].every(k=>typeof a[k]==='number'&&Number.isFinite(a[k]))))throw Error('Invalid data');if(new Set(rows.map(a=>a.code)).size!==rows.length||rows.some(a=>assets.some(o=>o.code===a.code)))throw Error('Duplicate or owned asset');setMarket(rows);alert('Market imported: '+rows.length+' assets')}catch{alert('Invalid JSON. See README example.')}}
- return <main><header><span className="eyebrow">PADDOCK IQ · MVP 0.5</span><h1>Fantasy Strategy Assistant</h1><p>Panass · F1 Fantasy 2026 · screenshot-seeded workspace · no live Fantasy sync</p></header><section className="stats">{[['League position','#2'],['Total points','3,918'],['Gap to leader','−51'],['Squad value','$125.7M'],['Bank (as shown)','$130.3M'],['Cash balance','$2.4M']].map(([k,v])=><article key={k}><small>{k}</small><strong>{v}</strong></article>)}</section><section><h2>Team setup</h2><p><a href="/my-team">My Team →</a> · <a href="/team/import">Create / Import My Team →</a></p></section><section><h2>Workspace</h2><p className="muted">{saveStatus || 'Loading saved workspace…'} · Browser-local only; no cloud sync. Export a backup before clearing browser data.</p><button onClick={exportWorkspace}>Export workspace JSON</button> <label>Import workspace JSON <input type="file" accept="application/json,.json" onChange={e=>importWorkspace(e.target.files?.[0])}/></label></section><section><h2>Strategy</h2><div className="tabs">{(['points','balanced','budget','custom'] as Mode[]).map(m=><button className={mode===m?'active':''} onClick={()=>setMode(m)} key={m}>{m==='points'?'Focus on Points':m==='budget'?'Focus on Budget':m==='balanced'?'Balanced':'Custom'}</button>)}</div>{mode==='custom'&&<label>Points weight: {weight}% · Budget weight: {100-weight}%<input type="range" min="0" max="100" step="5" value={weight} onChange={e=>setWeight(Number(e.target.value))}/></label>}<p className="muted">Scores use explicit reference scales; weights are preferences, not forecast probabilities.</p></section><section><h2>Team & transfer inputs</h2><div className="inputs"><label>Free transfers available <select value={free} onChange={e=>setFree(e.target.value)}><option value="">Unknown — select</option>{[0,1,2,3].map(n=><option key={n}>{n}</option>)}</select></label><label>Cash ($M) <input type="number" step="0.1" min="0" value={cash} onChange={e=>setCash(e.target.value)}/></label></div><p className="muted">Prices and forecasts are blank until entered; round scores below are historical, not price forecasts.</p><div className="tablewrap"><table><thead><tr><th>Asset</th><th>Last shown pts</th><th>Price $M</th><th>Expected pts</th><th>Expected Δ $M</th></tr></thead><tbody>{initial.map(a=><tr key={a.code}><td><b>{a.code}</b> · {a.name}{a.code==='VER'?' · 2×':''}</td><td>{a.pts}</td>{(['price','expectedPoints','expectedDelta'] as const).map(f=><td key={f}><input aria-label={`${a.code} ${f}`} type="number" step="0.1" placeholder="—" value={f!=='price'&&!forecasted.includes(a.code+':'+f)?'':assets.find(x=>x.code===a.code)?.[f] ?? 0} onChange={e=>edit(a.code,f,e.target.value)}/></td>)}</tr>)}</tbody></table></div></section><section><h2>Locked assets</h2><p className="muted">Keep selected assets in every proposed lineup.</p><div className="chips">{initial.map(a=><label key={a.code}><input type="checkbox" checked={locked.includes(a.code)} onChange={e=>setLocked(old=>e.target.checked?[...old,a.code]:old.filter(x=>x!==a.code))}/>{a.code}</label>)}</div></section><section><h2>Chip history</h2><div className="chips">{chips.map(([c,r])=><span key={c}>{c} <b>{r}</b></span>)}</div><p className="muted">Final Fix is locked in the supplied screenshot; not available to the optimizer.</p></section><section><h2>Market input & 0–3 transfer optimizer</h2><p>Paste candidate assets as JSON. No live prices or predictions are fabricated. The engine evaluates simultaneous 0–3 replacements and includes a configurable default −10 point penalty when no free transfer remains.</p><textarea rows={5} value={marketInput} onChange={e=>setMarketInput(e.target.value)} placeholder='[{"code":"EXAMPLE","type":"DRIVER","price":8.2,"expectedPoints":20,"expectedDelta":0.3}]'/><button onClick={importMarket}>Import candidates</button>{!ready?<p className="notice">Enter forecasts for your assets and import candidate assets to enable recommendations.</p>:<div className="tablewrap"><table><thead><tr><th>Sell</th><th>Buy</th><th>Net pts gain</th><th>Value gain ($M)</th><th>Penalty</th><th>Next free*</th></tr></thead><tbody>{proposals.slice(0,10).map(p=><tr key={p.out.join(',')+p.incoming.join(',')}><td>{p.out.join(', ')||'Keep team'}</td><td>{p.incoming.join(', ')||'—'}</td><td>{p.netPointsGain.toFixed(1)}</td><td>{p.projectedValueGain.toFixed(2)}</td><td>{p.penalty}</td><td>{p.projectedNextFreeTransfers}</td></tr>)}</tbody></table>{proposals.length===0&&<p>No affordable eligible swaps.</p>}</div>}</section><footer>*Next free uses configurable carry cap 3; verify official season rules before relying on it. Snapshot source: user screenshots · Prices are not live · Zero forecasts are placeholders, not predictions. Local browser persistence · No F1 account connection · No automatic trading or fantasy transfers.</footer></main>}
+import styles from './market-dashboard.module.css';
+
+type Score={round:number;points:number;name:string};
+type MarketAsset={
+ code:string;name:string;type:'DRIVER'|'CONSTRUCTOR';price:number|null;
+ expectedPoints:number|null;expectedDelta:number|null;
+ probabilityRise:number|null;probabilityFlat:number|null;probabilityFall:number|null;
+ probabilityMaxRise:number|null;probabilitySmallRise:number|null;
+ probabilitySmallFall:number|null;probabilityMaxFall:number|null;
+ requiredPointsMaxRise:number|null;requiredPointsSmallRise:number|null;
+ requiredPointsAvoidMaxFall:number|null;
+ confidence:number|null;modelVersion:string|null;recentFantasyScores:Score[];
+};
+type MarketResponse={
+ season:number;round:number;grandPrix:string;complete:boolean;incomplete:string[];
+ currentModels:string[];assets:MarketAsset[];
+};
+
+const accents:Record<string,string>={
+ VER:'#2658ff',RUS:'#08c9bd',ANT:'#20d2bf',LEC:'#f04545',HAM:'#ef4438',PIA:'#ff9f1a',NOR:'#ff9c18',
+ HAD:'#263cff',HUL:'#ff592f',LIN:'#5c7df7',BOT:'#777d89',BEA:'#f2f2f2',PER:'#d9d9d9',STR:'#18aa9b',
+ OCO:'#f5f5f5',LAW:'#7289ff',BOR:'#ff4b1f',SAI:'#1678ff',COL:'#ef73c6',ALB:'#237cf2',GAS:'#e36cae',ALO:'#26b7a2',
+ RBR:'#2347ff',FER:'#ef4444',MER:'#20bfc0',MCL:'#ff9c18',ALP:'#d57cac',AUD:'#9b5d35',RB:'#5b77ee',
+ HAS:'#e8e8e8',CAD:'#a9a9a9',WIL:'#2188ff',AST:'#159a89'
+};
+
+const pct=(v:number|null)=>v==null?'—':Math.round(v*100)+'%';
+const money=(v:number|null)=>v==null?'—':'$'+Number(v.toFixed(2))+'M';
+const delta=(v:number|null)=>v==null?'—':(v>0?'+':'')+v.toFixed(2);
+
+function scoreFor(asset:MarketAsset,round:number){
+ return asset.recentFantasyScores.find(s=>s.round===round)?.points;
+}
+
+function bucketProbabilities(asset:MarketAsset){
+ const raw=[
+  {delta:asset.price!=null&&asset.price>=18.5?-.3:-.6,p:asset.probabilityMaxFall??0,key:'maxFall'},
+  {delta:asset.price!=null&&asset.price>=18.5?-.1:-.2,p:asset.probabilitySmallFall??0,key:'smallFall'},
+  {delta:asset.price!=null&&asset.price>=18.5?.1:.2,p:asset.probabilitySmallRise??0,key:'smallRise'},
+  {delta:asset.price!=null&&asset.price>=18.5?.3:.6,p:asset.probabilityMaxRise??0,key:'maxRise'},
+ ] as const;
+ const floorDelta=asset.price==null?-Infinity:Math.round((3-asset.price)*100)/100;
+ const out=new Map<number,number>();
+ for(const item of raw){
+  const d=item.delta<0?Math.max(item.delta,floorDelta):item.delta;
+  out.set(d,(out.get(d)??0)+item.p);
+ }
+ if(asset.probabilityFlat!=null&&asset.probabilityFlat>0&&!out.has(0))out.set(0,asset.probabilityFlat);
+ return out;
+}
+
+function thresholdText(asset:MarketAsset,bucket:number){
+ const tierA=(asset.price??0)>=18.5;
+ if(bucket===(tierA?-.3:-.6)&&asset.requiredPointsAvoidMaxFall!=null)return '≤'+asset.requiredPointsAvoidMaxFall.toFixed(0);
+ if(bucket===(tierA?-.1:-.2)&&asset.requiredPointsSmallRise!=null)return '<'+asset.requiredPointsSmallRise.toFixed(0);
+ if(bucket===(tierA?.1:.2)&&asset.requiredPointsMaxRise!=null)return '<'+asset.requiredPointsMaxRise.toFixed(0);
+ if(bucket===(tierA?.3:.6)&&asset.requiredPointsMaxRise!=null)return '≥'+asset.requiredPointsMaxRise.toFixed(0);
+ return '';
+}
+
+function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets:MarketAsset[];round:number;query:string}){
+ const filtered=assets
+  .filter(a=>((a.price??0)>=18.5)===(tier==='A'))
+  .filter(a=>!query||a.code.toLowerCase().includes(query)||a.name.toLowerCase().includes(query))
+  .sort((a,b)=>(b.expectedDelta??-99)-(a.expectedDelta??-99)||(b.price??0)-(a.price??0));
+ const buckets=tier==='A'?[-.3,-.1,.1,.3]:[-.6,-.2,0,.2,.6];
+
+ return <div className={styles.board}>
+  <div className={styles.tierTitle}><strong>Tier {tier}</strong><span>{tier==='A'?'≥ $18.5M':'< $18.5M'}</span></div>
+  <div className={styles.scroll}>
+   <table className={styles.marketTable}>
+    <thead>
+     <tr>
+      <th className={styles.assetCol}>{title==='Drivers'?'DR':'CR'}</th>
+      <th>$</th>
+      <th>R{round-2}<small>Pts</small></th>
+      <th>R{round-1}<small>Pts</small></th>
+      <th>R{round}<small>xPts</small></th>
+      {buckets.map(b=><th key={b} className={b<0?styles.negHead:b>0?styles.posHead:styles.flatHead}>{b>0?'+':''}{b.toFixed(1)}<small>Odds (pts)</small></th>)}
+      <th>R{round}<small>xΔ$</small></th>
+     </tr>
+    </thead>
+    <tbody>
+     {filtered.map(asset=>{
+      const probs=bucketProbabilities(asset);
+      return <tr key={asset.code}>
+       <td className={styles.assetCell}><span className={styles.code} style={{'--accent':accents[asset.code]??'#64748b'} as React.CSSProperties}>{asset.code}</span><span className={styles.assetName}>{asset.name}</span></td>
+       <td>{asset.price==null?'—':asset.price.toFixed(1)}</td>
+       <td>{scoreFor(asset,round-2)??'—'}</td>
+       <td>{scoreFor(asset,round-1)??'—'}</td>
+       <td className={styles.xpts}>{asset.expectedPoints==null?'—':asset.expectedPoints.toFixed(1)}</td>
+       {buckets.map(b=>{
+        const p=probs.get(b)??0;
+        const t=thresholdText(asset,b);
+        return <td key={b} className={p>=.7?styles.probStrong:p>=.3?styles.probMid:styles.probLow}><b>{pct(p)}</b>{t&&<small>({t})</small>}</td>
+       })}
+       <td className={(asset.expectedDelta??0)>=0?styles.deltaPos:styles.deltaNeg}>{delta(asset.expectedDelta)}</td>
+      </tr>
+     })}
+     {!filtered.length&&<tr><td colSpan={buckets.length+6} className={styles.empty}>No matching assets</td></tr>}
+    </tbody>
+   </table>
+  </div>
+ </div>
+}
+
+export default function Home(){
+ const [data,setData]=useState<MarketResponse|null>(null);
+ const [status,setStatus]=useState('Loading market…');
+ const [driverQuery,setDriverQuery]=useState('');
+ const [constructorQuery,setConstructorQuery]=useState('');
+ const season=2026,round=16;
+
+ async function load(){
+  setStatus('Loading market…');
+  try{
+   const r=await fetch('/api/market?season='+season+'&round='+round,{cache:'no-store'});
+   const j=await r.json();
+   if(!r.ok)throw Error(j.error||'Market unavailable');
+   setData(j);
+   setStatus(j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
+  }catch(e){setStatus(e instanceof Error?e.message:'Market unavailable')}
+ }
+
+ async function refresh(){
+  setStatus('Refreshing xPts + price probabilities…');
+  try{
+   const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});
+   const j=await r.json();
+   if(!r.ok)throw Error(j.error||'Prediction refresh failed');
+   await load();
+  }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
+ }
+
+ useEffect(()=>{load()},[]);
+
+ const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
+ const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
+
+ return <main className={styles.page}>
+  <nav className={styles.topbar}>
+   <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>{data?.grandPrix??'R16'} · 2026</span></div>
+   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button></div>
+  </nav>
+
+  <header className={styles.hero}>
+   <div>
+    <span className={styles.kicker}>F1 FANTASY MARKET BOARD</span>
+    <h1>R{round} Price & Points Outlook</h1>
+    <p>Official F1 Fantasy prices and R{round-2}/R{round-1} scores · Paddock IQ xPts and price probabilities.</p>
+   </div>
+   <div className={styles.modelCard}>
+    <small>Current models</small>
+    <strong>Driver ridge50 · Constructor hybrid</strong>
+    <span>Price model v0.3 · floor-aware</span>
+   </div>
+  </header>
+
+  <div className={styles.status}>{status||<>Market complete · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+
+  <section className={styles.searchRow}>
+   <label>Find a driver…<input value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="e.g. VER or Norris"/></label>
+   <label>Find a constructor…<input value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="e.g. MER or Ferrari"/></label>
+  </section>
+
+  {data&&<div className={styles.grid}>
+   <section>
+    <div className={styles.sectionHeading}><h2>Drivers</h2><span>{drivers.length} active</span></div>
+    <Board title="Drivers" tier="A" assets={drivers} round={round} query={driverQuery}/>
+    <Board title="Drivers" tier="B" assets={drivers} round={round} query={driverQuery}/>
+   </section>
+   <section>
+    <div className={styles.sectionHeading}><h2>Constructors</h2><span>{constructors.length} active</span></div>
+    <Board title="Constructors" tier="A" assets={constructors} round={round} query={constructorQuery}/>
+    <Board title="Constructors" tier="B" assets={constructors} round={round} query={constructorQuery}/>
+   </section>
+  </div>}
+
+  <footer className={styles.footer}>
+   <span>Historical scores & prices: official F1 Fantasy round feeds.</span>
+   <span>xPts/odds: Paddock IQ models — expected values, not official F1 projections.</span>
+  </footer>
+ </main>
+}
