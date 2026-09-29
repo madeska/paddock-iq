@@ -32,6 +32,7 @@ export default function MyTeam() {
   const [data, setData] = useState<Data | null>(null);
   const [status, setStatus] = useState('');
   const [mode, setMode] = useState<Mode>('balanced');
+  const [customWeight, setCustomWeight] = useState(0.6);
   const [recs, setRecs] = useState<any[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
 
@@ -81,7 +82,7 @@ export default function MyTeam() {
         throw Error('Complete market prices and predictions first.');
       const response = await fetch('/api/optimize', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, maxChanges: 3, locked }),
+        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, weight: customWeight, maxChanges: 3, locked }),
       });
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Optimization failed');
@@ -133,7 +134,8 @@ export default function MyTeam() {
         <section>
           <h2>Strategy optimizer</h2>
           <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
-          <div className="tabs">{(['points','balanced','budget'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
+          <div className="tabs">{(['points','balanced','budget','custom'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
+          {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
           {recs.length > 0 && <div className="tablewrap"><table>
