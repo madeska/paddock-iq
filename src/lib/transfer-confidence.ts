@@ -68,3 +68,17 @@ export function horizonPackageConfidence(transfers:number,predictedThreeGpEdge:n
   const label:TransferConfidence=empiricalHitRate>=.78?'HIGH':empiricalHitRate>=.65?'MEDIUM':'LOW';
   return {label,empiricalHitRate};
 }
+
+
+export function horizonRecommendationConfidence(predictedNetGain:number){
+  if(predictedNetGain<=0)return {label:null as TransferConfidence|null,empiricalHitRate:null as number|null};
+
+  // Calibrated on optimizer-selected 3-GP recommendations from 2026 R7-R13
+  // using 168 strong deterministic synthetic lineups under the live $130M / 2 FT setup.
+  // Coarse bins intentionally avoid overfitting the small low-edge samples.
+  const empiricalHitRate=predictedNetGain<20?.586:
+    predictedNetGain<40?.757:.875;
+
+  const label:TransferConfidence=empiricalHitRate>=.78?'HIGH':empiricalHitRate>=.65?'MEDIUM':'LOW';
+  return {label,empiricalHitRate};
+}
