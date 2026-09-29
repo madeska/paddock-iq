@@ -6,7 +6,6 @@ type Session={meeting_key:number;session_key:number;session_name:string;session_
 type Driver={driver_number:number;name_acronym:string};
 type Result={driver_number:number;position:number;duration:number|number[]|null;gap_to_leader:number|string|Array<number|string>|null;number_of_laps:number};
 
-const SPRINT_ROUNDS=new Set([2,4,5,9,12]);
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 const std=(xs:number[])=>{if(xs.length<2)return 0;const m=mean(xs);return Math.sqrt(xs.reduce((s,x)=>s+(x-m)**2,0)/(xs.length-1))};
 const ewma=(h:number[],a=.25)=>{if(!h.length)return null;let x=h[0];for(const v of h.slice(1))x=a*v+(1-a)*x;return x};
@@ -20,6 +19,20 @@ async function get<T>(url:string):Promise<T>{
   }
   throw Error('Failed '+url);
 }
+async function tryJson<T>(url:string):Promise<T|null>{
+  for(let attempt=0;attempt<6;attempt++){
+    const r=await fetch(url,{headers:{'user-agent':'Paddock-IQ backtest'}});
+    if(r.ok)return r.json() as Promise<T>;
+    if(r.status===404)return null;
+    if(r.status===429||r.status>=500){
+      await new Promise(res=>setTimeout(res,1200*(attempt+1)));
+      continue;
+    }
+    throw Error(url+' -> '+r.status+' '+await r.text());
+  }
+  return null;
+}
+
 async function tryResults(sessionKey:number):Promise<Result[]|null>{
   const url=OPEN+'/session_result?session_key='+sessionKey;
   for(let attempt=0;attempt<3;attempt++){
@@ -58,7 +71,7 @@ function fitRidge(rows:{x:number[];y:number}[],lambda=50){
  const beta=solve(A,b);if(!beta)return null;
  return {predict:(x:number[])=>beta[0]+x.reduce((s,v,j)=>s+beta[j+1]*(v-means[j])/sds[j],0)};
 }
-type Weekend={practicePos:number;practiceGapPct:number;practiceLaps:number;sqPos:number;sqGapPct:number;hasSq:number};
+type Weekend={practicePos:number;practiceGapPct:number;practiceLaps:number;sqPos:number;sqGapPct:number;hasSq:number;hasPractice:number;isSprint:number};
 type Ex={round:number;code:string;y:number;price:number;history:number[];weekend:Weekend};
 type M={n:number;ae:number;sq:number;bias:number};
 const init=():M=>({n:0,ae:0,sq:0,bias:0});
@@ -69,7 +82,7 @@ function baseFeatures(h:number[],price:number){return [ewma(h)??0,mean(h),price]
 function weekendFeatures(w:Weekend,kind:'practice'|'deadline'){
  const practice=[w.practicePos,w.practiceGapPct,w.practiceLaps];
  if(kind==='practice')return practice;
- return [...practice,w.sqPos,w.sqGapPct,w.hasSq];
+ return [...practice,w.sqPos,w.sqGapPct,w.hasSq,w.isSprint];
 }
 
 async function main(){
@@ -89,21 +102,27 @@ async function main(){
 
  for(let i=0;i<meetings.length;i++){
    const round=i+1,[meetingKey,ss]=meetings[i];
-   const practice=ss.filter(s=>s.session_type==='Practice').sort((a,b)=>+new Date(a.date_start)-+new Date(b.date_start));
-   const sprintQ=ss.find(s=>s.session_name==='Sprint Qualifying'||s.session_type==='Sprint Qualifying');
-   const allowed=SPRINT_ROUNDS.has(round)
-      ? [...practice,...(sprintQ?[sprintQ]:[])]
-      : practice;
+   const practice=ss.filter(s=>s.session_type==='Practice'||s.session_name.startsWith('Practice')).sort((a,b)=>+new Date(a.date_start)-+new Date(b.date_start));
+   const isSprint=ss.some(s=>s.session_name.toLowerCase().includes('sprint')||s.session_type.toLowerCase().includes('sprint'));
+   const sprintQ=ss.find(s=>{
+     const n=s.session_name.toLowerCase(),t=s.session_type.toLowerCase();
+     return (n.includes('sprint')||t.includes('sprint'))&&(n.includes('qualif')||n.includes('shootout')||t.includes('qualif'));
+   });
+   const race=ss.find(s=>s.session_name==='Race');
+   if(!race)throw Error('No race session round '+round);
 
-   const driverSource=allowed[0]??ss.find(s=>s.session_name==='Race');
-   if(!driverSource)throw Error('No source session round '+round);
-   const drivers=await get<Driver[]>(OPEN+'/drivers?session_key='+driverSource.session_key);
+   let drivers=await tryJson<Driver[]>(OPEN+'/drivers?meeting_key='+meetingKey);
+   if(!drivers?.length)drivers=await tryJson<Driver[]>(OPEN+'/drivers?session_key='+race.session_key);
+   if(!drivers?.length){
+     console.log('round',round,'meeting',meetingKey,'SKIP no driver mapping');
+     continue;
+   }
    const codeByNum=new Map(drivers.map(d=>[d.driver_number,String(d.name_acronym).toUpperCase()]));
 
    const out=new Map<string,Weekend>();
    for(const d of drivers){
      const code=String(d.name_acronym).toUpperCase();
-     out.set(code,{practicePos:12,practiceGapPct:1.5,practiceLaps:0,sqPos:12,sqGapPct:1.5,hasSq:0});
+     out.set(code,{practicePos:0,practiceGapPct:0,practiceLaps:0,sqPos:0,sqGapPct:0,hasSq:0,hasPractice:0,isSprint:isSprint?1:0});
    }
 
    // Use the latest available practice as the strongest pre-deadline practice snapshot.
@@ -121,10 +140,11 @@ async function main(){
        w.practicePos=Number.isFinite(r.position)?r.position:12;
        w.practiceGapPct=typeof r.duration==='number'&&Number.isFinite(leader)?100*(r.duration-leader)/leader:1.5;
        w.practiceLaps=Number.isFinite(r.number_of_laps)?r.number_of_laps:0;
+       w.hasPractice=1;
      }
    }
 
-   if(SPRINT_ROUNDS.has(round)&&sprintQ){
+   if(isSprint&&sprintQ){
      const rs=await tryResults(sprintQ.session_key);
      if(rs?.length){
        const bestDur=(r:Result)=>{
@@ -141,8 +161,8 @@ async function main(){
        }
      }
    }
-   weekendByRound.set(round,out);
-   console.log('round',round,'meeting',meetingKey,'practice',lastPractice?.session_name??'none','sprintQ',SPRINT_ROUNDS.has(round)?sprintQ?.session_name??'missing':'n/a');
+   weekendByRound.set(round,new Map([...out.entries()].filter(([,w])=>w.hasPractice===1)));
+   console.log('round',round,'meeting',meetingKey,'practice',lastPractice?.session_name??'none','sprintQ',isSprint?sprintQ?.session_name??'missing':'n/a');
  }
 
  const histories=new Map<string,number[]>();
@@ -179,7 +199,7 @@ async function main(){
      for(const e of test){
        const err=model.predict(fx(e))-e.y;
        add(metrics.get(v.name)!,err);
-       add((SPRINT_ROUNDS.has(round)?sprintMetrics:normalMetrics).get(v.name)!,err);
+       add((e.weekend.isSprint?sprintMetrics:normalMetrics).get(v.name)!,err);
      }
    }
  }
