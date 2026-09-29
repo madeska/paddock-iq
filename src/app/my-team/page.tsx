@@ -135,10 +135,11 @@ export default function MyTeam() {
           <div className="tabs">{(['points','balanced','budget'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
           <button onClick={optimize}>Generate recommendations</button>
           {recs.length > 0 && <div className="tablewrap"><table>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>Transfer pts</th><th>Boost pts</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
               <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
+              <td>{scenario.transferPointsGain.toFixed(1)}</td><td>{scenario.boostGain.toFixed(1)}</td>
               <td>{scenario.netPointsGain.toFixed(1)}</td><td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
               <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
             </tr>)}</tbody>
