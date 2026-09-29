@@ -342,7 +342,7 @@ export default function MyTeam() {
                   <tr className={styles.currentTeamRow}>
                     <td>—</td>
                     <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}{a.code===currentTeamView.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}<em className={styles.ownedBadge}>OWN</em>{a.code===currentTeamView.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                     <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
                     <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
                     <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
@@ -353,7 +353,13 @@ export default function MyTeam() {
                     return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>{setHoveredScenario(key);document.getElementById('scenario-'+encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});}}>
                       <td><strong>{index+1}</strong></td>
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}{a.code===tv.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                      <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=>{
+                        const owned=ownedCodes.has(a.code);
+                        return <span key={a.code} className={owned?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}>
+                          <b>{a.code}{owned?<em className={styles.ownedBadge}>OWN</em>:null}{a.code===tv.boost?<em className={styles.x2Badge}>x2</em>:null}</b>
+                          <small>{a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small>
+                        </span>;
+                      })}</div></td>
                       <td><strong>{tv.price.toFixed(1)}</strong></td>
                       <td className={tv.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{tv.expectedDelta>=0?'+':''}{tv.expectedDelta.toFixed(2)}</td>
                       <td><strong>{tv.expectedPoints.toFixed(1)}</strong>{tv.penalty>0?<small className={styles.teamPenalty}> −{tv.penalty} penalty</small>:null}</td>
