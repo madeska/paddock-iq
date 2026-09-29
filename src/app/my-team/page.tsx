@@ -113,6 +113,8 @@ function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:st
 }
 
 
+const scenarioKey = (scenario:any) => [scenario.out?.join(','),scenario.incoming?.join(','),scenario.recommendedBoost ?? ''].join('>');
+
 export default function MyTeam() {
   const [email, setEmail] = useState('');
   const [data, setData] = useState<Data | null>(null);
@@ -121,6 +123,7 @@ export default function MyTeam() {
   const [customWeight, setCustomWeight] = useState(0.6);
   const [recs, setRecs] = useState<any[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
+  const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
 
   async function load() {
     setStatus('Loading…');
@@ -240,7 +243,18 @@ export default function MyTeam() {
             const headline = !best ? '—'
               : mode === 'budget' ? ((best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M')
               : ((best.transferPointsGain >= 0 ? '+' : '') + best.transferPointsGain.toFixed(1) + ' pts');
-            return <article key={count}>
+            const key = best ? scenarioKey(best) : null;
+            return <article
+              key={count}
+              className={key && hoveredScenario === key ? styles.summaryCardActive : styles.summaryCard}
+              onMouseEnter={() => key && setHoveredScenario(key)}
+              onMouseLeave={() => setHoveredScenario(null)}
+              onClick={() => {
+                if (!key) return;
+                setHoveredScenario(key);
+                document.getElementById('scenario-' + encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});
+              }}
+            >
               <small>{count} transfer{count === 1 ? '' : 's'}</small>
               <strong>{headline}</strong>
               {best ? <small>
@@ -251,12 +265,27 @@ export default function MyTeam() {
             </article>;
           })}</div><div className="tablewrap"><table>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
-            <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
+            <tbody>{recs.slice(0,10).map((scenario:any,index:number) => {
+              const key = scenarioKey(scenario);
+              return <tr
+                key={index}
+                id={'scenario-' + encodeURIComponent(key)}
+                className={hoveredScenario === key ? styles.recommendationRowActive : styles.recommendationRow}
+                onMouseEnter={() => setHoveredScenario(key)}
+                onMouseLeave={() => setHoveredScenario(null)}
+              >
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
               <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
               <td>{scenario.transferPointsGain.toFixed(1)}</td>{mode === 'horizon' ? <td>—</td> : null}<td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
-              <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
-            </tr>)}</tbody>
+              <td>{'
+          </table></div></>}
+        </section>
+        <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
+      </>}
+    </main>
+  );
+} + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
+            </tr>; })}</tbody>
           </table></div></>}
         </section>
         <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
