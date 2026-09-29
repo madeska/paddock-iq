@@ -22,7 +22,8 @@
     "fantasy:backtest-sprint-asset": "tsx scripts/backtest-sprint-asset.ts",
     "fantasy:backtest-horizon": "tsx scripts/backtest-horizon-error.ts",
     "fantasy:backtest-constructors": "tsx scripts/backtest-constructor-model.ts",
-    "fantasy:backtest-bias": "tsx scripts/backtest-xpts-bias.ts"
+    "fantasy:backtest-bias": "tsx scripts/backtest-xpts-bias.ts",
+    "fantasy:backtest-driver-ensemble": "tsx scripts/backtest-driver-ensemble.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
