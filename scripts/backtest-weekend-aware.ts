@@ -20,6 +20,18 @@ async function get<T>(url:string):Promise<T>{
   }
   throw Error('Failed '+url);
 }
+async function tryResults(sessionKey:number):Promise<Result[]|null>{
+  const url=OPEN+'/session_result?session_key='+sessionKey;
+  for(let attempt=0;attempt<3;attempt++){
+    const r=await fetch(url,{headers:{'user-agent':'Paddock-IQ backtest'}});
+    if(r.ok)return r.json() as Promise<Result[]>;
+    if(r.status===404)return null;
+    if(r.status===429||r.status>=500){await new Promise(res=>setTimeout(res,600*(attempt+1)));continue;}
+    throw Error(url+' -> '+r.status+' '+await r.text());
+  }
+  return null;
+}
+
 async function fantasy(round:number){
  const j=await get<any>(FANTASY+'/'+round+'_en.json?buster='+Date.now());
  return (Array.isArray(j?.Data?.Value)?j.Data.Value:[]) as FantasyRow[];
@@ -95,11 +107,15 @@ async function main(){
    }
 
    // Use the latest available practice as the strongest pre-deadline practice snapshot.
-   const lastPractice=practice.at(-1);
-   if(lastPractice){
-     const rs=await get<Result[]>(OPEN+'/session_result?session_key='+lastPractice.session_key);
-     const leader=Math.min(...rs.map(r=>typeof r.duration==='number'?r.duration:Infinity));
-     for(const r of rs){
+   let lastPractice:Session|undefined;
+   let practiceResults:Result[]|null=null;
+   for(const s of [...practice].reverse()){
+     const rs=await tryResults(s.session_key);
+     if(rs?.length){lastPractice=s;practiceResults=rs;break;}
+   }
+   if(lastPractice&&practiceResults){
+     const leader=Math.min(...practiceResults.map(r=>typeof r.duration==='number'?r.duration:Infinity));
+     for(const r of practiceResults){
        const code=codeByNum.get(r.driver_number);if(!code)continue;
        const w=out.get(code)!;
        w.practicePos=Number.isFinite(r.position)?r.position:12;
@@ -109,18 +125,20 @@ async function main(){
    }
 
    if(SPRINT_ROUNDS.has(round)&&sprintQ){
-     const rs=await get<Result[]>(OPEN+'/session_result?session_key='+sprintQ.session_key);
-     const bestDur=(r:Result)=>{
-       if(Array.isArray(r.duration)){const nums=r.duration.filter((x):x is number=>typeof x==='number');return nums.length?nums.at(-1)!:Infinity}
-       return typeof r.duration==='number'?r.duration:Infinity;
-     };
-     const leader=Math.min(...rs.map(bestDur));
-     for(const r of rs){
-       const code=codeByNum.get(r.driver_number);if(!code)continue;
-       const w=out.get(code)!;const dur=bestDur(r);
-       w.sqPos=Number.isFinite(r.position)?r.position:12;
-       w.sqGapPct=Number.isFinite(dur)&&Number.isFinite(leader)?100*(dur-leader)/leader:1.5;
-       w.hasSq=1;
+     const rs=await tryResults(sprintQ.session_key);
+     if(rs?.length){
+       const bestDur=(r:Result)=>{
+         if(Array.isArray(r.duration)){const nums=r.duration.filter((x):x is number=>typeof x==='number');return nums.length?nums.at(-1)!:Infinity}
+         return typeof r.duration==='number'?r.duration:Infinity;
+       };
+       const leader=Math.min(...rs.map(bestDur));
+       for(const r of rs){
+         const code=codeByNum.get(r.driver_number);if(!code)continue;
+         const w=out.get(code)!;const dur=bestDur(r);
+         w.sqPos=Number.isFinite(r.position)?r.position:12;
+         w.sqGapPct=Number.isFinite(dur)&&Number.isFinite(leader)?100*(dur-leader)/leader:1.5;
+         w.hasSq=1;
+       }
      }
    }
    weekendByRound.set(round,out);
