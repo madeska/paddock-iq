@@ -1,5 +1,6 @@
 import {type Asset,type Mode,scoreProposal} from './optimizer';
 import {transferAccounting} from './transfer-rules';
+import {scenarioConfidence,swapConfidence,type TransferConfidence} from './transfer-confidence';
 
 export type Scenario={
  out:string[];
@@ -16,6 +17,8 @@ export type Scenario={
  currentBoost:string|null;
  recommendedBoost:string|null;
  score:number;
+ transferConfidence:TransferConfidence|null;
+ empiricalHitRate:number|null;
 };
 
 const rawPoints=(lineup:Asset[])=>lineup.reduce((sum,a)=>sum+a.expectedPoints,0);
@@ -55,6 +58,8 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
   const remaining=Math.max(0,cash-spent);
   const netPointsGain=projectedPointsGain-penalty;
 
+  const confidence=scenarioConfidence(outs.map((out,i)=>swapConfidence(out.type,ins[i].expectedPoints-out.expectedPoints)));
+
   results.push({
    out:outs.map(a=>a.code),
    incoming:ins.map(a=>a.code),
@@ -69,7 +74,9 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
    projectedNextFreeTransfers:accounting.projectedNext,
    currentBoost:selectedBoost?.code??null,
    recommendedBoost:recommendedBoost?.code??null,
-   score:scoreProposal(netPointsGain,delta,mode,weight)
+   score:scoreProposal(netPointsGain,delta,mode,weight),
+   transferConfidence:confidence.label,
+   empiricalHitRate:confidence.empiricalHitRate
   });
  }
 
