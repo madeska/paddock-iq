@@ -26,7 +26,7 @@
     "fantasy:backtest-driver-ensemble": "tsx scripts/backtest-driver-ensemble.ts",
     "fantasy:backtest-driver-features": "tsx scripts/backtest-driver-features.ts",
     "fantasy:backtest-circuit": "tsx scripts/backtest-circuit-aware.ts",
-    "fantasy:backtest-weekend": "tsx scripts/backtest-weekend-aware.ts",
+    "fantasy:backtest-weekend": "tsx ./scripts/backtest-weekend-aware.ts",
     "fantasy:backtest-ci": "npm run fantasy:backtest-weekend"
   },
   "prisma": {
