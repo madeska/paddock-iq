@@ -47,3 +47,24 @@ export function packageConfidence(transfers:number,predictedEdge:number){
   const label:TransferConfidence=empiricalHitRate>=.78?'HIGH':empiricalHitRate>=.65?'MEDIUM':'LOW';
   return {label,empiricalHitRate};
 }
+
+
+export function horizonPackageConfidence(transfers:number,predictedThreeGpEdge:number){
+  if(transfers<=0)return {label:null as TransferConfidence|null,empiricalHitRate:null as number|null};
+
+  const bin=predictedThreeGpEdge<5?0:
+    predictedThreeGpEdge<10?1:
+    predictedThreeGpEdge<15?2:
+    predictedThreeGpEdge<25?3:4;
+
+  const ratesBySize:Record<number,number[]> = {
+    1:[.612,.719,.735,.747,.949],
+    2:[.564,.661,.683,.734,.896],
+    3:[.544,.611,.643,.672,.877],
+  };
+
+  const rates=ratesBySize[Math.min(3,Math.max(1,transfers))];
+  const empiricalHitRate=rates[bin];
+  const label:TransferConfidence=empiricalHitRate>=.78?'HIGH':empiricalHitRate>=.65?'MEDIUM':'LOW';
+  return {label,empiricalHitRate};
+}
