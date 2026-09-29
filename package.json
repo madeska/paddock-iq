@@ -24,7 +24,8 @@
     "fantasy:backtest-constructors": "tsx scripts/backtest-constructor-model.ts",
     "fantasy:backtest-bias": "tsx scripts/backtest-xpts-bias.ts",
     "fantasy:backtest-driver-ensemble": "tsx scripts/backtest-driver-ensemble.ts",
-    "fantasy:backtest-driver-features": "tsx scripts/backtest-driver-features.ts"
+    "fantasy:backtest-driver-features": "tsx scripts/backtest-driver-features.ts",
+    "fantasy:backtest-ci": "npm run fantasy:backtest-driver-features"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
