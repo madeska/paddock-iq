@@ -100,7 +100,7 @@ export async function POST(request:NextRequest){
   }
   const driverModel=fitRidge(driverTraining,RIDGE_LAMBDA);
 
-  const created=[];
+  const created:{code:string;type:string;expectedPoints:number;expectedDelta:number|null;modelVersion:string;id:string}[]=[];
   for(const asset of assets){
    const currentPriceRow=asset.prices
     .filter(p=>p.grandPrix.round===round)
