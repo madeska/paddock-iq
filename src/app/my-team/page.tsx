@@ -263,9 +263,9 @@ export default function MyTeam() {
                 <br/>Next FT {best.projectedNextFreeTransfers}
               </small> : null}
             </article>;
-          })}</div><div className="tablewrap"><table>
+          })}</div><div className={`tablewrap ${styles.recommendationTableWrap}`}><table className={styles.recommendationTable}>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
-            <tbody>{recs.slice(0,10).map((scenario:any,index:number) => {
+            <tbody>{recs.map((scenario:any,index:number) => {
               const key = scenarioKey(scenario);
               return <tr
                 key={index}
