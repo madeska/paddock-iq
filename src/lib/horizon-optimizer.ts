@@ -19,6 +19,7 @@ export type HorizonScenario={
  netPointsGain:number;
  projectedValueGain:number;
  perRoundGain:number[];
+ perRoundTransferGain:number[];
  cashRemaining:number;
  projectedNextFreeTransfers:number;
  currentBoost:string|null;
@@ -67,7 +68,8 @@ export function optimizeThreeGpHold(
   const boosts=Array.from({length:steps},(_,i)=>bestDriver(lineup,i));
   const finalBoostByRound=boosts.map((b,i)=>b?.horizonPoints[i]??0);
   const finalBoost=finalBoostByRound.reduce((a,b)=>a+b,0);
-  const perRoundGain=Array.from({length:steps},(_,i)=>(finalRawByRound[i]+finalBoostByRound[i])-(baselineRawByRound[i]+baselineBoostByRound[i]));
+  const perRoundTransferGain=Array.from({length:steps},(_,i)=>finalRawByRound[i]-baselineRawByRound[i]);
+  const perRoundGain=Array.from({length:steps},(_,i)=>perRoundTransferGain[i]+(finalBoostByRound[i]-baselineBoostByRound[i]));
   const transferPointsGain=finalRaw-baselineRaw;
   const boostGain=finalBoost-baselineBoost;
   const netPointsGain=transferPointsGain+boostGain-accounting.penalty;
@@ -81,6 +83,7 @@ export function optimizeThreeGpHold(
    netPointsGain,
    projectedValueGain:valueDelta,
    perRoundGain,
+   perRoundTransferGain,
    cashRemaining:Math.max(0,cash-spent),
    projectedNextFreeTransfers:accounting.projectedNext,
    currentBoost:currentBoost?.code??null,
