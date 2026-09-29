@@ -6,6 +6,10 @@ const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
+const HORIZON_ERROR={
+ DRIVER:[{mae:12.15,rmse:16.35},{mae:11.48,rmse:15.78},{mae:11.87,rmse:15.80}],
+ CONSTRUCTOR:[{mae:17.31,rmse:21.29},{mae:17.20,rmse:21.29},{mae:18.01,rmse:22.24}]
+} as const;
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 const std=(xs:number[])=>{if(xs.length<2)return 0;const m=mean(xs);return Math.sqrt(xs.reduce((s,x)=>s+(x-m)**2,0)/(xs.length-1))};
@@ -109,6 +113,7 @@ export async function GET(request:NextRequest){
      expectedPoints,
      sprint:SPRINT_ROUNDS_2026.has(round),
      sprintCorrection,
+     historicalError:HORIZON_ERROR[asset.type][step]??null,
      projectedPrice:Math.round(projectedPrice*100)/100,
      expectedPriceDelta,
      projectedNextPrice:nextPrice
@@ -127,6 +132,7 @@ export async function GET(request:NextRequest){
    driverModel:'ridge50 recursively using projected history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
+   horizonErrorCalibration:HORIZON_ERROR,
    caveat:'Sprint-format correction is applied to known 2026 Sprint rounds. Circuit, weather, qualifying, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
    assets:result
   });
