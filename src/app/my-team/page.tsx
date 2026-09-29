@@ -94,7 +94,7 @@ function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:st
           <td className={styles.assetCell}>
             <span className={styles.code} style={{'--accent':accents[asset.code] ?? '#64748b'} as CSSProperties}>{asset.code}</span>
             <span className={styles.assetName}>{asset.name}{asset.isDoubled ? ' · 2×' : ''}</span>
-            <button type="button" onClick={() => onToggleLock(asset.code)}>{locked.includes(asset.code) ? 'Unlock' : 'Lock'}</button>
+            <button type="button" className={styles.lockChip} title={locked.includes(asset.code) ? 'Unlock asset' : 'Lock asset'} onClick={() => onToggleLock(asset.code)}>{locked.includes(asset.code) ? '🔒' : '○'}</button>
           </td>
           <td>{asset.price?.toFixed(1) ?? '—'}</td>
           <td>{scoreAt(asset,round-2) ?? '—'}</td>
@@ -230,7 +230,22 @@ export default function MyTeam() {
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
-          {recs.length > 0 && <><div className="stats">{[0,1,2,3].map((count) => { const best = recs.find((scenario:any) => scenario.transfers === count); return <article key={count}><small>{count} transfer{count === 1 ? '' : 's'}</small><strong>{best ? (best.netPointsGain >= 0 ? '+' : '') + best.netPointsGain.toFixed(1) + ' pts' : '—'}</strong>{best ? <small>{best.out.join(', ') || 'Keep'}{best.incoming.length ? ' → ' + best.incoming.join(', ') : ''}<br/>Next FT {best.projectedNextFreeTransfers}</small> : null}</article>; })}</div><div className="tablewrap"><table>
+          {recs.length > 0 && <><div className="stats">{[0,1,2,3].map((count) => {
+            const candidates = recs.filter((scenario:any) => scenario.transfers === count);
+            const best = candidates[0];
+            const headline = !best ? '—'
+              : mode === 'budget' ? ((best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M')
+              : ((best.netPointsGain >= 0 ? '+' : '') + best.netPointsGain.toFixed(1) + ' pts');
+            return <article key={count}>
+              <small>{count} transfer{count === 1 ? '' : 's'}</small>
+              <strong>{headline}</strong>
+              {best ? <small>
+                {best.out.join(', ') || 'Keep'}{best.incoming.length ? ' → ' + best.incoming.join(', ') : ''}
+                {(mode === 'balanced' || mode === 'custom') && <><br/>Value Δ {(best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M'}</>}
+                <br/>Next FT {best.projectedNextFreeTransfers}
+              </small> : null}
+            </article>;
+          })}</div><div className="tablewrap"><table>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>{mode === 'horizon' ? '3GP boost pts' : 'Boost pts'}</th><th>{mode === 'horizon' ? 'R16/R17/R18 gain' : 'Net pts'}</th>{mode === 'horizon' ? <th>3GP net pts</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
