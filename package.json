@@ -33,7 +33,8 @@
     "fantasy:backtest-transfer-edge": "tsx scripts/backtest-transfer-edge.ts",
     "fantasy:backtest-package-edge": "tsx scripts/backtest-package-edge.ts",
     "fantasy:backtest-horizon-package-edge": "tsx scripts/backtest-horizon-package-edge.ts",
-    "fantasy:backtest-ci": "npm run fantasy:backtest-horizon-package-edge"
+    "fantasy:backtest-recommendations": "tsx scripts/backtest-recommendations.ts",
+    "fantasy:backtest-ci": "npm run fantasy:backtest-horizon-package-edge && npm run fantasy:backtest-recommendations"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
