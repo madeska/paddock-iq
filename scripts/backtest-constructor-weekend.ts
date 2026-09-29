@@ -1,7 +1,7 @@
 const FANTASY='https://fantasy.formula1.com/feeds/drivers';
 const OPEN='https://api.openf1.org/v1';
 
-type FantasyRow={PositionName?:string;DriverTLA?:string;TeamId?:string|number;TeamName?:string;FUllName?:string;DisplayName?:string;GamedayPoints?:string|number|null;Value?:string|number|null};
+type FantasyRow={PositionName?:string;DriverTLA?:string;TeamId?:string|number;PlayerId?:string|number;TeamName?:string;FUllName?:string;DisplayName?:string;GamedayPoints?:string|number|null;Value?:string|number|null};
 type Session={meeting_key:number;session_key:number;session_name:string;session_type:string;date_start:string;date_end:string};
 type Driver={driver_number:number;name_acronym:string;team_name?:string};
 type Result={driver_number:number;position:number};
@@ -101,12 +101,16 @@ async function main(){
   if(!drivers?.length)drivers=await get<Driver[]>(OPEN+'/drivers?session_key='+chosen.session_key);
   if(!drivers?.length)continue;
 
-  // OpenF1 team_name is not consistently populated historically. Use the official
-  // F1 Fantasy round feed to map driver acronym -> constructor code instead.
+  // Official Fantasy linkage: driver.TeamId matches constructor.PlayerId.
+  const constructorByPlayerId=new Map<string,string>();
+  for(const fr of feeds.get(round)!.filter(x=>x.PositionName==='CONSTRUCTOR')){
+    const team=constructorCode(fr);
+    if(team&&fr.PlayerId!=null)constructorByPlayerId.set(String(fr.PlayerId),team);
+  }
   const fantasyDriverTeam=new Map<string,string>();
   for(const fr of feeds.get(round)!.filter(x=>x.PositionName==='DRIVER')){
     const code=String(fr.DriverTLA??'').toUpperCase();
-    const team=TEAM[String(fr.TeamName??'').toUpperCase()];
+    const team=fr.TeamId!=null?constructorByPlayerId.get(String(fr.TeamId)):null;
     if(code&&team)fantasyDriverTeam.set(code,team);
   }
   const codeByNum=new Map(drivers.map(d=>[d.driver_number,String(d.name_acronym??'').toUpperCase()]));
