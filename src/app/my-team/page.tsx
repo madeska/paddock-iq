@@ -274,18 +274,17 @@ export default function MyTeam() {
                 onMouseEnter={() => setHoveredScenario(key)}
                 onMouseLeave={() => setHoveredScenario(null)}
               >
-              <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
-              <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
-              <td>{scenario.transferPointsGain.toFixed(1)}</td>{mode === 'horizon' ? <td>—</td> : null}<td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
-              <td>{'
-          </table></div></>}
-        </section>
-        <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
-      </>}
-    </main>
-  );
-} + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
-            </tr>; })}</tbody>
+                <td>{scenario.out.join(', ') || 'Keep'}</td>
+                <td>{scenario.incoming.join(', ') || '—'}</td>
+                <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
+                <td>{scenario.transferPointsGain.toFixed(1)}</td>
+                {mode === 'horizon' ? <td>—</td> : null}
+                <td>{scenario.projectedValueGain.toFixed(2)}</td>
+                <td>{scenario.penalty}</td>
+                <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td>
+                <td>{scenario.projectedNextFreeTransfers}</td>
+              </tr>;
+            })}</tbody>
           </table></div></>}
         </section>
         <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
