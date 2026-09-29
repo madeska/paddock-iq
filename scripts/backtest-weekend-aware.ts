@@ -111,8 +111,11 @@ async function main(){
    const practice=ss.filter(s=>s.session_type==='Practice'||s.session_name.startsWith('Practice')).sort((a,b)=>+new Date(a.date_start)-+new Date(b.date_start));
    const isSprint=ss.some(s=>s.session_name.toLowerCase().includes('sprint')||s.session_type.toLowerCase().includes('sprint'));
    const sprintQ=ss.find(s=>{
-     const n=s.session_name.toLowerCase(),t=s.session_type.toLowerCase();
-     return (n.includes('sprint')||t.includes('sprint'))&&(n.includes('qualif')||n.includes('shootout')||t.includes('qualif'));
+     const n=(s.session_name||'').toLowerCase(),t=(s.session_type||'').toLowerCase();
+     return n.includes('sprint qualifying') ||
+            n.includes('sprint shootout') ||
+            (n.includes('sprint') && (n.includes('qualif')||n.includes('shootout'))) ||
+            (t.includes('sprint') && (t.includes('qualif')||t.includes('shootout')));
    });
    const race=ss.find(s=>s.session_name==='Race');
    if(!race)throw Error('No race session round '+round);
@@ -168,7 +171,7 @@ async function main(){
      }
    }
    weekendByRound.set(round,new Map([...out.entries()].filter(([,w])=>w.hasPractice===1)));
-   console.log('round',round,'meeting',meetingKey,'practice',lastPractice?.session_name??'none','sprintQ',isSprint?sprintQ?.session_name??'missing':'n/a');
+   console.log('round',round,'meeting',meetingKey,'practice',lastPractice?.session_name??'none','sprintQ',isSprint?sprintQ?.session_name??'missing':'n/a','sessions',ss.map(s=>s.session_name).join(' | '));
  }
 
  const histories=new Map<string,number[]>();
@@ -222,25 +225,34 @@ async function main(){
 
  for(let round=6;round<=15;round++){
    const trainBase=examples.filter(e=>e.round<round),test=examples.filter(e=>e.round===round);
-   const baseModel=fitRidge(trainBase.map(e=>({x:baseFeatures(e.history,e.price),y:e.y})),50);
-   if(!baseModel)continue;
    for(const def of gatedDefs){
-     const practiceModel=fitRidge(trainBase.map(e=>({
+     const normalModel=fitRidge(trainBase.filter(e=>!e.weekend.isSprint).map(e=>({
        x:[...baseFeatures(e.history,e.price),...practiceSubset(e.weekend,def.kind)],
        y:e.y
      })),def.lambda);
-     if(!practiceModel)continue;
+     const sprintModel=fitRidge(trainBase.filter(e=>e.weekend.isSprint&&e.weekend.hasSq).map(e=>({
+       x:[...baseFeatures(e.history,e.price),...weekendFeatures(e.weekend,'deadline')],
+       y:e.y
+     })),def.lambda);
+
+     const fallbackBase=fitRidge(trainBase.map(e=>({x:baseFeatures(e.history,e.price),y:e.y})),50);
+     if(!fallbackBase)continue;
+
      for(const e of test){
-       const usePractice=!e.weekend.isSprint;
-       const p=usePractice
-         ? practiceModel.predict([...baseFeatures(e.history,e.price),...practiceSubset(e.weekend,def.kind)])
-         : baseModel.predict(baseFeatures(e.history,e.price));
+       let p:number;
+       if(e.weekend.isSprint && e.weekend.hasSq && sprintModel){
+         p=sprintModel.predict([...baseFeatures(e.history,e.price),...weekendFeatures(e.weekend,'deadline')]);
+       }else if(!e.weekend.isSprint && normalModel){
+         p=normalModel.predict([...baseFeatures(e.history,e.price),...practiceSubset(e.weekend,def.kind)]);
+       }else{
+         p=fallbackBase.predict(baseFeatures(e.history,e.price));
+       }
        add(gatedMetrics.get(def.name)!,p-e.y);
      }
    }
  }
 
- console.log('\nGATED: PRACTICE ON NORMAL / BASELINE ON SPRINT');
+ console.log('\nGATED: PRACTICE ON NORMAL / PRACTICE+SQ ON SPRINT');
  console.table(gatedDefs.map(v=>({model:v.name,...fmt(gatedMetrics.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE));
 
  const table=(map:Map<string,M>)=>variants.map(v=>({model:v.name,...fmt(map.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE);
