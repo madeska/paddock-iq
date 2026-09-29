@@ -7,6 +7,7 @@ export type Scenario={
  transfers:number;
  penalty:number;
  projectedPointsGain:number;
+ transferPointsGain:number;
  boostGain:number;
  netPointsGain:number;
  projectedValueGain:number;
@@ -48,8 +49,9 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
 
   const recommendedBoost=bestBoostAsset(lineup);
   const finalPoints=lineupPoints(lineup,recommendedBoost);
-  const projectedPointsGain=finalPoints-baselinePoints;
   const boostGain=(recommendedBoost?.expectedPoints??0)-(selectedBoost?.expectedPoints??0);
+  const transferPointsGain=(rawPoints(lineup)-rawPoints(current));
+  const projectedPointsGain=transferPointsGain+boostGain;
   const remaining=Math.max(0,cash-spent);
   const netPointsGain=projectedPointsGain-penalty;
 
@@ -59,6 +61,7 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
    transfers:count,
    penalty,
    projectedPointsGain,
+   transferPointsGain,
    boostGain,
    netPointsGain,
    projectedValueGain:delta,
