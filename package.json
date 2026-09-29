@@ -30,7 +30,8 @@
     "fantasy:backtest-constructor-weekend": "tsx ./scripts/backtest-constructor-weekend.ts",
     "fantasy:backtest-constructor-grid": "tsx scripts/backtest-constructor-grid.ts",
     "fantasy:backtest-constructor-blend": "tsx scripts/backtest-constructor-driver-blend.ts",
-    "fantasy:backtest-ci": "npm run fantasy:backtest-constructor-blend"
+    "fantasy:backtest-transfer-edge": "tsx scripts/backtest-transfer-edge.ts",
+    "fantasy:backtest-ci": "npm run fantasy:backtest-transfer-edge"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
