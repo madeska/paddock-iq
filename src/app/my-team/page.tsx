@@ -33,6 +33,7 @@ export default function MyTeam() {
   const [status, setStatus] = useState('');
   const [mode, setMode] = useState<Mode>('balanced');
   const [recs, setRecs] = useState<any[]>([]);
+  const [locked, setLocked] = useState<string[]>([]);
 
   async function load() {
     setStatus('Loading…');
@@ -40,7 +41,7 @@ export default function MyTeam() {
       const response = await fetch('/api/team?email=' + encodeURIComponent(email));
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Load failed');
-      setData(json); setStatus('');
+      setData(json); setLocked((prev) => prev.filter((code) => json.snapshot.assets.some((a: Asset) => a.code === code))); setStatus('');
     } catch (error) {
       setData(null); setStatus(error instanceof Error ? error.message : 'Load failed');
     }
@@ -80,7 +81,7 @@ export default function MyTeam() {
         throw Error('Complete market prices and predictions first.');
       const response = await fetch('/api/optimize', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, maxChanges: 3 }),
+        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, maxChanges: 3, locked }),
       });
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Optimization failed');
@@ -118,7 +119,7 @@ export default function MyTeam() {
           <div className="tablewrap"><table>
             <thead><tr><th>Asset</th><th>Price</th><th>Last 2 actual</th><th>xPts</th><th>Expected Δ</th><th>Most likely</th><th>Price probabilities</th><th>Rise thresholds</th></tr></thead>
             <tbody>{data.snapshot.assets.map((asset) => <tr key={asset.code}>
-              <td><b>{asset.code}</b> · {asset.name}{asset.isDoubled ? ' · 2×' : ''}<br/><small>{asset.type}</small></td>
+              <td><b>{asset.code}</b> · {asset.name}{asset.isDoubled ? ' · 2×' : ''}<br/><small>{asset.type}</small><br/><button type="button" onClick={() => setLocked((prev) => prev.includes(asset.code) ? prev.filter((code) => code !== asset.code) : [...prev, asset.code])}>{locked.includes(asset.code) ? 'Unlock' : 'Lock'}</button></td>
               <td>{asset.price == null ? '—' : '$' + asset.price + 'M'}</td>
               <td>{asset.recentFantasyScores.length ? asset.recentFantasyScores.map((score) => <span key={score.round}>R{score.round}: <b>{score.points}</b><br/></span>) : '—'}</td>
               <td>{asset.expectedPoints ?? '—'}{asset.modelVersion ? <><br/><small>{asset.modelVersion}</small></> : null}</td>
@@ -133,6 +134,7 @@ export default function MyTeam() {
           <h2>Strategy optimizer</h2>
           <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
           <div className="tabs">{(['points','balanced','budget'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
+          <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
           {recs.length > 0 && <div className="tablewrap"><table>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>Transfer pts</th><th>Boost pts</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
