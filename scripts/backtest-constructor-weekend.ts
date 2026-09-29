@@ -31,6 +31,7 @@ async function fantasy(round:number){
  return (Array.isArray(j?.Data?.Value)?j.Data.Value:[]) as FantasyRow[];
 }
 function constructorCode(r:FantasyRow){
+ if(r.PlayerId!=null)return 'PID:'+String(r.PlayerId);
  const n=String(r.TeamName??r.FUllName??r.DisplayName??'').toUpperCase();
  return TEAM[n]??null;
 }
@@ -102,15 +103,10 @@ async function main(){
   if(!drivers?.length)continue;
 
   // Official Fantasy linkage: driver.TeamId matches constructor.PlayerId.
-  const constructorByPlayerId=new Map<string,string>();
-  for(const fr of feeds.get(round)!.filter(x=>x.PositionName==='CONSTRUCTOR')){
-    const team=constructorCode(fr);
-    if(team&&fr.PlayerId!=null)constructorByPlayerId.set(String(fr.PlayerId),team);
-  }
   const fantasyDriverTeam=new Map<string,string>();
   for(const fr of feeds.get(round)!.filter(x=>x.PositionName==='DRIVER')){
     const code=String(fr.DriverTLA??'').toUpperCase();
-    const team=fr.TeamId!=null?constructorByPlayerId.get(String(fr.TeamId)):null;
+    const team=fr.TeamId!=null?'PID:'+String(fr.TeamId):null;
     if(code&&team)fantasyDriverTeam.set(code,team);
   }
   const codeByNum=new Map(drivers.map(d=>[d.driver_number,String(d.name_acronym??'').toUpperCase()]));
