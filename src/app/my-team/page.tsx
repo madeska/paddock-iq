@@ -278,7 +278,7 @@ export default function MyTeam() {
                 <td>{scenario.incoming.join(', ') || '—'}</td>
                 <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
                 <td>{scenario.transferPointsGain.toFixed(1)}</td>
-                {mode === 'horizon' ? <td>—</td> : null}
+                {mode === 'horizon' ? <td>{Array.isArray(scenario.perRoundTransferGain) ? scenario.perRoundTransferGain.map((v:number) => (v > 0 ? '+' : '') + v.toFixed(1)).join(' / ') : '—'}</td> : null}
                 <td>{scenario.projectedValueGain.toFixed(2)}</td>
                 <td>{scenario.penalty}</td>
                 <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td>
