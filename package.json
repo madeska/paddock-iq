@@ -11,6 +11,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "fantasy:sync": "tsx scripts/sync-fantasy-statistics.ts",
+    "fantasy:backfill-prices": "tsx scripts/backfill-fantasy-prices.ts",
     "fantasy:probe": "tsx scripts/probe-fantasy-network.ts",
     "fantasy:backtest-price": "tsx scripts/backtest-fantasy-price.ts",
     "fantasy:backtest-xpts": "tsx scripts/backtest-xpts.ts",
