@@ -4,6 +4,8 @@ import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
+const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
+const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 const std=(xs:number[])=>{if(xs.length<2)return 0;const m=mean(xs);return Math.sqrt(xs.reduce((s,x)=>s+(x-m)**2,0)/(xs.length-1))};
@@ -88,7 +90,8 @@ export async function GET(request:NextRequest){
       ?(driverModel?.predict(features(projectedHistory,projectedPrice))??null)
       :constructorXPts(projectedHistory);
     if(raw==null)break;
-    const expectedPoints=Math.round(raw*10)/10;
+    const sprintCorrection=SPRINT_ROUNDS_2026.has(round)?SPRINT_CORRECTION[asset.type]:0;
+    const expectedPoints=Math.round((raw+sprintCorrection)*10)/10;
 
     const newest=[...projectedHistory].reverse();
     const priceModel=newest.length>=2?predictFantasyPrice({
@@ -104,6 +107,8 @@ export async function GET(request:NextRequest){
      round,
      grandPrix:gpName(round),
      expectedPoints,
+     sprint:SPRINT_ROUNDS_2026.has(round),
+     sprintCorrection,
      projectedPrice:Math.round(projectedPrice*100)/100,
      expectedPriceDelta,
      projectedNextPrice:nextPrice
@@ -118,10 +123,11 @@ export async function GET(request:NextRequest){
 
   return NextResponse.json({
    season,startRound,length,
-   model:'form-only-horizon-v1',
-   driverModel:'ridge50 recursively using projected history/price',
-   constructorModel:'EWMA(0.25), floor -5, recursively using projected history',
-   caveat:'No circuit, sprint-format, weather, qualifying, upgrade, or news modifiers are applied yet. Uncertainty compounds after the first projected round.',
+   model:'sprint-aware-horizon-v1',
+   driverModel:'ridge50 recursively using projected history/price + validated Sprint correction',
+   constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
+   sprintCorrection:SPRINT_CORRECTION,
+   caveat:'Sprint-format correction is applied to known 2026 Sprint rounds. Circuit, weather, qualifying, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
    assets:result
   });
  }catch(error){
