@@ -252,6 +252,29 @@ async function main(){
    }
  }
 
+ const simpleDefs=[
+   {name:'simple_pos_a025',alpha:.25},
+   {name:'simple_pos_a050',alpha:.50},
+   {name:'simple_pos_a075',alpha:.75},
+   {name:'simple_pos_a100',alpha:1.00},
+   {name:'simple_pos_a125',alpha:1.25},
+ ];
+ const simpleMetrics=new Map(simpleDefs.map(v=>[v.name,init()]));
+
+ for(let round=6;round<=15;round++){
+   const trainBase=examples.filter(e=>e.round<round).map(e=>({x:baseFeatures(e.history,e.price),y:e.y}));
+   const baseModel=fitRidge(trainBase,50);if(!baseModel)continue;
+   for(const e of examples.filter(e=>e.round===round)){
+     const base=baseModel.predict(baseFeatures(e.history,e.price));
+     for(const def of simpleDefs){
+       const modifier=!e.weekend.isSprint ? def.alpha*(11.5-e.weekend.practicePos) : 0;
+       add(simpleMetrics.get(def.name)!,base+modifier-e.y);
+     }
+   }
+ }
+ console.log('\nSIMPLE NORMAL-GP PRACTICE POSITION MODIFIER');
+ console.table(simpleDefs.map(v=>({model:v.name,...fmt(simpleMetrics.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE));
+
  console.log('\nGATED: PRACTICE ON NORMAL / PRACTICE+SQ ON SPRINT');
  console.table(gatedDefs.map(v=>({model:v.name,...fmt(gatedMetrics.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE));
 
