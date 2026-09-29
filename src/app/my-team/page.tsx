@@ -31,7 +31,7 @@ export default function MyTeam() {
   const [email, setEmail] = useState('');
   const [data, setData] = useState<Data | null>(null);
   const [status, setStatus] = useState('');
-  const [mode, setMode] = useState<Mode>('balanced');
+  const [mode, setMode] = useState<Mode | 'horizon'>('balanced');
   const [customWeight, setCustomWeight] = useState(0.6);
   const [recs, setRecs] = useState<any[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
@@ -80,9 +80,22 @@ export default function MyTeam() {
       const market = marketJson.assets.filter((asset: any) => !owned.has(asset.code));
       if ([...current, ...market].some((asset: any) => asset.price == null || asset.expectedPoints == null || asset.expectedDelta == null))
         throw Error('Complete market prices and predictions first.');
-      const response = await fetch('/api/optimize', {
+      let endpoint='/api/optimize';
+      let optimizeCurrent=current;
+      let optimizeMarket=market;
+      if(mode==='horizon'){
+        const hr=await fetch('/api/predictions/horizon?season='+data.team.season+'&round='+data.snapshot.grandPrix.round+'&length=3');
+        const hj=await hr.json();
+        if(!hr.ok)throw Error(hj.error||'Horizon unavailable');
+        const byCode=new Map(hj.assets.map((a:any)=>[a.code,a.rounds.map((r:any)=>r.expectedPoints)]));
+        optimizeCurrent=current.map((a:any)=>({...a,horizonPoints:byCode.get(a.code)}));
+        optimizeMarket=market.map((a:any)=>({...a,horizonPoints:byCode.get(a.code)}));
+        if([...optimizeCurrent,...optimizeMarket].some((a:any)=>!Array.isArray(a.horizonPoints)||a.horizonPoints.length<3))throw Error('Incomplete 3-GP horizon');
+        endpoint='/api/optimize/horizon';
+      }
+      const response = await fetch(endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ current, market, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode, weight: customWeight, maxChanges: 3, locked }),
+        body: JSON.stringify({ current: optimizeCurrent, market: optimizeMarket, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode: mode==='horizon'?'points':mode, weight: customWeight, maxChanges: 3, locked }),
       });
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Optimization failed');
@@ -134,12 +147,13 @@ export default function MyTeam() {
         <section>
           <h2>Strategy optimizer</h2>
           <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
-          <div className="tabs">{(['points','balanced','budget','custom'] as Mode[]).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value)}>{value}</button>)}</div>
+          <div className="tabs">{(['points','balanced','budget','custom','horizon'] as const).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value as Mode | 'horizon')}>{value === 'horizon' ? '3 GP hold' : value}</button>)}</div>
+          {mode === 'horizon' && <p><small>3 GP hold = projected R16–R18 points if you make transfers now and hold the lineup. Future transfers and track/Sprint/weather/news modifiers are not simulated.</small></p>}
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
           {recs.length > 0 && <div className="tablewrap"><table>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>Transfer pts</th><th>Boost pts</th><th>Net pts</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
+            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>{mode === 'horizon' ? '3GP boost pts' : 'Boost pts'}</th><th>{mode === 'horizon' ? '3GP net pts' : 'Net pts'}</th><th>Value Δ</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
               <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
