@@ -17,7 +17,8 @@
     "fantasy:backtest-xpts": "tsx scripts/backtest-xpts.ts",
     "fantasy:backtest-xpts-robust": "tsx scripts/backtest-xpts-robust.ts",
     "fantasy:backtest-xpts-ewma": "tsx scripts/backtest-xpts-ewma.ts",
-    "fantasy:backtest-xpts-ridge": "tsx scripts/backtest-xpts-ridge.ts"
+    "fantasy:backtest-xpts-ridge": "tsx scripts/backtest-xpts-ridge.ts",
+    "fantasy:backtest-sprint": "tsx scripts/backtest-sprint-uplift.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
