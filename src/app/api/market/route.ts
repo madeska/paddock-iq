@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 
 const CURRENT_MODELS=[
+  'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware',
   'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware',
   'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware',
 ];

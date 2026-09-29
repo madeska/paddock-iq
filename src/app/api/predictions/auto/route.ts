@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
+import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../lib/openf1-weekend';
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
@@ -76,6 +77,8 @@ export async function POST(request:NextRequest){
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
+  const practiceSnapshot=await getPracticeSnapshot(season,gp.deadline);
+
   const assets=await prisma.asset.findMany({
    where:{season,active:true},
    include:{
@@ -111,11 +114,16 @@ export async function POST(request:NextRequest){
    if(!chronological.length)continue;
 
    let rawXPts:number|null=null;
+   let practicePosition:number|null=null;
    if(asset.type==='DRIVER'){
     rawXPts=driverModel?driverModel.predict(features(chronological,current)):null;
     if(rawXPts==null){
      const e=ewmaChronological(chronological);
      rawXPts=e==null?null:.7*e+.3*mean(chronological);
+    }
+    practicePosition=practiceSnapshot?.isSprint?null:(practiceSnapshot?.positions.get(asset.code)??null);
+    if(rawXPts!=null&&practicePosition!=null){
+      rawXPts=applyPracticePositionModifier(rawXPts,practicePosition);
     }
    }else{
     rawXPts=constructorXPts(chronological);
@@ -140,7 +148,9 @@ export async function POST(request:NextRequest){
 
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const modelVersion=asset.type==='DRIVER'
-    ?'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware'
+    ?(practicePosition!=null
+      ?'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware'
+      :'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware')
     :'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware';
 
    const row=await prisma.assetPrediction.create({data:{
@@ -156,7 +166,9 @@ export async function POST(request:NextRequest){
     requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
     source:asset.type==='DRIVER'
-     ?'Walk-forward ridge(50) using EWMA, season mean and current price + validated rolling-3 PPM price model'
+     ?(practicePosition!=null
+       ?'Ridge3 xPts + validated normal-GP Practice position modifier from '+practiceSnapshot?.sessionName+' + validated rolling-3 PPM price model'
+       :'Walk-forward ridge(50) using EWMA, season mean and current price + validated rolling-3 PPM price model')
      :'Official F1 Fantasy constructor hybrid xPts + validated rolling-3 PPM price model',
     modelVersion
    }});
@@ -167,7 +179,12 @@ export async function POST(request:NextRequest){
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
   return NextResponse.json({
    ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,
-   driverModel:'ridge lambda=50: ewma025, seasonMean, currentPrice',
+   driverModel:'ridge lambda=50: ewma025, seasonMean, currentPrice; normal-GP Practice modifier 0.5*(11.5-position) when available',
+   practiceSnapshot:practiceSnapshot?{
+    sessionName:practiceSnapshot.sessionName,
+    isSprint:practiceSnapshot.isSprint,
+    drivers:practiceSnapshot.positions.size
+   }:null,
    constructorModel:'max(-5, EWMA(0.25))',
    driverTrainingRows:driverTraining.length,
    predictions:created

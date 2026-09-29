@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
+import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../lib/openf1-weekend';
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
@@ -53,6 +54,9 @@ export async function GET(request:NextRequest){
   const startRound=Number(request.nextUrl.searchParams.get('round')??16);
   const length=Math.max(1,Math.min(3,Number(request.nextUrl.searchParams.get('length')??3)));
 
+  const startGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:startRound}}});
+  const practiceSnapshot=await getPracticeSnapshot(season,startGp?.deadline??null);
+
   const assets=await prisma.asset.findMany({
    where:{season,active:true},
    include:{
@@ -93,6 +97,10 @@ export async function GET(request:NextRequest){
       ?(driverModel?.predict(features(projectedHistory,projectedPrice))??null)
       :constructorXPts(projectedHistory);
     if(raw==null)break;
+    if(step===0&&asset.type==='DRIVER'&&practiceSnapshot&&!practiceSnapshot.isSprint){
+      const position=practiceSnapshot.positions.get(asset.code);
+      if(position!=null)raw=applyPracticePositionModifier(raw,position);
+    }
     const sprintCorrection=SPRINT_ROUNDS_2026.has(round)?SPRINT_CORRECTION[asset.type]:0;
     const expectedPoints=Math.round((raw+sprintCorrection)*10)/10;
 
@@ -128,11 +136,12 @@ export async function GET(request:NextRequest){
   return NextResponse.json({
    season,startRound,length,
    model:'sprint-aware-horizon-v1',
-   driverModel:'ridge50 using EWMA, season mean and price; recursive history/price + validated Sprint correction',
+   driverModel:'ridge50 using EWMA, season mean and price; current normal GP may include validated Practice-position modifier; recursive history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
    horizonErrorCalibration:HORIZON_ERROR,
-   caveat:'Sprint-format correction is applied to known 2026 Sprint rounds. Circuit, weather, qualifying, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
+   practiceSnapshot:practiceSnapshot?{sessionName:practiceSnapshot.sessionName,isSprint:practiceSnapshot.isSprint,drivers:practiceSnapshot.positions.size}:null,
+   caveat:'Current normal GP can use the validated pre-lock Practice-position modifier when OpenF1 data is available. Sprint weekends stay on ridge3 for this modifier. Sprint-format correction is still applied to known Sprint rounds. Circuit, weather, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
    assets:result
   });
  }catch(error){
