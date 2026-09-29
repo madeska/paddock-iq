@@ -29,7 +29,8 @@
     "fantasy:backtest-weekend": "tsx ./scripts/backtest-weekend-aware.ts",
     "fantasy:backtest-constructor-weekend": "tsx ./scripts/backtest-constructor-weekend.ts",
     "fantasy:backtest-constructor-grid": "tsx scripts/backtest-constructor-grid.ts",
-    "fantasy:backtest-ci": "npm run fantasy:backtest-constructor-grid"
+    "fantasy:backtest-constructor-blend": "tsx scripts/backtest-constructor-driver-blend.ts",
+    "fantasy:backtest-ci": "npm run fantasy:backtest-constructor-blend"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
