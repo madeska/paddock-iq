@@ -337,6 +337,7 @@ export default function MyTeam() {
                   <th>$</th>
                   <th><button type="button" className={styles.sortHeaderButton} onClick={() => changePossibleTeamsSort('DELTA')}>xΔ$ {possibleTeamsSort === 'DELTA' ? (possibleTeamsSortDir === 'DESC' ? '↓' : '↑') : ''}</button></th>
                   <th><button type="button" className={styles.sortHeaderButton} onClick={() => changePossibleTeamsSort('XPTS')}>{mode === 'horizon' ? '3GP xPts' : 'xPts'} {possibleTeamsSort === 'XPTS' ? (possibleTeamsSortDir === 'DESC' ? '↓' : '↑') : ''}</button></th>
+                  <th>Confidence</th>
                 </tr></thead>
                 <tbody>
                   <tr className={styles.currentTeamRow}>
@@ -346,6 +347,7 @@ export default function MyTeam() {
                     <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
                     <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
                     <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
+                    <td>—</td>
                   </tr>
                   {possibleTeamRows.slice(0,25).map((scenario:any,index:number)=>{
                     const tv=scenario.teamView as TeamView;
@@ -363,6 +365,7 @@ export default function MyTeam() {
                       <td><strong>{tv.price.toFixed(1)}</strong></td>
                       <td className={tv.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{tv.expectedDelta>=0?'+':''}{tv.expectedDelta.toFixed(2)}</td>
                       <td><strong>{tv.expectedPoints.toFixed(1)}</strong>{tv.penalty>0?<small className={styles.teamPenalty}> −{tv.penalty} penalty</small>:null}</td>
+                      <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? (mode === 'horizon' ? 'Historical hit rate for optimizer-selected 3GP recommendations with similar net gain: ' : 'Historical hit rate: ') + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
                     </tr>;
                   })}
                 </tbody>
@@ -402,32 +405,7 @@ export default function MyTeam() {
                 <br/>Next FT {best.projectedNextFreeTransfers}
               </small> : null}
             </article>;
-          })}</div><div className={`tablewrap ${styles.recommendationTableWrap}`}><table className={styles.recommendationTable}>
-            <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer gain' : 'Transfer pts'}</th>{mode === 'horizon' ? <th>2× gain</th> : null}{mode === 'horizon' ? <th>3GP net gain</th> : null}<th>Confidence</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
-            <tbody>{visibleRecs.map((scenario:any,index:number) => {
-              const key = scenarioKey(scenario);
-              return <tr
-                key={index}
-                id={'scenario-' + encodeURIComponent(key)}
-                className={hoveredScenario === key ? styles.recommendationRowActive : styles.recommendationRow}
-                onMouseEnter={() => setHoveredScenario(key)}
-                onMouseLeave={() => setHoveredScenario(null)}
-              >
-                <td>{scenario.out.join(', ') || 'Keep'}</td>
-                <td>{scenario.incoming.join(', ') || '—'}</td>
-                <td>{scenario.recommendedBoost || '—'}{scenario.currentBoost && scenario.recommendedBoost !== scenario.currentBoost ? ' (was ' + scenario.currentBoost + ')' : ''}</td>
-                <td>{scenario.transferPointsGain.toFixed(1)}</td>
-                {mode === 'horizon' ? <td>{(scenario.boostGain >= 0 ? '+' : '') + scenario.boostGain.toFixed(1)}</td> : null}
-                {mode === 'horizon' ? <td><strong>{(scenario.netPointsGain >= 0 ? '+' : '') + scenario.netPointsGain.toFixed(1)}</strong></td> : null}
-                <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? (mode === 'horizon' ? 'Historical hit rate for optimizer-selected 3GP recommendations with similar net gain: ' : 'Historical hit rate: ') + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
-                {mode === 'horizon' ? <td>{Array.isArray(scenario.perRoundTransferGain) ? scenario.perRoundTransferGain.map((v:number) => (v > 0 ? '+' : '') + v.toFixed(1)).join(' / ') : '—'}</td> : null}
-                <td>{scenario.projectedValueGain.toFixed(2)}</td>
-                <td>{scenario.penalty}</td>
-                <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td>
-                <td>{scenario.projectedNextFreeTransfers}</td>
-              </tr>;
-            })}</tbody>
-          </table></div>{visibleRecs.length === 0 ? <p className="notice">No recommendations match this confidence filter.</p> : null}</>}
+          })}</div>{visibleRecs.length === 0 ? <p className="notice">No recommendations match this confidence filter.</p> : null}</>}
         </section>
         <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
       </>}
