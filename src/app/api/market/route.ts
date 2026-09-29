@@ -22,6 +22,12 @@ export async function GET(request:NextRequest) {
         orderBy:{createdAt:'desc'},
         take:1
       },
+      fantasyScores:{
+        where:{grandPrix:{round:{lt:round}}},
+        orderBy:{grandPrix:{round:'desc'}},
+        take:2,
+        include:{grandPrix:true}
+      },
     },
     orderBy:[{type:'asc'},{name:'asc'}],
   });
@@ -42,6 +48,8 @@ export async function GET(request:NextRequest) {
     probabilityMaxFall:a.predictions[0]?.probabilityMaxFall ?? null,
     requiredPointsMaxRise:a.predictions[0]?.requiredPointsMaxRise ?? null,
     requiredPointsSmallRise:a.predictions[0]?.requiredPointsSmallRise ?? null,
+    requiredPointsAvoidMaxFall:a.predictions[0]?.requiredPointsAvoidMaxFall ?? null,
+    recentFantasyScores:a.fantasyScores.map(s=>({round:s.grandPrix.round,points:s.points,name:s.grandPrix.name})),
     confidence:a.predictions[0]?.confidence ?? null,
     modelVersion:a.predictions[0]?.modelVersion ?? null,
   }));
