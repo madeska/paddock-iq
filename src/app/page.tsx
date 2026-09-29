@@ -194,7 +194,16 @@ export default function Home(){
   setTimeout(()=>{
    const teams=generateBudgetTeams(drivers,constructors,builderBudget,50);
    setBuilderTeams(teams);
-   setBuilderStatus(teams.length?('Showing top '+teams.length+' teams under 
+   setBuilderStatus(teams.length?('Showing top '+teams.length+' teams under $'+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget.');
+  },0);
+ }
+
+ function changeBuilderSort(sort:'XPTS'|'DELTA'){
+  if(sort===builderSort)setBuilderSortDir(prev=>prev==='DESC'?'ASC':'DESC');
+  else{setBuilderSort(sort);setBuilderSortDir('DESC')}
+ }
+
+ return <main className={styles.page}>
   <nav className={styles.topbar}>
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>{data?.grandPrix??'R16'} · 2026</span></div>
    <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button></div>
