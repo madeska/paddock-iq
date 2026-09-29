@@ -49,11 +49,13 @@ export function optimizeThreeGpHold(
  const owned=new Set(current.map(a=>a.code));
  const candidates=market.filter(a=>!owned.has(a.code));
  const currentBoost=current.find(a=>a.type==='DRIVER'&&a.isDoubled)??bestDriver(current,0);
- const baselineRaw=rawTotal(current,steps).reduce((a,b)=>a+b,0);
- const baselineBoost=Array.from({length:steps},(_,i)=>{
+ const baselineRawByRound=rawTotal(current,steps);
+ const baselineBoostByRound=Array.from({length:steps},(_,i)=>{
   const b=i===0?currentBoost:bestDriver(current,i);
   return b?.horizonPoints[i]??0;
- }).reduce((a,b)=>a+b,0);
+ });
+ const baselineRaw=baselineRawByRound.reduce((a,b)=>a+b,0);
+ const baselineBoost=baselineBoostByRound.reduce((a,b)=>a+b,0);
 
  const results:HorizonScenario[]=[];
 
