@@ -5,8 +5,8 @@ const BASE='https://fantasy.formula1.com/feeds/drivers';
 const BUDGET=130;
 const FREE_TRANSFERS=2;
 const PENALTY_PER_EXTRA=10;
-const LINEUPS_PER_START=12;
-const CANDIDATE_LINEUPS=6000;
+const LINEUPS_PER_START=24;
+const CANDIDATE_LINEUPS=8000;
 const START_ROUND=6;
 const END_ROUND=13;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
@@ -330,6 +330,25 @@ async function main(){
   {name:'40+',lo:40,hi:Infinity},
  ];
  console.table(edgeBins.map(b=>summary(b.name,samples.filter(s=>s.scenario.netPointsGain>=b.lo&&s.scenario.netPointsGain<b.hi))));
+
+ console.log('\nBY TRANSFER COUNT × PREDICTED NET GAIN');
+ const matrixRows=[];
+ for(const transfers of [1,2,3]){
+  for(const b of edgeBins){
+   const rows=samples.filter(s=>s.scenario.transfers===transfers&&s.scenario.netPointsGain>=b.lo&&s.scenario.netPointsGain<b.hi);
+   const recommended=rows.filter(s=>s.scenario.transfers>0);
+   const hit=recommended.filter(s=>s.realizedGain>0).length;
+   matrixRows.push({
+    transfers,
+    bin:b.name,
+    n:recommended.length,
+    hitRate:recommended.length?+(100*hit/recommended.length).toFixed(1):0,
+    avgPredictedGain:recommended.length?+mean(recommended.map(s=>s.scenario.netPointsGain)).toFixed(2):0,
+    avgRealizedGain:recommended.length?+mean(recommended.map(s=>s.realizedGain)).toFixed(2):0
+   });
+  }
+ }
+ console.table(matrixRows.filter(r=>r.n>0));
 
  console.log('\nBY START WEEKEND');
  console.table([
