@@ -31,3 +31,19 @@ export function scenarioConfidence(swaps:SwapConfidence[]){
   const weakest=swaps.reduce((a,b)=>b.empiricalHitRate<a.empiricalHitRate?b:a);
   return {label:weakest.label,empiricalHitRate:weakest.empiricalHitRate};
 }
+
+
+export function packageConfidence(transfers:number,predictedEdge:number){
+  if(transfers<=0)return {label:null as TransferConfidence|null,empiricalHitRate:null as number|null};
+
+  const bin=predictedEdge<2?0:predictedEdge<5?1:predictedEdge<10?2:predictedEdge<15?3:4;
+  const ratesBySize:Record<number,number[]> = {
+    1:[.507,.612,.649,.783,.838],
+    2:[.499,.551,.616,.681,.838],
+    3:[.513,.547,.595,.655,.856],
+  };
+  const rates=ratesBySize[Math.min(3,Math.max(1,transfers))];
+  const empiricalHitRate=rates[bin];
+  const label:TransferConfidence=empiricalHitRate>=.78?'HIGH':empiricalHitRate>=.65?'MEDIUM':'LOW';
+  return {label,empiricalHitRate};
+}

@@ -1,6 +1,6 @@
 import {type Asset,type Mode,scoreProposal} from './optimizer';
 import {transferAccounting} from './transfer-rules';
-import {scenarioConfidence,swapConfidence,type TransferConfidence} from './transfer-confidence';
+import {packageConfidence,type TransferConfidence} from './transfer-confidence';
 
 export type Scenario={
  out:string[];
@@ -58,7 +58,7 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
   const remaining=Math.max(0,cash-spent);
   const netPointsGain=projectedPointsGain-penalty;
 
-  const confidence=scenarioConfidence(outs.map((out,i)=>swapConfidence(out.type,ins[i].expectedPoints-out.expectedPoints)));
+  const confidence=packageConfidence(count,transferPointsGain);
 
   results.push({
    out:outs.map(a=>a.code),
