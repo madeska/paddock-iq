@@ -12,6 +12,18 @@ const ewma=(scoresNewestFirst:number[])=>{
  return value;
 };
 
+const seasonMean=(scoresNewestFirst:number[])=>scoresNewestFirst.length?scoresNewestFirst.reduce((a,b)=>a+b,0)/scoresNewestFirst.length:null;
+
+const hybridXPts=(type:string,scoresNewestFirst:number[])=>{
+ const e=ewma(scoresNewestFirst);
+ if(e==null)return null;
+ if(type==='DRIVER'){
+  const s=seasonMean(scoresNewestFirst);
+  return s==null?e:.7*e+.3*s;
+ }
+ return Math.max(-5,e);
+};
+
 const sampleStdDev=(scores:number[])=>{
  if(scores.length<2)return undefined;
  const mean=scores.reduce((a,b)=>a+b,0)/scores.length;
@@ -33,7 +45,6 @@ export async function POST(request:NextRequest){
     fantasyScores:{
      where:{grandPrix:{round:{lt:round}}},
      orderBy:{grandPrix:{round:'desc'}},
-     take:5,
      include:{grandPrix:true}
     }
    }
@@ -45,12 +56,12 @@ export async function POST(request:NextRequest){
    if(current==null)continue;
 
    const scores=asset.fantasyScores.map(s=>s.points);
-   const rawXPts=ewma(scores);
+   const rawXPts=hybridXPts(asset.type,scores);
    if(rawXPts==null)continue;
    const pts=Math.round(rawXPts*10)/10;
 
    const previousTwo=scores.slice(0,2);
-   const sd=sampleStdDev(scores);
+   const sd=sampleStdDev(scores.slice(0,5));
    const price=previousTwo.length===2?predictFantasyPrice({
     currentPrice:current,
     previousFantasyPoints:[previousTwo[1],previousTwo[0]],
@@ -81,8 +92,8 @@ export async function POST(request:NextRequest){
      requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,
      requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
      confidence:Math.min(.8,.35+scores.length*.09),
-     source:price?'Official F1 Fantasy EWMA(0.25) xPts + validated rolling-3 PPM price model':'Official F1 Fantasy EWMA(0.25) xPts',
-     modelVersion:price?'xpts-fantasy-ewma025-v1 + price-probability-v0.3-floor-aware':'xpts-fantasy-ewma025-v1'
+     source:price?'Official F1 Fantasy hybrid xPts + validated rolling-3 PPM price model':'Official F1 Fantasy hybrid xPts',
+     modelVersion:price?'xpts-fantasy-hybrid-v1 + price-probability-v0.3-floor-aware':'xpts-fantasy-hybrid-v1'
     }
    });
 
@@ -104,10 +115,11 @@ export async function POST(request:NextRequest){
    created:created.length,
    totalAssets:assets.length,
    missing,
-   model:'xpts-fantasy-ewma025-v1',
-   alpha:EWMA_ALPHA,
+   model:'xpts-fantasy-hybrid-v1',
+   driverModel:'0.70*EWMA(0.25)+0.30*seasonMean',
+   constructorModel:'max(-5, EWMA(0.25))',
    predictions:created,
-   warning:'xPts use EWMA alpha 0.25 over official F1 Fantasy round scores. Track/session-specific modifiers are not yet included.'
+   warning:'xPts use a backtested hybrid model: drivers blend EWMA(0.25) with season mean; constructors use EWMA(0.25) clipped at -5. Track/session-specific modifiers are not yet included.'
   });
  }catch(error){
   return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500});
