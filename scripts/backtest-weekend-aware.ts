@@ -84,6 +84,12 @@ function weekendFeatures(w:Weekend,kind:'practice'|'deadline'){
  if(kind==='practice')return practice;
  return [...practice,w.sqPos,w.sqGapPct,w.hasSq,w.isSprint];
 }
+function practiceSubset(w:Weekend,kind:'pos'|'gap'|'pos_gap'|'pos_gap_laps'){
+ if(kind==='pos')return [w.practicePos];
+ if(kind==='gap')return [w.practiceGapPct];
+ if(kind==='pos_gap')return [w.practicePos,w.practiceGapPct];
+ return [w.practicePos,w.practiceGapPct,w.practiceLaps];
+}
 
 async function main(){
  const fantasyFeeds=new Map<number,FantasyRow[]>();
@@ -203,6 +209,39 @@ async function main(){
      }
    }
  }
+
+ const gatedDefs=[
+   {name:'gate_pos_l25',kind:'pos' as const,lambda:25},
+   {name:'gate_gap_l25',kind:'gap' as const,lambda:25},
+   {name:'gate_posgap_l25',kind:'pos_gap' as const,lambda:25},
+   {name:'gate_full_l25',kind:'pos_gap_laps' as const,lambda:25},
+   {name:'gate_posgap_l50',kind:'pos_gap' as const,lambda:50},
+   {name:'gate_full_l50',kind:'pos_gap_laps' as const,lambda:50},
+ ];
+ const gatedMetrics=new Map(gatedDefs.map(v=>[v.name,init()]));
+
+ for(let round=6;round<=15;round++){
+   const trainBase=examples.filter(e=>e.round<round),test=examples.filter(e=>e.round===round);
+   const baseModel=fitRidge(trainBase.map(e=>({x:baseFeatures(e.history,e.price),y:e.y})),50);
+   if(!baseModel)continue;
+   for(const def of gatedDefs){
+     const practiceModel=fitRidge(trainBase.map(e=>({
+       x:[...baseFeatures(e.history,e.price),...practiceSubset(e.weekend,def.kind)],
+       y:e.y
+     })),def.lambda);
+     if(!practiceModel)continue;
+     for(const e of test){
+       const usePractice=!e.weekend.isSprint;
+       const p=usePractice
+         ? practiceModel.predict([...baseFeatures(e.history,e.price),...practiceSubset(e.weekend,def.kind)])
+         : baseModel.predict(baseFeatures(e.history,e.price));
+       add(gatedMetrics.get(def.name)!,p-e.y);
+     }
+   }
+ }
+
+ console.log('\nGATED: PRACTICE ON NORMAL / BASELINE ON SPRINT');
+ console.table(gatedDefs.map(v=>({model:v.name,...fmt(gatedMetrics.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE));
 
  const table=(map:Map<string,M>)=>variants.map(v=>({model:v.name,...fmt(map.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE);
  console.log('\nWEEKEND-AWARE DRIVER WALK-FORWARD');console.table(table(metrics));
