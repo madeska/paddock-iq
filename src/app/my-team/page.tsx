@@ -152,7 +152,7 @@ export default function MyTeam() {
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
-          {recs.length > 0 && <div className="tablewrap"><table>
+          {recs.length > 0 && <><div className="stats">{[0,1,2,3].map((count) => { const best = recs.find((scenario:any) => scenario.transfers === count); return <article key={count}><small>{count} transfer{count === 1 ? '' : 's'}</small><strong>{best ? (best.netPointsGain >= 0 ? '+' : '') + best.netPointsGain.toFixed(1) + ' pts' : '—'}</strong>{best ? <small>{best.out.join(', ') || 'Keep'}{best.incoming.length ? ' → ' + best.incoming.join(', ') : ''}<br/>Next FT {best.projectedNextFreeTransfers}</small> : null}</article>; })}</div><div className="tablewrap"><table>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>{mode === 'horizon' ? '3GP boost pts' : 'Boost pts'}</th><th>{mode === 'horizon' ? 'R16/R17/R18 gain' : 'Net pts'}</th>{mode === 'horizon' ? <th>3GP net pts</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
             <tbody>{recs.slice(0,10).map((scenario:any,index:number) => <tr key={index}>
               <td>{scenario.out.join(', ') || 'Keep'}</td><td>{scenario.incoming.join(', ') || '—'}</td>
@@ -161,7 +161,7 @@ export default function MyTeam() {
               <td>{mode === 'horizon' && Array.isArray(scenario.perRoundGain) ? scenario.perRoundGain.map((v:number) => v.toFixed(1)).join(' / ') : scenario.netPointsGain.toFixed(1)}</td>{mode === 'horizon' ? <td>{scenario.netPointsGain.toFixed(1)}</td> : null}<td>{scenario.projectedValueGain.toFixed(2)}</td><td>{scenario.penalty}</td>
               <td>{'$' + scenario.cashRemaining.toFixed(1) + 'M'}</td><td>{scenario.projectedNextFreeTransfers}</td>
             </tr>)}</tbody>
-          </table></div>}
+          </table></div></>}
         </section>
         <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
       </>}
