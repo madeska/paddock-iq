@@ -1,4 +1,4 @@
-export type Asset = {code:string; type:'DRIVER'|'CONSTRUCTOR'; price:number; expectedPoints:number; expectedDelta:number};
+export type Asset = {code:string; type:'DRIVER'|'CONSTRUCTOR'; price:number; expectedPoints:number; expectedDelta:number; isDoubled?:boolean};
 export type Mode = 'points'|'balanced'|'budget'|'custom';
 export type Proposal = {out:string; incoming:string; projectedPointsGain:number; projectedValueGain:number; penalty:number; netPointsGain:number; score:number};
 export function scoreProposal(pointsGain:number,valueGain:number,mode:Mode,customPointsWeight=0.6){
