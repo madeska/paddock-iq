@@ -133,6 +133,49 @@ async function main(){
    }
  }
 
+
+ // Second experiment: keep production ridge3 intact and use only previously observed
+ // out-of-sample residuals as a small circuit-specific correction.
+ const residualVariants=['resid_a25','resid_a50','resid_a75'];
+ const residualMetrics=new Map(residualVariants.map(n=>[n,init()]));
+ const pastResiduals:{round:number;code:string;err:number}[]=[];
+
+ for(let round=6;round<=15;round++){
+   const train=examples.filter(e=>e.round<round).map(e=>({x:baseFeatures(e.history,e.price),y:e.y}));
+   const model=fitRidge(train,50); if(!model)continue;
+
+   for(const e of examples.filter(e=>e.round===round)){
+     const base=model.predict(baseFeatures(e.history,e.price));
+     const target=TRACK[round];
+     const relevant=pastResiduals.filter(r=>{
+       if(r.code!==e.code)return false;
+       const t=TRACK[r.round];
+       return !!t && (t.speed===target.speed || t.street===target.street);
+     });
+
+     // Weight exact speed+street matches more than one-attribute matches,
+     // then shrink toward zero with 3 pseudo-observations.
+     let num=0,den=3;
+     for(const r of relevant){
+       const t=TRACK[r.round];
+       const w=(t.speed===target.speed && t.street===target.street)?2:1;
+       num+=w*r.err; den+=w;
+     }
+     const correction=num/den;
+
+     for(const [name,alpha] of [['resid_a25',.25],['resid_a50',.50],['resid_a75',.75]] as const){
+       // err = prediction - actual, so subtract positive historical residual.
+       add(residualMetrics.get(name)!, (base-alpha*correction)-e.y);
+     }
+
+     // Store this round's true out-of-sample baseline residual only after predicting it.
+     pastResiduals.push({round,code:e.code,err:base-e.y});
+   }
+ }
+
+ console.log('\nCIRCUIT RESIDUAL CORRECTION');
+ console.table(residualVariants.map(name=>({model:name,...fmt(residualMetrics.get(name)!)})).sort((a,b)=>a.MAE-b.MAE));
+
  console.log('\nCIRCUIT-AWARE DRIVER WALK-FORWARD');
  console.table(variants.map(v=>({model:v.name,...fmt(metrics.get(v.name)!)})).sort((a,b)=>a.MAE-b.MAE));
 }
