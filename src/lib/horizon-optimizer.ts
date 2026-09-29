@@ -1,5 +1,5 @@
 import {transferAccounting} from './transfer-rules';
-import {packageConfidence,type TransferConfidence} from './transfer-confidence';
+import {horizonPackageConfidence,type TransferConfidence} from './transfer-confidence';
 
 export type HorizonAsset={
  code:string;
@@ -76,8 +76,7 @@ export function optimizeThreeGpHold(
   const transferPointsGain=finalRaw-baselineRaw;
   const boostGain=finalBoost-baselineBoost;
   const netPointsGain=transferPointsGain+boostGain-accounting.penalty;
-  const firstRoundTransferEdge=perRoundTransferGain[0]??0;
-  const confidence=packageConfidence(outs.length,firstRoundTransferEdge);
+  const confidence=horizonPackageConfidence(outs.length,transferPointsGain);
   results.push({
    out:outs.map(a=>a.code),
    incoming:ins.map(a=>a.code),
@@ -123,7 +122,13 @@ export function optimizeThreeGpHold(
   const prev=unique.get(key);
   if(!prev||r.score>prev.score)unique.set(key,r);
  }
- return [...unique.values()]
-  .sort((a,b)=>b.score-a.score||b.projectedNextFreeTransfers-a.projectedNextFreeTransfers||b.projectedValueGain-a.projectedValueGain)
-  .slice(0,50);
+ const sorted=[...unique.values()]
+  .sort((a,b)=>b.score-a.score||b.projectedNextFreeTransfers-a.projectedNextFreeTransfers||b.projectedValueGain-a.projectedValueGain);
+ const keep=sorted.find(r=>r.transfers===0);
+ const top=sorted.slice(0,50);
+ if(keep&&!top.includes(keep)){
+  if(top.length>=50)top[top.length-1]=keep;else top.push(keep);
+  top.sort((a,b)=>b.score-a.score||b.projectedNextFreeTransfers-a.projectedNextFreeTransfers||b.projectedValueGain-a.projectedValueGain);
+ }
+ return top;
 }
