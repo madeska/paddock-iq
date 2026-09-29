@@ -124,6 +124,7 @@ export default function MyTeam() {
   const [recs, setRecs] = useState<any[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
   const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
+  const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
 
   async function load() {
     setStatus('Loading…');
@@ -195,6 +196,13 @@ export default function MyTeam() {
     }
   }
 
+  const visibleRecs = recs.filter((scenario:any) => {
+    if (scenario.transfers === 0) return true;
+    if (confidenceFilter === 'ALL') return true;
+    if (confidenceFilter === 'HIGH') return scenario.transferConfidence === 'HIGH';
+    return scenario.transferConfidence === 'HIGH' || scenario.transferConfidence === 'MEDIUM';
+  });
+
   return (
     <main>
       <nav style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,marginBottom:18}}>
@@ -237,8 +245,15 @@ export default function MyTeam() {
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
           <button onClick={optimize}>Generate recommendations</button>
-          {recs.length > 0 && <><div className="stats">{[0,1,2,3].map((count) => {
-            const candidates = recs.filter((scenario:any) => scenario.transfers === count);
+          {recs.length > 0 && <>
+          <div className={styles.confidenceFilters}>
+            <span>Confidence:</span>
+            <button className={confidenceFilter === 'ALL' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('ALL')}>All</button>
+            <button className={confidenceFilter === 'MEDIUM_PLUS' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
+            <button className={confidenceFilter === 'HIGH' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('HIGH')}>High only</button>
+          </div>
+          <div className="stats">{[0,1,2,3].map((count) => {
+            const candidates = visibleRecs.filter((scenario:any) => scenario.transfers === count);
             const best = candidates[0];
             const headline = !best ? '—'
               : mode === 'budget' ? ((best.projectedValueGain >= 0 ? '+' : '') + best.projectedValueGain.toFixed(2) + 'M')
@@ -265,7 +280,7 @@ export default function MyTeam() {
             </article>;
           })}</div><div className={`tablewrap ${styles.recommendationTableWrap}`}><table className={styles.recommendationTable}>
             <thead><tr><th>Sell</th><th>Buy</th><th>2× Boost</th><th>{mode === 'horizon' ? '3GP transfer pts' : 'Transfer pts'}</th><th>Confidence</th>{mode === 'horizon' ? <th>R16/R17/R18 transfer gain</th> : null}<th>{mode === 'horizon' ? '3GP Value Δ' : 'Value Δ'}</th><th>Penalty</th><th>Cash after</th><th>Next FT</th></tr></thead>
-            <tbody>{recs.map((scenario:any,index:number) => {
+            <tbody>{visibleRecs.map((scenario:any,index:number) => {
               const key = scenarioKey(scenario);
               return <tr
                 key={index}
@@ -286,7 +301,7 @@ export default function MyTeam() {
                 <td>{scenario.projectedNextFreeTransfers}</td>
               </tr>;
             })}</tbody>
-          </table></div></>}
+          </table></div>{visibleRecs.length === 0 ? <p className="notice">No recommendations match this confidence filter.</p> : null}</>}
         </section>
         <section><h2>Chips</h2><div className="chips">{data.snapshot.chips.map((chip) => <span key={chip.code}>{chip.code} <b>{chip.status}</b></span>)}</div></section>
       </>}
