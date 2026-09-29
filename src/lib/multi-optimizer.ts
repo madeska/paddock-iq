@@ -110,5 +110,12 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
   if(!prev||r.score>prev.score)unique.set(key,r);
  }
 
- return [...unique.values()].sort((a,b)=>b.score-a.score).slice(0,50);
+ const sorted=[...unique.values()].sort((a,b)=>b.score-a.score);
+ const keep=sorted.find(r=>r.transfers===0);
+ const top=sorted.slice(0,50);
+ if(keep&&!top.includes(keep)){
+  if(top.length>=50)top[top.length-1]=keep;else top.push(keep);
+  top.sort((a,b)=>b.score-a.score);
+ }
+ return top;
 }
