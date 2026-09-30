@@ -129,9 +129,7 @@ function enumerateTeams(assets:Asset[],budget:number){
        const actualDelta=all.reduce((s,x)=>s+x.actualDelta,0);
        const actualBestBoostPoints=Math.max(...drivers.map(x=>x.actualPoints));
        teams.push({
-        drivers,constructors,boost,price,predictedPoints,predictedDelta,actualPoints,actualDelta,actualBestBoostPoints,
-        predictedScore:utility(predictedPoints,predictedDelta,weight),
-        actualScore:utility(actualPoints,actualDelta,weight)
+        drivers,constructors,boost,price,predictedPoints,predictedDelta,actualPoints,actualDelta,actualBestBoostPoints
        });
       }
  }
