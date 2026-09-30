@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 
 const CURRENT_MODELS=[
+  'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
+  'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
+  'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
+  // Legacy fallbacks keep the market populated until the next projection refresh.
   'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware',
   'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware',
   'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware',
