@@ -226,8 +226,7 @@ function generateBudgetTeams(
       }
  }
 
- const ranked=teams.sort((x,y)=>y.score-x.score||y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta).slice(0,limit);
- return calibrateTeamConfidence(ranked,mode);
+ return teams.sort((x,y)=>y.score-x.score||y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta).slice(0,limit);
 }
 export default function Home(){
  const [data,setData]=useState<MarketResponse|null>(null);
@@ -272,17 +271,19 @@ export default function Home(){
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
  const visibleBuilderTeams=useMemo(()=>{
-  const filtered=builderTeams.filter(team=>{
+  const optimizerRanked=[...builderTeams].sort((a,b)=>b.score-a.score||b.expectedPoints-a.expectedPoints||b.expectedDelta-a.expectedDelta);
+  const diversified=diversifyTeams(optimizerRanked,builderDiversity,25);
+  const calibrated=calibrateTeamConfidence(diversified,builderMode);
+  const filtered=calibrated.filter(team=>{
    if(builderConfidenceFilter==='ALL'||builderMode==='custom'||builderMode==='horizon')return true;
    if(builderConfidenceFilter==='HIGH')return team.confidenceLabel==='HIGH';
    return team.confidenceLabel==='HIGH'||team.confidenceLabel==='MEDIUM';
   });
-  const sorted=[...filtered].sort((a,b)=>{
+  return [...filtered].sort((a,b)=>{
    const av=builderSort==='XPTS'?a.expectedPoints:a.expectedDelta;
    const bv=builderSort==='XPTS'?b.expectedPoints:b.expectedDelta;
    return builderSortDir==='DESC'?bv-av:av-bv;
   });
-  return diversifyTeams(sorted,builderDiversity,25);
  },[builderTeams,builderSort,builderSortDir,builderDiversity,builderConfidenceFilter,builderMode]);
 
  async function buildTeams(){
