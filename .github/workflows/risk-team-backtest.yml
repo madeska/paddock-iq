@@ -17,4 +17,4 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm install
-      - run: npm run fantasy:backtest-risk-adjusted-teams
+      - run: npm run fantasy:backtest-team-xpts-blends
