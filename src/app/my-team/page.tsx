@@ -7,7 +7,7 @@ import styles from '../market-dashboard.module.css';
 type Score = { round: number; name: string; points: number };
 type Asset = {
   code: string; name: string; type: string; isDoubled: boolean;
-  price: number | null; expectedPoints: number | null; expectedDelta: number | null; modelVersion: string | null;
+  price: number | null; expectedPoints: number | null; boostExpectedPoints?: number | null; expectedDelta: number | null; modelVersion: string | null;
   probabilityMaxRise: number | null; probabilitySmallRise: number | null;
   probabilitySmallFall: number | null; probabilityMaxFall: number | null; probabilityFlat: number | null;
   requiredPointsMaxRise: number | null; requiredPointsSmallRise: number | null; requiredPointsAvoidMaxFall: number | null;
@@ -115,7 +115,7 @@ function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:st
 
 const scenarioKey = (scenario:any) => [scenario.out?.join(','),scenario.incoming?.join(','),scenario.recommendedBoost ?? ''].join('>');
 
-type TeamViewAsset = {code:string;type:string;price:number;expectedDelta:number;expectedPoints?:number;horizonPoints?:number[];isDoubled?:boolean};
+type TeamViewAsset = {code:string;type:string;price:number;expectedDelta:number;expectedPoints?:number;boostExpectedPoints?:number;horizonPoints?:number[];isDoubled?:boolean};
 type TeamView = {assets:TeamViewAsset[];boost:string|null;price:number;expectedDelta:number;expectedPoints:number;penalty:number};
 
 function buildTeamView(current:any[],market:any[],scenario:any,horizon:boolean):TeamView{
@@ -140,7 +140,7 @@ function buildTeamView(current:any[],market:any[],scenario:any,horizon:boolean):
   }else{
     expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0);
     const boost=scenario?.recommendedBoost ? byCode.get(scenario.recommendedBoost) : null;
-    expectedPoints+=Number(boost?.expectedPoints??0);
+    expectedPoints+=Number(boost?.boostExpectedPoints??boost?.expectedPoints??0);
   }
   return {assets,boost:scenario?.recommendedBoost??null,price,expectedDelta,expectedPoints:expectedPoints-penalty,penalty};
 }
@@ -160,7 +160,7 @@ function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
       expectedPoints+=Number(boost?.horizonPoints?.[step]??0);
     }
   }else{
-    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0)+Number(currentBoost?.expectedPoints??0);
+    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0)+Number(currentBoost?.boostExpectedPoints??currentBoost?.expectedPoints??0);
   }
   return {assets,boost:currentBoost?.code??null,price,expectedDelta,expectedPoints,penalty:0};
 }
@@ -217,7 +217,7 @@ export default function MyTeam() {
       if (!marketResponse.ok) throw Error(marketJson.error || 'Market unavailable');
       const current = data.snapshot.assets.map((asset) => ({
         code: asset.code, type: asset.type, price: asset.price,
-        expectedPoints: asset.expectedPoints, expectedDelta: asset.expectedDelta, isDoubled: asset.isDoubled,
+        expectedPoints: asset.expectedPoints, boostExpectedPoints: asset.boostExpectedPoints, expectedDelta: asset.expectedDelta, isDoubled: asset.isDoubled,
       }));
       const owned = new Set(current.map((asset) => asset.code));
       const market = marketJson.assets.filter((asset: any) => !owned.has(asset.code));
@@ -306,7 +306,7 @@ export default function MyTeam() {
           <TeamMarketBoard title="Drivers" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
           <TeamMarketBoard title="Constructors" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
           <TeamMarketBoard title="Constructors" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
-          <p><small>Forecast model: driver ridge50 / constructor hybrid · price probabilities v0.3 floor-aware.</small></p>
+          <p><small>Forecast model: driver ridge50/EWMA50 · constructor EWMA50/mean3 · dedicated ridge50 x2 selector · price probabilities v0.3 floor-aware.</small></p>
         </section>
         <section>
           <h2>Strategy optimizer</h2>
