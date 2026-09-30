@@ -22,8 +22,8 @@ type Team={
  predictedPoints:number;predictedDelta:number;actualPoints:number;actualDelta:number;
 };
 type Obs={
- mode:string;round:number;budget:number;rank:number;predictedGap:number;
- actualRegret:number;hit:boolean;
+ mode:string;round:number;budget:number;predictedGap:number;
+ actualGap:number;hit:boolean;
 };
 
 const mean=(xs:number[])=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0;
@@ -120,27 +120,25 @@ async function main(){
    const teams=enumerateTeams(assets,budget);if(!teams.length)continue;
    for(const mode of MODES){
     const pred=[...teams].sort((a,b)=>utility(b.predictedPoints,b.predictedDelta,mode.weight)-utility(a.predictedPoints,a.predictedDelta,mode.weight));
-    const actual=[...teams].sort((a,b)=>utility(b.actualPoints,b.actualDelta,mode.weight)-utility(a.actualPoints,a.actualDelta,mode.weight));
-    const predBest=utility(pred[0].predictedPoints,pred[0].predictedDelta,mode.weight);
-    const actualBest=utility(actual[0].actualPoints,actual[0].actualDelta,mode.weight);
-    pred.slice(0,25).forEach((team,index)=>{
-     const predictedScore=utility(team.predictedPoints,team.predictedDelta,mode.weight);
-     const actualScore=utility(team.actualPoints,team.actualDelta,mode.weight);
-     const actualRegret=actualBest-actualScore;
+    const top=pred.slice(0,25);
+    for(let i=0;i<top.length-1;i++)for(let j=i+1;j<top.length;j++){
+     const better=top[i],worse=top[j];
+     const predictedGap=utility(better.predictedPoints,better.predictedDelta,mode.weight)-utility(worse.predictedPoints,worse.predictedDelta,mode.weight);
+     const actualGap=utility(better.actualPoints,better.actualDelta,mode.weight)-utility(worse.actualPoints,worse.actualDelta,mode.weight);
      observations.push({
-      mode:mode.name,round,budget,rank:index+1,
-      predictedGap:Math.max(0,predBest-predictedScore),
-      actualRegret,
-      hit:actualRegret<=1
+      mode:mode.name,round,budget,
+      predictedGap:Math.max(0,predictedGap),
+      actualGap,
+      hit:actualGap>0
      });
-    });
+    }
    }
   }
  }
 
  console.log('\nTEAM BUILDER CONFIDENCE CALIBRATION');
- console.log('Hit = actual lineup finished within 1.0 utility point of hindsight-best feasible lineup for that mode.');
- console.log('For points mode, 1.0 utility point = 20 fantasy points.');
+ console.log('Hit = the higher-ranked predicted lineup actually beat the lower-ranked lineup.');
+ console.log('Confidence is pairwise ordering accuracy, bucketed by predicted utility gap.');
 
  for(const mode of MODES){
   const rows=observations.filter(x=>x.mode===mode.name);
@@ -153,19 +151,11 @@ async function main(){
     predictedGap:upper===Infinity?'>= '+low.toFixed(2):low.toFixed(2)+'–'+upper.toFixed(2),
     n:bucket.length,
     hitRate:bucket.length?+(100*bucket.filter(x=>x.hit).length/bucket.length).toFixed(1):null,
-    avgActualRegret:bucket.length?+mean(bucket.map(x=>x.actualRegret)).toFixed(2):null,
-    medianRank:bucket.length?bucket.map(x=>x.rank).sort((a,b)=>a-b)[Math.floor(bucket.length/2)]:null
+    avgActualGap:bucket.length?+mean(bucket.map(x=>x.actualGap)).toFixed(2):null
    });
    low=upper;
   }
   console.table(out);
-
-  const rankBuckets=[[1,1],[2,3],[4,5],[6,10],[11,25]];
-  console.log('BY RANK');
-  console.table(rankBuckets.map(([a,b])=>{
-   const bucket=rows.filter(x=>x.rank>=a&&x.rank<=b);
-   return {rank:a===b?String(a):a+'-'+b,n:bucket.length,hitRate:+(100*bucket.filter(x=>x.hit).length/bucket.length).toFixed(1),avgActualRegret:+mean(bucket.map(x=>x.actualRegret)).toFixed(2)};
-  }));
  }
 }
 main().catch(e=>{console.error(e);process.exitCode=1});
