@@ -122,6 +122,12 @@ async function main(){
  console.log('\nHORIZON xPTS BLEND GRID');
  console.table(summary);
  console.log('\nBEST',summary[0]);
+ const bestVariant=variants.find(v=>v.d===summary[0].driverRidgeWeight&&v.c===summary[0].constructorEwmaWeight)!;
+ const bestMetrics=metrics.get(bestVariant.key)!;
+ console.log('\nBEST DRIVER ERROR BY HORIZON');
+ console.table(bestMetrics.driver.map((m,i)=>({horizon:i+1,...Object.fromEntries(Object.entries(out(m)).map(([k,v])=>[k,typeof v==='number'?+v.toFixed(2):v]))})));
+ console.log('\nBEST CONSTRUCTOR ERROR BY HORIZON');
+ console.table(bestMetrics.constructor.map((m,i)=>({horizon:i+1,...Object.fromEntries(Object.entries(out(m)).map(([k,v])=>[k,typeof v==='number'?+v.toFixed(2):v]))})));
  console.log('\nBASELINE ridge1 / constructorEWMA1',summary.find(x=>x.driverRidgeWeight===1&&x.constructorEwmaWeight===1));
  console.log('\nCURRENT ONE-GP CALIBRATED BLEND 0.5/0.5',summary.find(x=>x.driverRidgeWeight===.5&&x.constructorEwmaWeight===.5));
 }
