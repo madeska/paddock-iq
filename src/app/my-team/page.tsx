@@ -201,20 +201,22 @@ function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
   const assets=current as TeamViewAsset[];
   const price=assets.reduce((s,a)=>s+Number(a.price??0),0);
   const expectedDelta=assets.reduce((s,a)=>s+Number(a.expectedDelta??0),0);
-  const currentBoost=assets.find(a=>a.type==='DRIVER'&&a.isDoubled)??null;
+  const drivers=assets.filter(a=>a.type==='DRIVER');
+  const optimalBoost=drivers.length
+    ? drivers.reduce((best,a)=>Number(a.boostExpectedPoints??a.expectedPoints??-Infinity)>Number(best.boostExpectedPoints??best.expectedPoints??-Infinity)?a:best)
+    : null;
   let expectedPoints=0;
   if(horizon){
     const steps=Math.min(3,...assets.map(a=>Array.isArray(a.horizonPoints)?a.horizonPoints.length:0));
     for(let step=0;step<steps;step++){
       expectedPoints+=assets.reduce((s,a)=>s+Number(a.horizonPoints?.[step]??0),0);
-      const drivers=assets.filter(a=>a.type==='DRIVER');
-      const boost=step===0&&currentBoost?currentBoost:(drivers.length?drivers.reduce((best,a)=>Number(a.horizonPoints?.[step]??-Infinity)>Number(best.horizonPoints?.[step]??-Infinity)?a:best):null);
+      const boost=drivers.length?drivers.reduce((best,a)=>Number(a.horizonPoints?.[step]??-Infinity)>Number(best.horizonPoints?.[step]??-Infinity)?a:best):null;
       expectedPoints+=Number(boost?.horizonPoints?.[step]??0);
     }
   }else{
-    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0)+Number(currentBoost?.boostExpectedPoints??currentBoost?.expectedPoints??0);
+    expectedPoints=assets.reduce((s,a)=>s+Number(a.expectedPoints??0),0)+Number(optimalBoost?.boostExpectedPoints??optimalBoost?.expectedPoints??0);
   }
-  return {assets,boost:currentBoost?.code??null,price,expectedDelta,expectedPoints,penalty:0};
+  return {assets,boost:optimalBoost?.code??null,price,expectedDelta,expectedPoints,penalty:0};
 }
 
 export default function MyTeam() {
