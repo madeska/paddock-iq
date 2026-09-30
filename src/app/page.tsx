@@ -119,7 +119,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
 
 function builderScore(points:number,valueDelta:number,mode:BuilderMode,weight:number){
  if(mode==='points'||mode==='horizon')return points;
- const w=mode==='budget'?.2:mode==='balanced'?.6:Math.max(0,Math.min(1,weight));
+ const w=mode==='budget'?.3:mode==='balanced'?.7:Math.max(0,Math.min(1,weight));
  return w*(points/20)+(1-w)*valueDelta;
 }
 
