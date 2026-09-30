@@ -5,6 +5,8 @@ import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
+const DRIVER_RIDGE_WEIGHT=.5;
+const CONSTRUCTOR_EWMA_WEIGHT=.5;
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 const sampleStdDev=(xs:number[])=>{
@@ -20,7 +22,10 @@ const ewmaChronological=(scores:number[])=>{
 };
 const constructorXPts=(scoresChronological:number[])=>{
  const e=ewmaChronological(scoresChronological);
- return e==null?null:Math.max(-5,e);
+ if(e==null)return null;
+ const recent=scoresChronological.slice(-3);
+ const mean3=mean(recent);
+ return Math.max(-5,CONSTRUCTOR_EWMA_WEIGHT*e+(1-CONSTRUCTOR_EWMA_WEIGHT)*mean3);
 };
 
 function solve(A:number[][],b:number[]){
@@ -116,9 +121,12 @@ export async function POST(request:NextRequest){
    let rawXPts:number|null=null;
    let practicePosition:number|null=null;
    if(asset.type==='DRIVER'){
-    rawXPts=driverModel?driverModel.predict(features(chronological,current)):null;
+    const e=ewmaChronological(chronological);
+    const ridge=driverModel?driverModel.predict(features(chronological,current)):null;
+    rawXPts=ridge!=null&&e!=null
+     ?DRIVER_RIDGE_WEIGHT*ridge+(1-DRIVER_RIDGE_WEIGHT)*e
+     :null;
     if(rawXPts==null){
-     const e=ewmaChronological(chronological);
      rawXPts=e==null?null:.7*e+.3*mean(chronological);
     }
     practicePosition=practiceSnapshot?.isSprint?null:(practiceSnapshot?.positions.get(asset.code)??null);
@@ -149,9 +157,9 @@ export async function POST(request:NextRequest){
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const modelVersion=asset.type==='DRIVER'
     ?(practicePosition!=null
-      ?'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware'
-      :'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware')
-    :'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware';
+      ?'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware'
+      :'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware')
+    :'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware';
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
@@ -167,9 +175,9 @@ export async function POST(request:NextRequest){
     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
     source:asset.type==='DRIVER'
      ?(practicePosition!=null
-       ?'Ridge3 xPts + validated normal-GP Practice position modifier from '+practiceSnapshot?.sessionName+' + validated rolling-3 PPM price model'
-       :'Walk-forward ridge(50) using EWMA, season mean and current price + validated rolling-3 PPM price model')
-     :'Official F1 Fantasy constructor hybrid xPts + validated rolling-3 PPM price model',
+       ?'50/50 blend of ridge(50) xPts and EWMA(0.25) + validated normal-GP Practice position modifier from '+practiceSnapshot?.sessionName+' + validated rolling-3 PPM price model'
+       :'50/50 blend of walk-forward ridge(50) and EWMA(0.25) xPts + validated rolling-3 PPM price model')
+     :'50/50 blend of EWMA(0.25) and recent-3 mean constructor xPts + validated rolling-3 PPM price model',
     modelVersion
    }});
 
@@ -179,13 +187,13 @@ export async function POST(request:NextRequest){
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
   return NextResponse.json({
    ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,
-   driverModel:'ridge lambda=50: ewma025, seasonMean, currentPrice; normal-GP Practice modifier 0.5*(11.5-position) when available',
+   driverModel:'50% ridge(lambda=50: ewma025, seasonMean, currentPrice) + 50% EWMA(0.25); normal-GP Practice modifier 0.5*(11.5-position) when available',
    practiceSnapshot:practiceSnapshot?{
     sessionName:practiceSnapshot.sessionName,
     isSprint:practiceSnapshot.isSprint,
     drivers:practiceSnapshot.positions.size
    }:null,
-   constructorModel:'max(-5, EWMA(0.25))',
+   constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
    driverTrainingRows:driverTraining.length,
    predictions:created
   });
