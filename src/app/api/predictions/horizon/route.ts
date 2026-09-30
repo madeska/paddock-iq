@@ -5,6 +5,7 @@ import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
+const HORIZON_DRIVER_RIDGE_WEIGHT=.25;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
 const HORIZON_ERROR={
@@ -93,9 +94,16 @@ export async function GET(request:NextRequest){
 
    for(let step=0;step<length;step++){
     const round=startRound+step;
-    let raw=asset.type==='DRIVER'
-      ?(driverModel?.predict(features(projectedHistory,projectedPrice))??null)
-      :constructorXPts(projectedHistory);
+    let raw:number|null=null;
+    if(asset.type==='DRIVER'){
+      const ridge=driverModel?.predict(features(projectedHistory,projectedPrice))??null;
+      const e=ewma(projectedHistory);
+      raw=ridge!=null
+        ?HORIZON_DRIVER_RIDGE_WEIGHT*ridge+(1-HORIZON_DRIVER_RIDGE_WEIGHT)*e
+        :e;
+    }else{
+      raw=constructorXPts(projectedHistory);
+    }
     if(raw==null)break;
     if(step===0&&asset.type==='DRIVER'&&practiceSnapshot&&!practiceSnapshot.isSprint){
       const position=practiceSnapshot.positions.get(asset.code);
@@ -135,13 +143,13 @@ export async function GET(request:NextRequest){
 
   return NextResponse.json({
    season,startRound,length,
-   model:'sprint-aware-horizon-v1',
-   driverModel:'ridge50 using EWMA, season mean and price; current normal GP may include validated Practice-position modifier; recursive history/price + validated Sprint correction',
+   model:'sprint-aware-horizon-v2',
+   driverModel:'25% ridge(lambda=50: EWMA, season mean, price) + 75% EWMA(0.25); current normal GP may include validated Practice-position modifier; recursive history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
    horizonErrorCalibration:HORIZON_ERROR,
    practiceSnapshot:practiceSnapshot?{sessionName:practiceSnapshot.sessionName,isSprint:practiceSnapshot.isSprint,drivers:practiceSnapshot.positions.size}:null,
-   caveat:'Current normal GP can use the validated pre-lock Practice-position modifier when OpenF1 data is available. Sprint weekends stay on ridge3 for this modifier. Sprint-format correction is still applied to known Sprint rounds. Circuit, weather, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
+   caveat:'Current normal GP can use the validated pre-lock Practice-position modifier when OpenF1 data is available. Sprint weekends keep the base horizon blend for this modifier. Sprint-format correction is applied to known Sprint rounds. Circuit, weather, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
    assets:result
   });
  }catch(error){
