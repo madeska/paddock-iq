@@ -145,6 +145,58 @@ function buildTeamView(current:any[],market:any[],scenario:any,horizon:boolean):
   return {assets,boost:scenario?.recommendedBoost??null,price,expectedDelta,expectedPoints:expectedPoints-penalty,penalty};
 }
 
+function myTeamPairwiseRate(mode:Mode|'horizon',scoreGap:number){
+  if(mode==='custom'||mode==='horizon')return null;
+  const rates=mode==='points'
+    ? [0.509,0.616,0.694]
+    : mode==='balanced'
+      ? [0.540,0.676,0.733]
+      : [0.540,0.666,0.735];
+  return rates[scoreGap<0.15?0:scoreGap<0.35?1:2];
+}
+
+function myTeamConfidenceLabel(value:number):'HIGH'|'MEDIUM'|'LOW'{
+  return value>=.68?'HIGH':value>=.60?'MEDIUM':'LOW';
+}
+
+function scenarioAssetDifference(a:any,b:any){
+  const ac=new Set((a.teamView?.assets??[]).map((x:any)=>x.code));
+  const bc=new Set((b.teamView?.assets??[]).map((x:any)=>x.code));
+  let diff=0;
+  for(const code of ac)if(!bc.has(code))diff++;
+  for(const code of bc)if(!ac.has(code))diff++;
+  return diff/2;
+}
+
+function diversifyScenarios(scenarios:any[],minAssetChanges:number,limit=25){
+  if(minAssetChanges<=0)return scenarios.slice(0,limit);
+  const selected:any[]=[];
+  for(const scenario of scenarios){
+    if(selected.every(existing=>scenarioAssetDifference(scenario,existing)>=minAssetChanges))selected.push(scenario);
+    if(selected.length>=limit)break;
+  }
+  return selected;
+}
+
+function calibrateScenarioConfidence(scenarios:any[],mode:Mode|'horizon'){
+  const raw=scenarios.map((scenario,index)=>{
+    if(mode==='custom'||mode==='horizon')return {...scenario,teamConfidence:null,teamConfidenceLabel:null};
+    const lower=scenarios.slice(index+1);
+    if(!lower.length)return {...scenario,teamConfidence:null,teamConfidenceLabel:null};
+    const rates=lower
+      .map(other=>myTeamPairwiseRate(mode,Math.max(0,Number(scenario.score??0)-Number(other.score??0))))
+      .filter((value):value is number=>value!=null);
+    const teamConfidence=rates.reduce((s,x)=>s+x,0)/rates.length;
+    return {...scenario,teamConfidence,teamConfidenceLabel:myTeamConfidenceLabel(teamConfidence)};
+  });
+  let ceiling=1;
+  return raw.map(scenario=>{
+    if(scenario.teamConfidence==null)return scenario;
+    ceiling=Math.min(ceiling,scenario.teamConfidence);
+    return {...scenario,teamConfidence:ceiling,teamConfidenceLabel:myTeamConfidenceLabel(ceiling)};
+  });
+}
+
 function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
   const assets=current as TeamViewAsset[];
   const price=assets.reduce((s,a)=>s+Number(a.price??0),0);
@@ -176,6 +228,7 @@ export default function MyTeam() {
   const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
   const [focusedScenario, setFocusedScenario] = useState<string | null>(null);
   const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
+  const [teamDiversity, setTeamDiversity] = useState<0|1|2>(2);
   const [currentTeamView, setCurrentTeamView] = useState<TeamView | null>(null);
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'XPTS'|'DELTA'>('XPTS');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
@@ -253,17 +306,21 @@ export default function MyTeam() {
     }
   }
 
-  const visibleRecs = recs.filter((scenario:any) => {
-    if (scenario.transfers === 0) return true;
-    if (confidenceFilter === 'ALL') return true;
-    if (confidenceFilter === 'HIGH') return scenario.transferConfidence === 'HIGH';
-    return scenario.transferConfidence === 'HIGH' || scenario.transferConfidence === 'MEDIUM';
-  });
   const ownedCodes = new Set(currentTeamView?.assets.map((asset) => asset.code) ?? []);
-  const keepScenario = visibleRecs.find((scenario:any) => scenario.transfers === 0);
+  const keepScenario = recs.find((scenario:any) => scenario.transfers === 0);
   const keepScenarioKey = keepScenario ? scenarioKey(keepScenario) : null;
-  const possibleTeamRows = visibleRecs
+  const optimizerRanked = recs
     .filter((scenario:any) => scenario.transfers > 0)
+    .sort((a:any,b:any) => Number(b.score??-Infinity)-Number(a.score??-Infinity));
+  const diversifiedScenarios = diversifyScenarios(optimizerRanked,teamDiversity,25);
+  const calibratedScenarios = calibrateScenarioConfidence(diversifiedScenarios,mode);
+  const confidenceFilteredScenarios = calibratedScenarios.filter((scenario:any) => {
+    if (confidenceFilter === 'ALL' || mode === 'custom' || mode === 'horizon') return true;
+    if (confidenceFilter === 'HIGH') return scenario.teamConfidenceLabel === 'HIGH';
+    return scenario.teamConfidenceLabel === 'HIGH' || scenario.teamConfidenceLabel === 'MEDIUM';
+  });
+  const visibleRecs = keepScenario ? [keepScenario,...confidenceFilteredScenarios] : confidenceFilteredScenarios;
+  const possibleTeamRows = [...confidenceFilteredScenarios]
     .sort((a:any,b:any) => {
       const av = possibleTeamsSort === 'XPTS' ? Number(a.teamView?.expectedPoints ?? -Infinity) : Number(a.teamView?.expectedDelta ?? -Infinity);
       const bv = possibleTeamsSort === 'XPTS' ? Number(b.teamView?.expectedPoints ?? -Infinity) : Number(b.teamView?.expectedDelta ?? -Infinity);
@@ -321,10 +378,15 @@ export default function MyTeam() {
           <button onClick={optimize}>Generate recommendations</button>
           {recs.length > 0 && <>
           <div className={styles.confidenceFilters}>
-            <span>Confidence:</span>
-            <button className={confidenceFilter === 'ALL' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('ALL')}>All</button>
-            <button className={confidenceFilter === 'MEDIUM_PLUS' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
-            <button className={confidenceFilter === 'HIGH' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('HIGH')}>High only</button>
+            <span>Diversity:</span>
+            {([0,1,2] as const).map((value)=><button key={value} className={teamDiversity===value?styles.confidenceFilterActive:''} onClick={()=>setTeamDiversity(value)}>{value===0?'Off':value+' asset'+(value===1?'':'s')}</button>)}
+            {mode!=='custom'&&mode!=='horizon'&&<>
+              <span style={{marginLeft:8}}>Confidence:</span>
+              <button className={confidenceFilter === 'ALL' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('ALL')}>All</button>
+              <button className={confidenceFilter === 'MEDIUM_PLUS' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
+              <button className={confidenceFilter === 'HIGH' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('HIGH')}>High only</button>
+            </>}
+            <span style={{marginLeft:'auto'}}>{mode==='custom'||mode==='horizon'?'Empirical lineup confidence is not calibrated for this mode yet.':'Confidence = average historical pairwise ranking accuracy versus lower-ranked displayed teams.'}</span>
           </div>
           {currentTeamView && <div className={styles.bestTeamsBoard}>
             <div className={styles.bestTeamsTitle}>
@@ -368,7 +430,7 @@ export default function MyTeam() {
                       <td><strong>{tv.price.toFixed(1)}</strong></td>
                       <td className={tv.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{tv.expectedDelta>=0?'+':''}{tv.expectedDelta.toFixed(2)}</td>
                       <td><strong>{tv.expectedPoints.toFixed(1)}</strong>{tv.penalty>0?<small className={styles.teamPenalty}> −{tv.penalty} penalty</small>:null}</td>
-                      <td>{scenario.transferConfidence ? <span className={scenario.transferConfidence === 'HIGH' ? styles.confHigh : scenario.transferConfidence === 'MEDIUM' ? styles.confMedium : styles.confLow} title={scenario.empiricalHitRate != null ? (mode === 'horizon' ? 'Historical hit rate for optimizer-selected 3GP recommendations with similar net gain: ' : 'Historical hit rate: ') + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}>{scenario.transferConfidence}{scenario.empiricalHitRate != null ? ' · ' + Math.round(scenario.empiricalHitRate * 100) + '%' : ''}</span> : '—'}</td>
+                      <td>{scenario.teamConfidenceLabel && scenario.teamConfidence != null ? <span className={scenario.teamConfidenceLabel === 'HIGH' ? styles.confHigh : scenario.teamConfidenceLabel === 'MEDIUM' ? styles.confMedium : styles.confLow} title="Average historical pairwise ranking accuracy versus lower-ranked displayed teams; not a win probability">{scenario.teamConfidenceLabel} · {Math.round(scenario.teamConfidence * 100)}%</span> : '—'}</td>
                     </tr>;
                   })}
                 </tbody>
