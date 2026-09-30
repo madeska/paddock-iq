@@ -142,27 +142,31 @@ function diversifyTeams(teams:BuilderTeam[],minAssetChanges:number,limit=25){
  return selected;
 }
 
-function empiricalTeamConfidence(mode:BuilderMode,scoreGap:number){
- if(mode==='custom'||mode==='horizon')return {confidence:null as number|null,confidenceLabel:null as 'HIGH'|'MEDIUM'|'LOW'|null};
+function empiricalPairwiseRate(mode:BuilderMode,scoreGap:number){
+ if(mode==='custom'||mode==='horizon')return null;
  const utilityGap=mode==='points'?scoreGap/20:scoreGap;
  const rates=mode==='points'
   ? [0.509,0.616,0.694]
   : mode==='balanced'
    ? [0.540,0.676,0.733]
    : [0.540,0.666,0.735];
- const bucket=utilityGap<0.15?0:utilityGap<0.35?1:2;
- return {
-  confidence:rates[bucket],
-  confidenceLabel:(bucket===2?'HIGH':bucket===1?'MEDIUM':'LOW') as 'HIGH'|'MEDIUM'|'LOW'
- };
+ return rates[utilityGap<0.15?0:utilityGap<0.35?1:2];
+}
+
+function confidenceLabel(value:number):'HIGH'|'MEDIUM'|'LOW'{
+ return value>=.68?'HIGH':value>=.60?'MEDIUM':'LOW';
 }
 
 function calibrateTeamConfidence(teams:BuilderTeam[],mode:BuilderMode){
  return teams.map((team,index)=>{
-  const next=teams[index+1];
-  if(!next)return {...team,confidence:null,confidenceLabel:null};
-  const gap=Math.max(0,team.score-next.score);
-  return {...team,...empiricalTeamConfidence(mode,gap)};
+  if(mode==='custom'||mode==='horizon')return {...team,confidence:null,confidenceLabel:null};
+  const lower=teams.slice(index+1);
+  if(!lower.length)return {...team,confidence:null,confidenceLabel:null};
+  const rates=lower
+   .map(other=>empiricalPairwiseRate(mode,Math.max(0,team.score-other.score)))
+   .filter((value):value is number=>value!=null);
+  const confidence=rates.reduce((s,x)=>s+x,0)/rates.length;
+  return {...team,confidence,confidenceLabel:confidenceLabel(confidence)};
  });
 }
 
@@ -391,7 +395,7 @@ export default function Home(){
      <button type="button" className={builderConfidenceFilter==='MEDIUM_PLUS'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
      <button type="button" className={builderConfidenceFilter==='HIGH'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('HIGH')}>High only</button>
     </div>:null}
-    <small>{builderMode==='custom'||builderMode==='horizon'?'Empirical lineup confidence is not calibrated for this mode yet.':'Confidence = historical pairwise ranking accuracy for teams with a similar predicted score gap. It is not a win probability.'}</small>
+    <small>{builderMode==='custom'||builderMode==='horizon'?'Empirical lineup confidence is not calibrated for this mode yet.':'Confidence = average historical pairwise ranking accuracy versus the lower-ranked displayed teams. It is not a win probability.'}</small>
    </div>
 
    {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
@@ -410,7 +414,7 @@ export default function Home(){
        <td><strong>{team.price.toFixed(1)}</strong></td>
        <td className={team.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{team.expectedDelta>=0?'+':''}{team.expectedDelta.toFixed(2)}</td>
        <td><strong>{team.expectedPoints.toFixed(1)}</strong></td>
-       <td>{team.confidenceLabel&&team.confidence!=null?<span className={team.confidenceLabel==='HIGH'?styles.confHigh:team.confidenceLabel==='MEDIUM'?styles.confMedium:styles.confLow} title="Historical pairwise ranking accuracy for teams with a similar predicted score gap; not a win probability">{team.confidenceLabel} · {Math.round(team.confidence*100)}%</span>:'—'}</td>
+       <td>{team.confidenceLabel&&team.confidence!=null?<span className={team.confidenceLabel==='HIGH'?styles.confHigh:team.confidenceLabel==='MEDIUM'?styles.confMedium:styles.confLow} title="Average historical pairwise ranking accuracy versus lower-ranked displayed teams; not a win probability">{team.confidenceLabel} · {Math.round(team.confidence*100)}%</span>:'—'}</td>
       </tr>)}</tbody>
      </table>
     </div>
