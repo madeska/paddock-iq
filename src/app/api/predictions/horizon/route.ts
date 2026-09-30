@@ -5,6 +5,7 @@ import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
+const HORIZON_DRIVER_RIDGE_WEIGHT=.25;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
 const HORIZON_ERROR={
