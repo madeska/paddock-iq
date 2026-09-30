@@ -174,6 +174,7 @@ export default function MyTeam() {
   const [recs, setRecs] = useState<any[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
   const [hoveredScenario, setHoveredScenario] = useState<string | null>(null);
+  const [focusedScenario, setFocusedScenario] = useState<string | null>(null);
   const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
   const [currentTeamView, setCurrentTeamView] = useState<TeamView | null>(null);
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'XPTS'|'DELTA'>('XPTS');
@@ -259,6 +260,8 @@ export default function MyTeam() {
     return scenario.transferConfidence === 'HIGH' || scenario.transferConfidence === 'MEDIUM';
   });
   const ownedCodes = new Set(currentTeamView?.assets.map((asset) => asset.code) ?? []);
+  const keepScenario = visibleRecs.find((scenario:any) => scenario.transfers === 0);
+  const keepScenarioKey = keepScenario ? scenarioKey(keepScenario) : null;
   const possibleTeamRows = visibleRecs
     .filter((scenario:any) => scenario.transfers > 0)
     .sort((a:any,b:any) => {
@@ -340,10 +343,10 @@ export default function MyTeam() {
                   <th>Confidence</th>
                 </tr></thead>
                 <tbody>
-                  <tr className={styles.currentTeamRow}>
+                  <tr id="scenario-current" tabIndex={-1} className={(keepScenarioKey && (hoveredScenario===keepScenarioKey || focusedScenario===keepScenarioKey)) ? `${styles.currentTeamRow} ${styles.bestTeamRowActive}` : styles.currentTeamRow}>
                     <td>—</td>
                     <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}<em className={styles.ownedBadge}>OWN</em>{a.code===currentTeamView.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}<em className={styles.ownedBadge}>OWN</em>{a.code===currentTeamView.boost?<em className={styles.x2Badge} title="Calibrated x2 score">x2 {Number(a.boostExpectedPoints??a.expectedPoints??0).toFixed(1)}</em>:null}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                     <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
                     <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
                     <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
@@ -352,7 +355,7 @@ export default function MyTeam() {
                   {possibleTeamRows.slice(0,25).map((scenario:any,index:number)=>{
                     const tv=scenario.teamView as TeamView;
                     const key=scenarioKey(scenario);
-                    return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>{setHoveredScenario(key);document.getElementById('scenario-'+encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});}}>
+                    return <tr id={'scenario-'+encodeURIComponent(key)} tabIndex={-1} key={key} className={(hoveredScenario===key||focusedScenario===key)?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>setFocusedScenario(key)}>
                       <td><strong>{index+1}</strong></td>
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=>{
@@ -382,13 +385,17 @@ export default function MyTeam() {
             const key = best ? scenarioKey(best) : null;
             return <article
               key={count}
-              className={key && hoveredScenario === key ? styles.summaryCardActive : styles.summaryCard}
+              className={key && (hoveredScenario === key || focusedScenario === key) ? styles.summaryCardActive : styles.summaryCard}
               onMouseEnter={() => key && setHoveredScenario(key)}
               onMouseLeave={() => setHoveredScenario(null)}
               onClick={() => {
                 if (!key) return;
-                setHoveredScenario(key);
-                document.getElementById('scenario-' + encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});
+                setFocusedScenario(key);
+                const target = count === 0
+                  ? document.getElementById('scenario-current')
+                  : document.getElementById('scenario-' + encodeURIComponent(key));
+                target?.focus({preventScroll:true});
+                target?.scrollIntoView({behavior:'smooth',block:'center'});
               }}
             >
               <small>{count} transfer{count === 1 ? '' : 's'}</small>
