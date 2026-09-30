@@ -7,6 +7,7 @@ const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
 const DRIVER_RIDGE_WEIGHT=.5;
 const CONSTRUCTOR_EWMA_WEIGHT=.5;
+const DRIVER_REACTIVATION_ROUND_2026:Record<string,number>={LAW:15,HAD:15};
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 const sampleStdDev=(xs:number[])=>{
@@ -147,7 +148,10 @@ export async function POST(request:NextRequest){
 
    const newest=[...chronological].reverse();
    const trailingConsecutive:number[]=[];
-   for(let r=round-1;r>=Math.max(1,round-2);r--){
+   const activationRound=season===2026&&asset.type==='DRIVER'
+    ?(DRIVER_REACTIVATION_ROUND_2026[asset.code]??1)
+    :1;
+   for(let r=round-1;r>=Math.max(activationRound,round-2);r--){
     const row=scoreRows.find(s=>s.grandPrix.round===r);
     if(!row)break;
     trailingConsecutive.unshift(row.points);
