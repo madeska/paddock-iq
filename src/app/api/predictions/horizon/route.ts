@@ -143,7 +143,7 @@ export async function GET(request:NextRequest){
 
   return NextResponse.json({
    season,startRound,length,
-   model:'sprint-aware-horizon-v1',
+   model:'sprint-aware-horizon-v2',
    driverModel:'ridge50 using EWMA, season mean and price; current normal GP may include validated Practice-position modifier; recursive history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
