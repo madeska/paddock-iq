@@ -58,10 +58,14 @@ function teamBucketProbabilities(asset: Asset) {
 function teamThresholdText(asset: Asset, bucket: number) {
   if (asset.price == null) return '';
   const tierA = asset.price >= 18.5;
-  if (bucket === (tierA ? -.3 : -.6) && asset.requiredPointsAvoidMaxFall != null) return '≤' + asset.requiredPointsAvoidMaxFall.toFixed(0);
-  if (bucket === (tierA ? -.1 : -.2) && asset.requiredPointsSmallRise != null) return '<' + asset.requiredPointsSmallRise.toFixed(0);
-  if (bucket === (tierA ? .1 : .2) && asset.requiredPointsMaxRise != null) return '<' + asset.requiredPointsMaxRise.toFixed(0);
-  if (bucket === (tierA ? .3 : .6) && asset.requiredPointsMaxRise != null) return '≥' + asset.requiredPointsMaxRise.toFixed(0);
+  const t06=asset.requiredPointsAvoidMaxFall;
+  const t09=asset.requiredPointsSmallRise;
+  const t12=asset.requiredPointsMaxRise;
+  const min=(v:number)=>Math.ceil(v-1e-9);
+  if (bucket === (tierA ? -.3 : -.6) && t06 != null) return '≤' + (min(t06)-1);
+  if (bucket === (tierA ? -.1 : -.2) && t06 != null && t09 != null) return min(t06) + '–' + (min(t09)-1);
+  if (bucket === (tierA ? .1 : .2) && t09 != null && t12 != null) return min(t09) + '–' + (min(t12)-1);
+  if (bucket === (tierA ? .3 : .6) && t12 != null) return '≥' + min(t12);
   return '';
 }
 

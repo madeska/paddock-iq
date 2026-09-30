@@ -1,5 +1,5 @@
 export type PriceTier='A'|'B';
-export type PriceProbabilityInput={currentPrice:number;previousFantasyPoints:[number,number];expectedPoints:number;pointsStdDev?:number};
+export type PriceProbabilityInput={currentPrice:number;previousFantasyPoints:number[];expectedPoints:number;pointsStdDev?:number};
 export type PriceProbability={
  tier:PriceTier;
  expectedDelta:number;
@@ -13,8 +13,11 @@ const erf=(x:number)=>{const s=x<0?-1:1,a=Math.abs(x),t=1/(1+.3275911*a);return 
 const cdf=(x:number,mu:number,sd:number)=>.5*(1+erf((x-mu)/(sd*Math.sqrt(2))));
 const round=(n:number,d=3)=>Math.round(n*10**d)/10**d;
 export function predictFantasyPrice(i:PriceProbabilityInput):PriceProbability{
- const tier:PriceTier=i.currentPrice>=18.5?'A':'B', [p1,p2]=i.previousFantasyPoints, sum=p1+p2;
- const threshold=(ppm:number)=>3*i.currentPrice*ppm-sum;
+ const tier:PriceTier=i.currentPrice>=18.5?'A':'B';
+ const previous=i.previousFantasyPoints.slice(-2);
+ const sum=previous.reduce((s,x)=>s+x,0);
+ const windowSize=previous.length+1;
+ const threshold=(ppm:number)=>windowSize*i.currentPrice*ppm-sum;
  const t06=threshold(.6),t09=threshold(.9),t12=threshold(1.2);
  const sd=Math.max(4,i.pointsStdDev??Math.max(6,Math.abs(i.expectedPoints)*.35));
  const raw={
