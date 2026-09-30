@@ -38,7 +38,8 @@
     "fantasy:backtest-team-builder-weights": "tsx scripts/backtest-team-builder-weights.ts",
     "fantasy:backtest-generated-teams": "tsx scripts/backtest-generated-teams.ts",
     "fantasy:backtest-risk-adjusted-teams": "tsx scripts/backtest-risk-adjusted-team-ranking.ts",
-    "fantasy:backtest-team-xpts-blends": "tsx scripts/backtest-team-xpts-blends.ts"
+    "fantasy:backtest-team-xpts-blends": "tsx scripts/backtest-team-xpts-blends.ts",
+    "fantasy:backtest-horizon-blend-grid": "tsx scripts/backtest-horizon-blend-grid.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
