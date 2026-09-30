@@ -2,7 +2,7 @@ export type Asset = {code:string; type:'DRIVER'|'CONSTRUCTOR'; price:number; exp
 export type Mode = 'points'|'balanced'|'budget'|'custom';
 export type Proposal = {out:string; incoming:string; projectedPointsGain:number; projectedValueGain:number; penalty:number; netPointsGain:number; score:number};
 export function scoreProposal(pointsGain:number,valueGain:number,mode:Mode,customPointsWeight=0.6){
- const w=mode==='points'?1:mode==='budget'?0.2:mode==='balanced'?0.6:Math.max(0,Math.min(1,customPointsWeight));
+ const w=mode==='points'?1:mode==='budget'?0.3:mode==='balanced'?0.7:Math.max(0,Math.min(1,customPointsWeight));
  // Explicit reference scales: 20 fantasy points and $1m, not raw unit addition.
  return w*(pointsGain/20)+(1-w)*(valueGain/1);
 }
