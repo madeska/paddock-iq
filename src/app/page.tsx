@@ -6,7 +6,7 @@ import styles from './market-dashboard.module.css';
 type Score={round:number;points:number;name:string};
 type MarketAsset={
  code:string;name:string;type:'DRIVER'|'CONSTRUCTOR';price:number|null;
- expectedPoints:number|null;expectedDelta:number|null;horizonPoints?:number[];
+ expectedPoints:number|null;boostExpectedPoints?:number|null;expectedDelta:number|null;horizonPoints?:number[];
  probabilityRise:number|null;probabilityFlat:number|null;probabilityFall:number|null;
  probabilityMaxRise:number|null;probabilitySmallRise:number|null;
  probabilitySmallFall:number|null;probabilityMaxFall:number|null;
@@ -24,6 +24,7 @@ type BuilderTeam={
  drivers:MarketAsset[];
  constructors:MarketAsset[];
  boost:string;
+ boostPoints:number;
  price:number;
  expectedPoints:number;
  expectedDelta:number;
@@ -156,22 +157,24 @@ function generateBudgetTeams(
 
        let expectedPoints=0;
        let boost=driverFive[0];
+       let boostPoints=Number(driverFive[0].boostExpectedPoints??driverFive[0].expectedPoints??0);
        if(mode==='horizon'){
         const all=[...constructorPair,...driverFive];
         for(let step=0;step<3;step++){
          expectedPoints+=all.reduce((s,x)=>s+Number(x.horizonPoints?.[step]??0),0);
          const best=driverFive.reduce((cur,x)=>Number(x.horizonPoints?.[step]??-Infinity)>Number(cur.horizonPoints?.[step]??-Infinity)?x:cur);
          expectedPoints+=Number(best.horizonPoints?.[step]??0);
-         if(step===0)boost=best;
+         if(step===0){boost=best;boostPoints=Number(best.horizonPoints?.[step]??0)}
         }
        }else{
-        boost=driverFive.reduce((best,x)=>(x.expectedPoints??-Infinity)>(best.expectedPoints??-Infinity)?x:best);
-        expectedPoints=constructorPair.reduce((s,x)=>s+(x.expectedPoints??0),0)+driverFive.reduce((s,x)=>s+(x.expectedPoints??0),0)+(boost.expectedPoints??0);
+        boost=driverFive.reduce((best,x)=>Number(x.boostExpectedPoints??x.expectedPoints??-Infinity)>Number(best.boostExpectedPoints??best.expectedPoints??-Infinity)?x:best);
+        boostPoints=Number(boost.boostExpectedPoints??boost.expectedPoints??0);
+        expectedPoints=constructorPair.reduce((s,x)=>s+(x.expectedPoints??0),0)+driverFive.reduce((s,x)=>s+(x.expectedPoints??0),0)+boostPoints;
        }
 
        const expectedDelta=[...constructorPair,...driverFive].reduce((s,x)=>s+(x.expectedDelta??0),0);
        const score=builderScore(expectedPoints,expectedDelta,mode,customWeight);
-       teams.push({drivers:driverFive,constructors:constructorPair,boost:boost.code,price,expectedPoints,expectedDelta,score});
+       teams.push({drivers:driverFive,constructors:constructorPair,boost:boost.code,boostPoints,price,expectedPoints,expectedDelta,score});
       }
  }
 
@@ -331,7 +334,7 @@ export default function Home(){
       <tbody>{visibleBuilderTeams.slice(0,25).map((team,index)=><tr key={team.constructors.map(a=>a.code).join('-')+'-'+team.drivers.map(a=>a.code).join('-')}>
        <td><strong>{index+1}</strong></td>
        <td><div className={styles.teamAssetGroup}>{team.constructors.map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as React.CSSProperties}><b>{a.code}</b><small>{(builderMode==='horizon'?Number(a.horizonPoints?.[0]??0):Number(a.expectedPoints??0)).toFixed(1)} xPts · &#36;{Number(a.price??0).toFixed(1)} · {(Number(a.expectedDelta??0)>=0?'+':'')+Number(a.expectedDelta??0).toFixed(2)}</small></span>)}</div></td>
-       <td><div className={styles.teamAssetGroup}>{team.drivers.map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as React.CSSProperties}><b>{a.code}{a.code===team.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{(builderMode==='horizon'?Number(a.horizonPoints?.[0]??0):Number(a.expectedPoints??0)).toFixed(1)} xPts · &#36;{Number(a.price??0).toFixed(1)} · {(Number(a.expectedDelta??0)>=0?'+':'')+Number(a.expectedDelta??0).toFixed(2)}</small></span>)}</div></td>
+       <td><div className={styles.teamAssetGroup}>{team.drivers.map(a=><span key={a.code} className={styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as React.CSSProperties}><b>{a.code}{a.code===team.boost?<em className={styles.x2Badge} title={'Calibrated x2 score: '+team.boostPoints.toFixed(1)}>x2 {team.boostPoints.toFixed(1)}</em>:null}</b><small>{(builderMode==='horizon'?Number(a.horizonPoints?.[0]??0):Number(a.expectedPoints??0)).toFixed(1)} xPts · &#36;{Number(a.price??0).toFixed(1)} · {(Number(a.expectedDelta??0)>=0?'+':'')+Number(a.expectedDelta??0).toFixed(2)}</small></span>)}</div></td>
        <td><strong>{team.price.toFixed(1)}</strong></td>
        <td className={team.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{team.expectedDelta>=0?'+':''}{team.expectedDelta.toFixed(2)}</td>
        <td><strong>{team.expectedPoints.toFixed(1)}</strong></td>

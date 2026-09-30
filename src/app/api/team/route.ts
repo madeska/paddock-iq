@@ -1,6 +1,17 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
 
+const MAIN_MODELS=[
+ 'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
+ 'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
+ 'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
+ 'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware',
+ 'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware',
+ 'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware',
+];
+const BOOST_MODELS=['xpts-driver-ridge50-boost-practice-v1','xpts-driver-ridge50-boost-v1'];
+const CURRENT_MODELS=[...MAIN_MODELS,...BOOST_MODELS];
+
 export async function GET(request:NextRequest){
  const email=request.nextUrl.searchParams.get('email')?.trim().toLowerCase();
  const season=Number(request.nextUrl.searchParams.get('season')??2026);
@@ -25,7 +36,7 @@ export async function GET(request:NextRequest){
    grandPrix:true,
    slots:{include:{asset:{include:{
     prices:targetGp?{where:{grandPrixId:targetGp.id},orderBy:{recordedAt:'desc'},take:1}:{orderBy:{recordedAt:'desc'},take:1},
-    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:{in:['xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware','xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware','xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware']}},orderBy:{createdAt:'desc'},take:1}:{orderBy:{createdAt:'desc'},take:1},
+    predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:{in:CURRENT_MODELS}},orderBy:{createdAt:'desc'}}:{orderBy:{createdAt:'desc'}},
     fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}
@@ -43,7 +54,10 @@ export async function GET(request:NextRequest){
    cashBalance:snapshot.cashBalance===null?null:Number(snapshot.cashBalance),
    freeTransfers:snapshot.freeTransfers,totalPoints:snapshot.totalPoints,
    assets:snapshot.slots.map(s=>{
-    const p=s.asset.predictions[0];
+    const p=s.asset.predictions.find(pred=>MAIN_MODELS.includes(pred.modelVersion))??s.asset.predictions[0]??null;
+    const boost=s.asset.type==='DRIVER'
+      ?(s.asset.predictions.find(pred=>BOOST_MODELS.includes(pred.modelVersion))??null)
+      :null;
     const currentRound=targetGp?.round??snapshot.grandPrix.round;
     const history=s.asset.fantasyScores.filter(x=>x.grandPrix.round<currentRound).slice(0,2);
     const probs=p?[p.probabilityMaxRise,p.probabilitySmallRise,p.probabilitySmallFall,p.probabilityMaxFall,p.probabilityFlat]:[null,null,null,null,null];
@@ -57,7 +71,7 @@ export async function GET(request:NextRequest){
     return {
      code:s.asset.code,name:s.asset.name,type:s.asset.type,isDoubled:s.isDoubled,
      price:s.asset.prices[0]?Number(s.asset.prices[0].price):null,
-     expectedPoints:p?.expectedPoints??null,expectedDelta:p?.expectedPriceDelta??null,modelVersion:p?.modelVersion??null,
+     expectedPoints:p?.expectedPoints??null,boostExpectedPoints:boost?.expectedPoints??p?.expectedPoints??null,expectedDelta:p?.expectedPriceDelta??null,modelVersion:p?.modelVersion??null,
      probabilityMaxRise:p?.probabilityMaxRise??null,probabilitySmallRise:p?.probabilitySmallRise??null,
      probabilitySmallFall:p?.probabilitySmallFall??null,probabilityMaxFall:p?.probabilityMaxFall??null,probabilityFlat:p?.probabilityFlat??null,
      requiredPointsMaxRise:p?.requiredPointsMaxRise??null,requiredPointsSmallRise:p?.requiredPointsSmallRise??null,
