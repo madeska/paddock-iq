@@ -358,7 +358,7 @@ export default function MyTeam() {
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=>{
                         const owned=ownedCodes.has(a.code);
                         return <span key={a.code} className={owned?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}>
-                          <b>{a.code}{owned?<em className={styles.ownedBadge}>OWN</em>:null}{a.code===tv.boost?<em className={styles.x2Badge}>x2</em>:null}</b>
+                          <b>{a.code}{owned?<em className={styles.ownedBadge}>OWN</em>:null}{a.code===tv.boost?<em className={styles.x2Badge} title="Calibrated x2 score">x2 {Number(a.boostExpectedPoints??a.expectedPoints??0).toFixed(1)}</em>:null}</b>
                           <small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small>
                         </span>;
                       })}</div></td>
