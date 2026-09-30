@@ -37,7 +37,8 @@
     "fantasy:backtest-ci": "npm run fantasy:backtest-horizon-package-edge && npm run fantasy:backtest-recommendations && npm run fantasy:backtest-team-builder-weights && npm run fantasy:backtest-generated-teams && npm run fantasy:backtest-risk-adjusted-teams",
     "fantasy:backtest-team-builder-weights": "tsx scripts/backtest-team-builder-weights.ts",
     "fantasy:backtest-generated-teams": "tsx scripts/backtest-generated-teams.ts",
-    "fantasy:backtest-risk-adjusted-teams": "tsx scripts/backtest-risk-adjusted-team-ranking.ts"
+    "fantasy:backtest-risk-adjusted-teams": "tsx scripts/backtest-risk-adjusted-team-ranking.ts",
+    "fantasy:backtest-team-xpts-blends": "tsx scripts/backtest-team-xpts-blends.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
