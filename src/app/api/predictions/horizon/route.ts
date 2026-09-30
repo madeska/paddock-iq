@@ -9,8 +9,8 @@ const HORIZON_DRIVER_RIDGE_WEIGHT=.25;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
 const HORIZON_ERROR={
- DRIVER:[{mae:12.15,rmse:16.35},{mae:11.48,rmse:15.78},{mae:11.87,rmse:15.80}],
- CONSTRUCTOR:[{mae:17.31,rmse:21.29},{mae:17.20,rmse:21.29},{mae:18.01,rmse:22.24}]
+ DRIVER:[{mae:10.64,rmse:14.50},{mae:10.40,rmse:14.28},{mae:11.35,rmse:15.20}],
+ CONSTRUCTOR:[{mae:16.49,rmse:20.78},{mae:16.77,rmse:20.75},{mae:17.90,rmse:22.40}]
 } as const;
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
