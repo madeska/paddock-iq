@@ -343,7 +343,7 @@ export default function MyTeam() {
                   <tr className={styles.currentTeamRow}>
                     <td>—</td>
                     <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
-                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}<em className={styles.ownedBadge}>OWN</em>{a.code===currentTeamView.boost?<em className={styles.x2Badge}>x2</em>:null}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
+                    <td><div className={styles.teamAssetGroup}>{currentTeamView.assets.filter(a=>a.type==='DRIVER').map(a=><span key={a.code} className={styles.teamAssetChipOwned} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}<em className={styles.ownedBadge}>OWN</em>{a.code===currentTeamView.boost?<em className={styles.x2Badge} title="Calibrated x2 score">x2 {Number(a.boostExpectedPoints??a.expectedPoints??0).toFixed(1)}</em>:null}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                     <td><strong>{currentTeamView.price.toFixed(1)}</strong></td>
                     <td className={currentTeamView.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{currentTeamView.expectedDelta>=0?'+':''}{currentTeamView.expectedDelta.toFixed(2)}</td>
                     <td><strong>{currentTeamView.expectedPoints.toFixed(1)}</strong></td>
@@ -352,7 +352,7 @@ export default function MyTeam() {
                   {possibleTeamRows.slice(0,25).map((scenario:any,index:number)=>{
                     const tv=scenario.teamView as TeamView;
                     const key=scenarioKey(scenario);
-                    return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>{setHoveredScenario(key);document.getElementById('scenario-'+encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});}}>
+                    return <tr key={key} className={hoveredScenario===key?styles.bestTeamRowActive:styles.bestTeamRow} onMouseEnter={()=>setHoveredScenario(key)} onMouseLeave={()=>setHoveredScenario(null)} onClick={()=>setHoveredScenario(key)}>
                       <td><strong>{index+1}</strong></td>
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='CONSTRUCTOR').map(a=><span key={a.code} className={ownedCodes.has(a.code)?styles.teamAssetChipOwned:styles.teamAssetChip} style={{'--accent':accents[a.code]??'#64748b'} as CSSProperties}><b>{a.code}</b><small>{(mode === 'horizon' ? Number(a.horizonPoints?.[0]??0).toFixed(1) : Number(a.expectedPoints??0).toFixed(1))} xPts · ${a.price.toFixed(1)} · {(a.expectedDelta>=0?'+':'')+a.expectedDelta.toFixed(2)}</small></span>)}</div></td>
                       <td><div className={styles.teamAssetGroup}>{tv.assets.filter(a=>a.type==='DRIVER').map(a=>{
@@ -388,7 +388,6 @@ export default function MyTeam() {
               onClick={() => {
                 if (!key) return;
                 setHoveredScenario(key);
-                document.getElementById('scenario-' + encodeURIComponent(key))?.scrollIntoView({behavior:'smooth',block:'center'});
               }}
             >
               <small>{count} transfer{count === 1 ? '' : 's'}</small>
