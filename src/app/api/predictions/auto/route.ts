@@ -119,6 +119,7 @@ export async function POST(request:NextRequest){
    if(!chronological.length)continue;
 
    let rawXPts:number|null=null;
+   let boostXPts:number|null=null;
    let practicePosition:number|null=null;
    if(asset.type==='DRIVER'){
     const e=ewmaChronological(chronological);
@@ -126,12 +127,16 @@ export async function POST(request:NextRequest){
     rawXPts=ridge!=null&&e!=null
      ?DRIVER_RIDGE_WEIGHT*ridge+(1-DRIVER_RIDGE_WEIGHT)*e
      :null;
+    boostXPts=ridge;
     if(rawXPts==null){
      rawXPts=e==null?null:.7*e+.3*mean(chronological);
     }
     practicePosition=practiceSnapshot?.isSprint?null:(practiceSnapshot?.positions.get(asset.code)??null);
     if(rawXPts!=null&&practicePosition!=null){
       rawXPts=applyPracticePositionModifier(rawXPts,practicePosition);
+    }
+    if(boostXPts!=null&&practicePosition!=null){
+      boostXPts=applyPracticePositionModifier(boostXPts,practicePosition);
     }
    }else{
     rawXPts=constructorXPts(chronological);
@@ -182,6 +187,22 @@ export async function POST(request:NextRequest){
    }});
 
    created.push({code:asset.code,type:asset.type,expectedPoints:pts,expectedDelta:price?.expectedDelta??null,modelVersion,id:row.id});
+
+   if(asset.type==='DRIVER'&&boostXPts!=null){
+    const boostPts=Math.round(boostXPts*10)/10;
+    await prisma.assetPrediction.create({data:{
+     assetId:asset.id,
+     grandPrixId:gp.id,
+     expectedPoints:boostPts,
+     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
+     source:practicePosition!=null
+      ?'Pure ridge(lambda=50) x2 selector + validated normal-GP Practice position modifier from '+practiceSnapshot?.sessionName
+      :'Pure walk-forward ridge(lambda=50) x2 selector',
+     modelVersion:practicePosition!=null
+      ?'xpts-driver-ridge50-boost-practice-v1'
+      :'xpts-driver-ridge50-boost-v1'
+    }});
+   }
   }
 
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
