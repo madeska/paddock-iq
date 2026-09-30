@@ -280,7 +280,7 @@ export default function Home(){
    </div>
    <div className={styles.modelCard}>
     <small>Current models</small>
-    <strong>Driver ridge50 · Constructor hybrid</strong>
+    <strong>Driver 50/50 ridge+EWMA · Constructor 50/50 EWMA+mean3</strong>
     <span>Price model v0.3 · floor-aware</span>
    </div>
   </header>
