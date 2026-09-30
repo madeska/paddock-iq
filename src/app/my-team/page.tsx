@@ -230,7 +230,7 @@ export default function MyTeam() {
   const [confidenceFilter, setConfidenceFilter] = useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
   const [teamDiversity, setTeamDiversity] = useState<0|1|2>(2);
   const [currentTeamView, setCurrentTeamView] = useState<TeamView | null>(null);
-  const [possibleTeamsSort, setPossibleTeamsSort] = useState<'XPTS'|'DELTA'>('XPTS');
+  const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
   async function load() {
@@ -322,8 +322,8 @@ export default function MyTeam() {
   const visibleRecs = keepScenario ? [keepScenario,...confidenceFilteredScenarios] : confidenceFilteredScenarios;
   const possibleTeamRows = [...confidenceFilteredScenarios]
     .sort((a:any,b:any) => {
-      const av = possibleTeamsSort === 'XPTS' ? Number(a.teamView?.expectedPoints ?? -Infinity) : Number(a.teamView?.expectedDelta ?? -Infinity);
-      const bv = possibleTeamsSort === 'XPTS' ? Number(b.teamView?.expectedPoints ?? -Infinity) : Number(b.teamView?.expectedDelta ?? -Infinity);
+      const av = possibleTeamsSort === 'SCORE' ? Number(a.score ?? -Infinity) : possibleTeamsSort === 'XPTS' ? Number(a.teamView?.expectedPoints ?? -Infinity) : Number(a.teamView?.expectedDelta ?? -Infinity);
+      const bv = possibleTeamsSort === 'SCORE' ? Number(b.score ?? -Infinity) : possibleTeamsSort === 'XPTS' ? Number(b.teamView?.expectedPoints ?? -Infinity) : Number(b.teamView?.expectedDelta ?? -Infinity);
       return possibleTeamsSortDir === 'DESC' ? bv-av : av-bv;
     });
   const changePossibleTeamsSort = (sort:'XPTS'|'DELTA') => {
