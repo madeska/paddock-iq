@@ -5,11 +5,12 @@ import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
+const HORIZON_DRIVER_RIDGE_WEIGHT=.25;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 const SPRINT_CORRECTION={DRIVER:2.58,CONSTRUCTOR:3.70} as const;
 const HORIZON_ERROR={
- DRIVER:[{mae:12.15,rmse:16.35},{mae:11.48,rmse:15.78},{mae:11.87,rmse:15.80}],
- CONSTRUCTOR:[{mae:17.31,rmse:21.29},{mae:17.20,rmse:21.29},{mae:18.01,rmse:22.24}]
+ DRIVER:[{mae:10.64,rmse:14.50},{mae:10.40,rmse:14.28},{mae:11.35,rmse:15.20}],
+ CONSTRUCTOR:[{mae:16.49,rmse:20.78},{mae:16.77,rmse:20.75},{mae:17.90,rmse:22.40}]
 } as const;
 
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
@@ -93,9 +94,16 @@ export async function GET(request:NextRequest){
 
    for(let step=0;step<length;step++){
     const round=startRound+step;
-    let raw=asset.type==='DRIVER'
-      ?(driverModel?.predict(features(projectedHistory,projectedPrice))??null)
-      :constructorXPts(projectedHistory);
+    let raw:number|null=null;
+    if(asset.type==='DRIVER'){
+      const ridge=driverModel?.predict(features(projectedHistory,projectedPrice))??null;
+      const e=ewma(projectedHistory)??0;
+      raw=ridge!=null
+        ?HORIZON_DRIVER_RIDGE_WEIGHT*ridge+(1-HORIZON_DRIVER_RIDGE_WEIGHT)*e
+        :e;
+    }else{
+      raw=constructorXPts(projectedHistory);
+    }
     if(raw==null)break;
     if(step===0&&asset.type==='DRIVER'&&practiceSnapshot&&!practiceSnapshot.isSprint){
       const position=practiceSnapshot.positions.get(asset.code);
@@ -135,7 +143,7 @@ export async function GET(request:NextRequest){
 
   return NextResponse.json({
    season,startRound,length,
-   model:'sprint-aware-horizon-v1',
+   model:'sprint-aware-horizon-v2',
    driverModel:'ridge50 using EWMA, season mean and price; current normal GP may include validated Practice-position modifier; recursive history/price + validated Sprint correction',
    constructorModel:'EWMA(0.25), floor -5, recursively using projected history + validated Sprint correction',
    sprintCorrection:SPRINT_CORRECTION,
