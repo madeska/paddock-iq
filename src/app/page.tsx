@@ -29,6 +29,8 @@ type BuilderTeam={
  expectedPoints:number;
  expectedDelta:number;
  score:number;
+ confidence:number;
+ confidenceLabel:'HIGH'|'MEDIUM'|'LOW';
 };
 
 const accents:Record<string,string>={
@@ -118,6 +120,32 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
  </div>
 }
 
+function teamCodes(team:Pick<BuilderTeam,'drivers'|'constructors'>){
+ return new Set([...team.drivers,...team.constructors].map(a=>a.code));
+}
+
+function assetDifference(a:Pick<BuilderTeam,'drivers'|'constructors'>,b:Pick<BuilderTeam,'drivers'|'constructors'>){
+ const ac=teamCodes(a),bc=teamCodes(b);
+ let diff=0;
+ for(const code of ac)if(!bc.has(code))diff++;
+ for(const code of bc)if(!ac.has(code))diff++;
+ return diff/2;
+}
+
+function diversifyTeams(teams:BuilderTeam[],minAssetChanges:number,limit=25){
+ if(minAssetChanges<=0)return teams.slice(0,limit);
+ const selected:BuilderTeam[]=[];
+ for(const team of teams){
+  if(selected.every(existing=>assetDifference(team,existing)>=minAssetChanges))selected.push(team);
+  if(selected.length>=limit)break;
+ }
+ return selected;
+}
+
+function confidenceLabel(value:number):'HIGH'|'MEDIUM'|'LOW'{
+ return value>=.74?'HIGH':value>=.61?'MEDIUM':'LOW';
+}
+
 function builderScore(points:number,valueDelta:number,mode:BuilderMode,weight:number){
  if(mode==='points'||mode==='horizon')return points;
  const w=mode==='budget'?.3:mode==='balanced'?.7:Math.max(0,Math.min(1,weight));
@@ -174,7 +202,9 @@ function generateBudgetTeams(
 
        const expectedDelta=[...constructorPair,...driverFive].reduce((s,x)=>s+(x.expectedDelta??0),0);
        const score=builderScore(expectedPoints,expectedDelta,mode,customWeight);
-       teams.push({drivers:driverFive,constructors:constructorPair,boost:boost.code,boostPoints,price,expectedPoints,expectedDelta,score});
+       const allAssets=[...constructorPair,...driverFive];
+       const assetConfidence=allAssets.reduce((s,x)=>s+Number(x.confidence??.55),0)/allAssets.length;
+       teams.push({drivers:driverFive,constructors:constructorPair,boost:boost.code,boostPoints,price,expectedPoints,expectedDelta,score,confidence:assetConfidence,confidenceLabel:confidenceLabel(assetConfidence)});
       }
  }
 
@@ -193,6 +223,8 @@ export default function Home(){
  const [builderMode,setBuilderMode]=useState<BuilderMode>('points');
  const [builderWeight,setBuilderWeight]=useState(.6);
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
+ const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
+ const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
  const season=2026,round=16;
 
  async function load(){
@@ -220,11 +252,19 @@ export default function Home(){
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
- const visibleBuilderTeams=useMemo(()=>[...builderTeams].sort((a,b)=>{
-  const av=builderSort==='XPTS'?a.expectedPoints:a.expectedDelta;
-  const bv=builderSort==='XPTS'?b.expectedPoints:b.expectedDelta;
-  return builderSortDir==='DESC'?bv-av:av-bv;
- }),[builderTeams,builderSort,builderSortDir]);
+ const visibleBuilderTeams=useMemo(()=>{
+  const filtered=builderTeams.filter(team=>{
+   if(builderConfidenceFilter==='ALL')return true;
+   if(builderConfidenceFilter==='HIGH')return team.confidenceLabel==='HIGH';
+   return team.confidenceLabel==='HIGH'||team.confidenceLabel==='MEDIUM';
+  });
+  const sorted=[...filtered].sort((a,b)=>{
+   const av=builderSort==='XPTS'?a.expectedPoints:a.expectedDelta;
+   const bv=builderSort==='XPTS'?b.expectedPoints:b.expectedDelta;
+   return builderSortDir==='DESC'?bv-av:av-bv;
+  });
+  return diversifyTeams(sorted,builderDiversity,25);
+ },[builderTeams,builderSort,builderSortDir,builderDiversity,builderConfidenceFilter]);
 
  async function buildTeams(){
   if(!data)return;
@@ -259,9 +299,10 @@ export default function Home(){
   }
 
   setTimeout(()=>{
-   const teams=generateBudgetTeams(builderDrivers,builderConstructors,builderBudget,builderMode,builderWeight,builderRules,50);
+   const teams=generateBudgetTeams(builderDrivers,builderConstructors,builderBudget,builderMode,builderWeight,builderRules,250);
    setBuilderTeams(teams);
-   setBuilderStatus(teams.length?('Showing top '+teams.length+' teams under '+String.fromCharCode(36)+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget and asset filters.');
+   const diversified=diversifyTeams(teams,builderDiversity,25);
+   setBuilderStatus(teams.length?('Generated '+teams.length+' valid top-ranked teams · showing '+diversified.length+' diversified options under '+String.fromCharCode(36)+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget and asset filters.');
   },0);
  }
  function changeBuilderSort(sort:'XPTS'|'DELTA'){
@@ -323,6 +364,16 @@ export default function Home(){
     })}</div></div>
    </div>
    {builderStatus&&<div className={styles.builderStatus}>{builderStatus}</div>}
+   <div className={styles.builderResultControls}>
+    <div className={styles.builderControlGroup}><span>Diversity</span>{([0,1,2] as const).map(value=><button type="button" key={value} className={builderDiversity===value?styles.builderControlActive:''} onClick={()=>setBuilderDiversity(value)}>{value===0?'Off':value+' asset'+(value===1?'':'s')}</button>)}</div>
+    <div className={styles.builderControlGroup}><span>Confidence</span>
+     <button type="button" className={builderConfidenceFilter==='ALL'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('ALL')}>All</button>
+     <button type="button" className={builderConfidenceFilter==='MEDIUM_PLUS'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
+     <button type="button" className={builderConfidenceFilter==='HIGH'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('HIGH')}>High only</button>
+    </div>
+    <small>Confidence = average model confidence of the 7 assets. It is not a probability that this lineup will win.</small>
+   </div>
+
    {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
     <div className={styles.bestTeamsScroll}>
      <table className={styles.bestTeamsTable}>
@@ -330,6 +381,7 @@ export default function Home(){
        <th>#</th><th>CR</th><th>DR</th><th>$</th>
        <th><button type="button" className={styles.sortHeaderButton} onClick={()=>changeBuilderSort('DELTA')}>xΔ$ {builderSort==='DELTA'?(builderSortDir==='DESC'?'↓':'↑'):''}</button></th>
        <th><button type="button" className={styles.sortHeaderButton} onClick={()=>changeBuilderSort('XPTS')}>{builderMode==='horizon'?'3GP xPts':'xPts'} {builderSort==='XPTS'?(builderSortDir==='DESC'?'↓':'↑'):''}</button></th>
+       <th>Confidence</th>
       </tr></thead>
       <tbody>{visibleBuilderTeams.slice(0,25).map((team,index)=><tr key={team.constructors.map(a=>a.code).join('-')+'-'+team.drivers.map(a=>a.code).join('-')}>
        <td><strong>{index+1}</strong></td>
@@ -338,6 +390,7 @@ export default function Home(){
        <td><strong>{team.price.toFixed(1)}</strong></td>
        <td className={team.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{team.expectedDelta>=0?'+':''}{team.expectedDelta.toFixed(2)}</td>
        <td><strong>{team.expectedPoints.toFixed(1)}</strong></td>
+       <td><span className={team.confidenceLabel==='HIGH'?styles.confHigh:team.confidenceLabel==='MEDIUM'?styles.confMedium:styles.confLow} title="Average asset model confidence; not a lineup win probability">{team.confidenceLabel} · {Math.round(team.confidence*100)}%</span></td>
       </tr>)}</tbody>
      </table>
     </div>
