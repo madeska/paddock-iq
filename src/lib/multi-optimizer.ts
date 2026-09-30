@@ -26,9 +26,9 @@ const currentBoostAsset=(lineup:Asset[])=>lineup.find(a=>a.type==='DRIVER'&&a.is
 const bestBoostAsset=(lineup:Asset[])=>{
  const drivers=lineup.filter(a=>a.type==='DRIVER');
  if(!drivers.length)return null;
- return drivers.reduce((best,a)=>a.expectedPoints>best.expectedPoints?a:best);
+ return drivers.reduce((best,a)=>(a.boostExpectedPoints??a.expectedPoints)>(best.boostExpectedPoints??best.expectedPoints)?a:best);
 };
-const lineupPoints=(lineup:Asset[],boost:Asset|null)=>rawPoints(lineup)+(boost?.expectedPoints??0);
+const lineupPoints=(lineup:Asset[],boost:Asset|null)=>rawPoints(lineup)+(boost?(boost.boostExpectedPoints??boost.expectedPoints):0);
 
 export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,freeTransfers:number,mode:Mode,weight=.6,penaltyPerExtra=10,maxChanges=3,locked:string[]=[]):Scenario[]{
  if(current.length!==7||current.filter(a=>a.type==='DRIVER').length!==5||current.filter(a=>a.type==='CONSTRUCTOR').length!==2)throw Error('Expected 5 drivers and 2 constructors');
@@ -52,7 +52,7 @@ export function optimizeTransfers(current:Asset[],market:Asset[],cash:number,fre
 
   const recommendedBoost=bestBoostAsset(lineup);
   const finalPoints=lineupPoints(lineup,recommendedBoost);
-  const boostGain=(recommendedBoost?.expectedPoints??0)-(selectedBoost?.expectedPoints??0);
+  const boostGain=(recommendedBoost?(recommendedBoost.boostExpectedPoints??recommendedBoost.expectedPoints):0)-(selectedBoost?(selectedBoost.boostExpectedPoints??selectedBoost.expectedPoints):0);
   const transferPointsGain=(rawPoints(lineup)-rawPoints(current));
   const projectedPointsGain=transferPointsGain+boostGain;
   const remaining=Math.max(0,cash-spent);
