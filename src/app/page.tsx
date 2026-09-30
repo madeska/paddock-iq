@@ -158,7 +158,7 @@ function confidenceLabel(value:number):'HIGH'|'MEDIUM'|'LOW'{
 }
 
 function calibrateTeamConfidence(teams:BuilderTeam[],mode:BuilderMode){
- return teams.map((team,index)=>{
+ const raw=teams.map((team,index)=>{
   if(mode==='custom'||mode==='horizon')return {...team,confidence:null,confidenceLabel:null};
   const lower=teams.slice(index+1);
   if(!lower.length)return {...team,confidence:null,confidenceLabel:null};
@@ -167,6 +167,12 @@ function calibrateTeamConfidence(teams:BuilderTeam[],mode:BuilderMode){
    .filter((value):value is number=>value!=null);
   const confidence=rates.reduce((s,x)=>s+x,0)/rates.length;
   return {...team,confidence,confidenceLabel:confidenceLabel(confidence)};
+ });
+ let ceiling=1;
+ return raw.map(team=>{
+  if(team.confidence==null)return team;
+  ceiling=Math.min(ceiling,team.confidence);
+  return {...team,confidence:ceiling,confidenceLabel:confidenceLabel(ceiling)};
  });
 }
 
