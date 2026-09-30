@@ -37,8 +37,6 @@ type Team={
  actualPoints:number;
  actualDelta:number;
  actualBestBoostPoints:number;
- predictedScore:number;
- actualScore:number;
 };
 
 const mean=(xs:number[])=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0;
@@ -107,7 +105,7 @@ function fitRidge(rows:{x:number[];y:number}[],lambda=50){
 }
 const features=(h:number[],price:number)=>[ewma(h),mean(h),price];
 
-function enumerateTeams(assets:Asset[],budget:number,weight:number){
+function enumerateTeams(assets:Asset[],budget:number){
  const ds=assets.filter(a=>a.type==='DRIVER');
  const cs=assets.filter(a=>a.type==='CONSTRUCTOR');
  const teams:Team[]=[];
@@ -230,29 +228,32 @@ async function main(){
   }
 
   for(const budget of BUDGETS){
+   const teams=enumerateTeams(assets,budget);
+   if(!teams.length)continue;
    for(const mode of MODES){
-    const teams=enumerateTeams(assets,budget,mode.weight);
-    if(!teams.length)continue;
-    const predicted=[...teams].sort((a,b)=>b.predictedScore-a.predictedScore);
-    const actual=[...teams].sort((a,b)=>b.actualScore-a.actualScore);
+    const predicted=[...teams].sort((a,b)=>utility(b.predictedPoints,b.predictedDelta,mode.weight)-utility(a.predictedPoints,a.predictedDelta,mode.weight));
+    const actual=[...teams].sort((a,b)=>utility(b.actualPoints,b.actualDelta,mode.weight)-utility(a.actualPoints,a.actualDelta,mode.weight));
     const top1=predicted[0];
     const top3=predicted.slice(0,3);
     const top5=predicted.slice(0,5);
     const oracle=actual[0];
-    const top3Best=Math.max(...top3.map(t=>t.actualScore));
-    const top5Best=Math.max(...top5.map(t=>t.actualScore));
+    const actualScore=(t:Team)=>utility(t.actualPoints,t.actualDelta,mode.weight);
+    const oracleScore=actualScore(oracle);
+    const top1Score=actualScore(top1);
+    const top3Best=Math.max(...top3.map(actualScore));
+    const top5Best=Math.max(...top5.map(actualScore));
     const boostActualBest=top1.drivers.reduce((best,x)=>x.actualPoints>best.actualPoints?x:best);
     const oracleKey=[...oracle.constructors,...oracle.drivers].map(x=>x.code).sort().join('|');
     const rankOfOracle=predicted.findIndex(t=>[...t.constructors,...t.drivers].map(x=>x.code).sort().join('|')===oracleKey)+1;
     observations.push({
      round,budget,mode:mode.name,
-     top1Actual:top1.actualScore,
+     top1Actual:top1Score,
      top3BestActual:top3Best,
      top5BestActual:top5Best,
-     oracleActual:oracle.actualScore,
-     top1Regret:oracle.actualScore-top1.actualScore,
-     top3Regret:oracle.actualScore-top3Best,
-     top5Regret:oracle.actualScore-top5Best,
+     oracleActual:oracleScore,
+     top1Regret:oracleScore-top1Score,
+     top3Regret:oracleScore-top3Best,
+     top5Regret:oracleScore-top5Best,
      boostHit:top1.boost.code===boostActualBest.code,
      boostRegret:boostActualBest.actualPoints-top1.boost.actualPoints,
      rankOfOracle
