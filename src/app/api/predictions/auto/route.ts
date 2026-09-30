@@ -113,9 +113,10 @@ export async function POST(request:NextRequest){
    const current=currentPriceRow?Number(currentPriceRow.price):null;
    if(current==null)continue;
 
-   const chronological=asset.fantasyScores
-    .sort((a,b)=>a.grandPrix.round-b.grandPrix.round)
-    .map(s=>s.points);
+   const scoreRows=asset.fantasyScores
+    .slice()
+    .sort((a,b)=>a.grandPrix.round-b.grandPrix.round);
+   const chronological=scoreRows.map(s=>s.points);
    if(!chronological.length)continue;
 
    let rawXPts:number|null=null;
@@ -145,14 +146,19 @@ export async function POST(request:NextRequest){
    const pts=Math.round(rawXPts*10)/10;
 
    const newest=[...chronological].reverse();
-   const previousTwo=newest.slice(0,2);
+   const trailingConsecutive:number[]=[];
+   for(let r=round-1;r>=Math.max(1,round-2);r--){
+    const row=scoreRows.find(s=>s.grandPrix.round===r);
+    if(!row)break;
+    trailingConsecutive.unshift(row.points);
+   }
    const sd=sampleStdDev(newest.slice(0,5));
-   const price=previousTwo.length===2?predictFantasyPrice({
+   const price=predictFantasyPrice({
     currentPrice:current,
-    previousFantasyPoints:[previousTwo[1],previousTwo[0]],
+    previousFantasyPoints:trailingConsecutive,
     expectedPoints:pts,
     pointsStdDev:sd
-   }):null;
+   });
 
    const rise=price?price.probabilities.smallRise+price.probabilities.maxRise:null;
    const fall=price?
