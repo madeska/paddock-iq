@@ -94,9 +94,16 @@ export async function GET(request:NextRequest){
 
    for(let step=0;step<length;step++){
     const round=startRound+step;
-    let raw=asset.type==='DRIVER'
-      ?(driverModel?.predict(features(projectedHistory,projectedPrice))??null)
-      :constructorXPts(projectedHistory);
+    let raw:number|null=null;
+    if(asset.type==='DRIVER'){
+      const ridge=driverModel?.predict(features(projectedHistory,projectedPrice))??null;
+      const e=ewma(projectedHistory)??0;
+      raw=ridge!=null
+        ?HORIZON_DRIVER_RIDGE_WEIGHT*ridge+(1-HORIZON_DRIVER_RIDGE_WEIGHT)*e
+        :e;
+    }else{
+      raw=constructorXPts(projectedHistory);
+    }
     if(raw==null)break;
     if(step===0&&asset.type==='DRIVER'&&practiceSnapshot&&!practiceSnapshot.isSprint){
       const position=practiceSnapshot.positions.get(asset.code);
