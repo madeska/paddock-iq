@@ -350,7 +350,7 @@ export default function Home(){
 
  return <main className={styles.page}>
   <nav className={styles.topbar}>
-   <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>{data?.grandPrix??'R16'} · 2026</span></div>
+   <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
    <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button></div>
   </nav>
 
