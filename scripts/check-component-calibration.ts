@@ -61,3 +61,18 @@ test('no-time drivers do not earn constructor qualifying progression awards',()=
  for(const c of result.constructors)assert.equal(c.qualifying,-11);
 });
 
+test('a 22-car field includes position 16 in constructor Q2 progression',()=>{
+ const calibration=calibrateComponents([],{season:2026,round:17});calibration.driverSessions=1;calibration.globalDriverRates.noTimeProbability=0;
+ const drivers=Array.from({length:22},(_,i)=>({code:'D'+i,team:'T'+Math.floor(i/2),baselineXPts:10,recentScores:[10]}));
+ const constructors=Array.from({length:11},(_,i)=>({code:'T'+i,baselineXPts:20}));
+ const result=simulateComponentWeekend(drivers,constructors,{sprint:false,simulations:100,calibration,qualifyingPace:Object.fromEntries(drivers.map((d,i)=>[d.code,22-i])),qualifyingNoise:.001});
+ assert.equal(result.constructors.find(c=>c.code==='T7')!.qualifying,3);
+ assert.equal(result.constructors.find(c=>c.code==='T8')!.qualifying,-1);
+});
+test('a 20-car field retains the 15-driver Q2 cutoff',()=>{
+ const calibration=calibrateComponents([],{season:2025,round:17});calibration.driverSessions=1;calibration.globalDriverRates.noTimeProbability=0;
+ const drivers=Array.from({length:20},(_,i)=>({code:'D'+i,team:'T'+Math.floor(i/2),baselineXPts:10,recentScores:[10]}));
+ const constructors=Array.from({length:10},(_,i)=>({code:'T'+i,baselineXPts:20}));
+ const result=simulateComponentWeekend(drivers,constructors,{sprint:false,simulations:100,calibration,qualifyingPace:Object.fromEntries(drivers.map((d,i)=>[d.code,20-i])),qualifyingNoise:.001});
+ assert.equal(result.constructors.find(c=>c.code==='T7')!.qualifying,1);
+});

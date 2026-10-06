@@ -140,6 +140,7 @@ export function simulateComponentWeekend(
   for(const d of driverState)dAcc.set(d.code,{code:d.code,qualifying:0,sprint:0,raceFinish:0,positions:0,overtakes:0,fastestLap:0,driverOfTheDay:0,dnfPenalty:0,total:0});
   for(const c of constructorState)cAcc.set(c.code,{code:c.code,qualifying:0,sprint:0,raceDrivers:0,pitStops:0,total:0});
 
+  const q2Cutoff=Math.min(driverState.length,Math.floor((driverState.length+10)/2));
   const teamDrivers=new Map<string,typeof driverState>();
   for(const d of driverState){
     const list=teamDrivers.get(d.team)??[];
@@ -237,7 +238,7 @@ export function simulateComponentWeekend(
       if(ds.length<2)continue;
       const [d1,d2]=ds;
       const qp:[number,number]=[qPts.get(d1.code)??0,qPts.get(d2.code)??0];
-      const q2Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=15).length;
+      const q2Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=q2Cutoff).length;
       const q3Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=10).length;
       const qualifying=constructorQualifyingPoints(qp,q2Count,q3Count,0);
       const sprint=options.sprint?constructorSprintPoints([sprintPts.get(d1.code)??0,sprintPts.get(d2.code)??0],0):0;

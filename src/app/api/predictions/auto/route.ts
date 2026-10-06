@@ -216,7 +216,7 @@ export async function POST(request:NextRequest){
     ?(practicePosition!=null
       ?'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded'
       :'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded')
-    :'xpts-constructor-baseline75-component25-v2 + price-probability-v0.4-bounded';
+    :'xpts-constructor-baseline75-component25-v3 + price-probability-v0.4-bounded';
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
