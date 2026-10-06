@@ -2,6 +2,9 @@ import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
 
 const MAIN_MODELS=[
+ 'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded',
+ 'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded',
+ 'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded',
  'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
  'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
  'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
