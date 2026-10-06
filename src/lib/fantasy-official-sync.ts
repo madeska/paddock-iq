@@ -33,6 +33,11 @@ const CONSTRUCTOR_CODES:Record<string,string>={
  'CADILLAC FORMULA 1 TEAM':'CAD',
 };
 
+const CURRENT_DRIVER_TEAM_2026:Record<string,string>={
+ LAW:'RACING BULLS',
+};
+const INACTIVE_DRIVER_CODES_2026=new Set(['TSU']);
+
 const GP_NAMES_2026:Record<number,string>={
  16:'Bahrain GP in Malaysia',
  17:'Singapore GP',
@@ -47,6 +52,17 @@ const GP_NAMES_2026:Record<number,string>={
 function constructorCode(name:unknown){
  const upper=String(name??'').trim().toUpperCase();
  return CONSTRUCTOR_CODES[upper]??null;
+}
+
+function normalizedTeam(name:unknown){return String(name??'').trim().toUpperCase()}
+
+function shouldUseDriverRow(row:FeedRow,season:number,markCurrent:boolean){
+ if(row.PositionName!=='DRIVER')return true;
+ const code=String(row.DriverTLA??'').trim().toUpperCase();
+ if(season===2026&&markCurrent&&INACTIVE_DRIVER_CODES_2026.has(code))return false;
+ const preferred=season===2026?CURRENT_DRIVER_TEAM_2026[code]:undefined;
+ if(preferred&&normalizedTeam(row.TeamName)!==preferred)return false;
+ return true;
 }
 
 function rowIdentity(row:FeedRow,teamIdToCode:Map<string,string>){
@@ -88,9 +104,10 @@ export type OfficialFantasySyncResult={
 export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,targetRound=17):Promise<OfficialFantasySyncResult>{
  const existingAssets=await prisma.asset.findMany({where:{season}});
  const byKey=new Map(existingAssets.map(a=>[a.type+':'+a.code,a]));
- const completedRound=Math.max(1,targetRound-1);
- const [completedRows,currentRows]=await Promise.all([
-  fetchRound(completedRound),
+ const completedRounds=[Math.max(1,targetRound-2),Math.max(1,targetRound-1)];
+ const [olderRows,completedRows,currentRows]=await Promise.all([
+  fetchRound(completedRounds[0]),
+  fetchRound(completedRounds[1]),
   fetchRound(targetRound),
  ]);
  if(!currentRows)throw new Error('Official F1 Fantasy current round '+targetRound+' feed is unavailable');
@@ -101,6 +118,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
  const processRows=async(round:number,rows:FeedRow[],saveScores:boolean,markCurrent:boolean)=>{
   const teamIdToCode=new Map<string,string>();
   for(const row of rows){
+   if(!shouldUseDriverRow(row,season,markCurrent))continue;
    if(row.PositionName!=='DRIVER'||row.TeamId==null)continue;
    const code=constructorCode(row.TeamName);
    if(code)teamIdToCode.set(String(row.TeamId),code);
@@ -114,6 +132,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   if(markCurrent)await prisma.asset.updateMany({where:{season},data:{active:false}});
 
   for(const row of rows){
+   if(!shouldUseDriverRow(row,season,markCurrent))continue;
    const identity=rowIdentity(row,teamIdToCode);
    if(!identity)continue;
    const asset=byKey.get(identity.type+':'+identity.code);
@@ -144,8 +163,10 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   }
  };
 
+ const olderHasScores=Boolean(olderRows?.some(row=>Number.isFinite(Number(row.GamedayPoints))&&Number(row.GamedayPoints)!==0));
  const completedHasScores=Boolean(completedRows?.some(row=>Number.isFinite(Number(row.GamedayPoints))&&Number(row.GamedayPoints)!==0));
- if(completedRows)await processRows(completedRound,completedRows,completedHasScores,false);
+ if(olderRows)await processRows(completedRounds[0],olderRows,olderHasScores,false);
+ if(completedRows)await processRows(completedRounds[1],completedRows,completedHasScores,false);
  await processRows(targetRound,currentRows,false,true);
 
  const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}},select:{id:true}});
@@ -154,7 +175,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
  const activeAssets=await prisma.asset.count({where:{season,active:true}});
  return {
   season,
-  latestCompletedRound:completedHasScores?completedRound:Math.max(0,completedRound-1),
+  latestCompletedRound:completedHasScores?completedRounds[1]:olderHasScores?completedRounds[0]:Math.max(0,completedRounds[0]-1),
   currentRound:targetRound,
   scoresSaved,
   pricesSaved,
