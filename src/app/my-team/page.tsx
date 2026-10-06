@@ -46,9 +46,10 @@ function teamBucketProbabilities(asset: Asset) {
     { delta: tierA ? .3 : .6, p: asset.probabilityMaxRise ?? 0 },
   ];
   const floorDelta = Math.round((3 - asset.price) * 100) / 100;
+  const ceilingDelta = Math.round((34 - asset.price) * 100) / 100;
   const out = new Map<number,number>();
   for (const item of raw) {
-    const d = item.delta < 0 ? Math.max(item.delta, floorDelta) : item.delta;
+    const d = item.delta < 0 ? Math.max(item.delta, floorDelta) : Math.min(item.delta, ceilingDelta);
     out.set(d, (out.get(d) ?? 0) + item.p);
   }
   if ((asset.probabilityFlat ?? 0) > 0 && !out.has(0)) out.set(0, asset.probabilityFlat ?? 0);
