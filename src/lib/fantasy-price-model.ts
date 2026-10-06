@@ -28,14 +28,18 @@ export function predictFantasyPrice(i:PriceProbabilityInput):PriceProbability{
  };
  const base=tier==='A'?{maxFall:-.3,smallFall:-.1,smallRise:.1,maxRise:.3}:{maxFall:-.6,smallFall:-.2,smallRise:.2,maxRise:.6};
  const floorDelta=round(3-i.currentPrice,2);
+ const ceilingDelta=round(34-i.currentPrice,2);
  const effectiveDeltas={
   maxFall:round(Math.max(base.maxFall,floorDelta),2),
   smallFall:round(Math.max(base.smallFall,floorDelta),2),
-  smallRise:base.smallRise,
-  maxRise:base.maxRise,
+  smallRise:round(Math.min(base.smallRise,ceilingDelta),2),
+  maxRise:round(Math.min(base.maxRise,ceilingDelta),2),
  };
  const probabilityFlat=round(
-  (effectiveDeltas.maxFall===0?raw.maxFall:0)+(effectiveDeltas.smallFall===0?raw.smallFall:0)
+  (effectiveDeltas.maxFall===0?raw.maxFall:0)+
+  (effectiveDeltas.smallFall===0?raw.smallFall:0)+
+  (effectiveDeltas.smallRise===0?raw.smallRise:0)+
+  (effectiveDeltas.maxRise===0?raw.maxRise:0)
  );
  const expectedDelta=round(
   raw.maxFall*effectiveDeltas.maxFall+

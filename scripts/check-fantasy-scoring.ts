@@ -1,3 +1,4 @@
+import {predictFantasyPrice} from '../src/lib/fantasy-price-model';
 import {
  qualifyingDriverPoints,
  raceDriverPoints,
@@ -44,3 +45,14 @@ eq(constructorRacePoints({
 }),65,'constructor race aggregation');
 
 console.log('Official 2026 Fantasy scoring checks passed');
+
+const atCeiling=predictFantasyPrice({currentPrice:34,previousFantasyPoints:[80,80],expectedPoints:100,pointsStdDev:5});
+eq(atCeiling.effectiveDeltas.smallRise,0,'price ceiling small rise');
+eq(atCeiling.effectiveDeltas.maxRise,0,'price ceiling max rise');
+eq(atCeiling.expectedDelta<=0?1:0,1,'price ceiling expected delta');
+const nearCeiling=predictFantasyPrice({currentPrice:33.9,previousFantasyPoints:[80,80],expectedPoints:100,pointsStdDev:5});
+eq(nearCeiling.effectiveDeltas.smallRise,0.1,'near ceiling small rise cap');
+eq(nearCeiling.effectiveDeltas.maxRise,0.1,'near ceiling max rise cap');
+const atFloor=predictFantasyPrice({currentPrice:3,previousFantasyPoints:[-20,-20],expectedPoints:-20,pointsStdDev:5});
+eq(atFloor.effectiveDeltas.maxFall,0,'price floor max fall');
+eq(atFloor.effectiveDeltas.smallFall,0,'price floor small fall');
