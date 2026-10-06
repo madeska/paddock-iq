@@ -3,6 +3,9 @@ import { prisma } from '../../../lib/prisma';
 import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
 
 const MAIN_MODELS=[
+  'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded',
+  'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded',
+  'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded',
   'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
   'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
   'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
@@ -49,7 +52,7 @@ export async function GET(request:NextRequest) {
   });
 
   const rows=assets.map(a=>{
-    const main=a.predictions.find(p=>MAIN_MODELS.includes(p.modelVersion))??null;
+    const main=MAIN_MODELS.map(model=>a.predictions.find(p=>p.modelVersion===model)).find(Boolean)??null;
     const boost=a.type==='DRIVER'
       ?(a.predictions.find(p=>BOOST_MODELS.includes(p.modelVersion))??null)
       :null;
