@@ -45,7 +45,7 @@ test('API previews without writes and preserves single-team and manual snapshot 
  const originalFind=prisma.asset.findMany;const originalTransaction=prisma.$transaction;
  let snapshots:any[]=[];let slots:any[]=[];
  (prisma.asset as any).findMany=async()=>assets;
- (prisma as any).$transaction=async(fn:any)=>fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{upsert:async()=>({id:'team'})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'snapshot'}}},teamSlot:{createMany:async({data}:any)=>{slots=data}},chipUsage:{upsert:async()=>({})}});
+ (prisma as any).$transaction=async(fn:any)=>fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{findFirst:async()=>null,create:async()=>({id:'team'}),upsert:async()=>({id:'team'})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'snapshot'}}},teamSlot:{createMany:async({data}:any)=>{slots=data}},chipUsage:{upsert:async()=>({})}});
  const send=(body:any,origin='https://paddock.test')=>importF1Team(new NextRequest('https://paddock.test/api/team/f1/import',{method:'POST',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)}));
  try{
   const input={action:'preview',export:fixture(),season:2026,round:18};
@@ -76,7 +76,7 @@ test('current team_info transfer balance overrides the completed-round top-level
 test('one save persists all exported teams in one transaction with separate snapshots',async()=>{
  const originalFind=prisma.asset.findMany,originalTransaction=prisma.$transaction;const snapshots:any[]=[];const slotBatches:any[]=[];let transactions=0;
  (prisma.asset as any).findMany=async()=>assets;
- (prisma as any).$transaction=async(fn:any)=>{transactions++;return fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{upsert:async({create}:any)=>({id:create.name})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'snapshot-'+data.teamId}}},teamSlot:{createMany:async({data}:any)=>slotBatches.push(data)},chipUsage:{upsert:async()=>({})}})};
+ (prisma as any).$transaction=async(fn:any)=>{transactions++;return fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{findFirst:async()=>null,create:async({data}:any)=>({id:data.name}),upsert:async({create}:any)=>({id:create.name})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'snapshot-'+data.teamId}}},teamSlot:{createMany:async({data}:any)=>slotBatches.push(data)},chipUsage:{upsert:async()=>({})}})};
  const f=fixture();f.teams.push({...f.teams[0],teamno:2,teamname:'Second',capplayerid:'2',team_info:{teamBal:0.4},usersubsleft:3,ovpoints:100});
  const send=()=>importF1Team(new NextRequest('https://paddock.test/api/team/f1/import',{method:'POST',headers:{origin:'https://paddock.test','Content-Type':'application/json'},body:JSON.stringify({action:'save',export:f,season:2026,round:18,email:'user@example.test',teamNo:2})}));
  try{
@@ -84,4 +84,40 @@ test('one save persists all exported teams in one transaction with separate snap
   assert.deepEqual(snapshots.map(s=>[s.teamId,s.cashBalance,s.freeTransfers]),[['Race Team',0,0],['Second',0.4,3]]);assert.deepEqual(slotBatches.map(batch=>batch.filter((s:any)=>s.isDoubled).map((s:any)=>s.assetId)),[['VER'],['NOR']]);
   f.teams[1].playerid=[{id:'1'}];assert.equal((await send()).status,400);assert.equal(transactions,1);assert.equal(snapshots.length,2);
  }finally{(prisma.asset as any).findMany=originalFind;(prisma as any).$transaction=originalTransaction;await prisma.$disconnect()}
+});
+import {PATCH as editTeam,DELETE as deleteTeam} from '../src/app/api/team/manage/route';
+test('team management edits existing identity and deletes only the owned team dependencies',async()=>{
+ const original=prisma.$transaction;const snapshots:any[]=[];const edits:any[]=[];const deleted:any[]=[];
+ const tx={user:{upsert:async()=>({id:'profile'})},fantasyTeam:{findFirst:async({where}:any)=>where.id==='owned'&&where.user.email==='user@example.test'?{id:'owned',userId:'profile',name:'Original',season:2026}:null,update:async({where,data}:any)=>{edits.push({where,data});return {id:where.id}},findMany:async()=>[{id:'remaining',name:'Remaining'}],delete:async({where}:any)=>deleted.push(['team',where])},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>assets.some(a=>a.code===where.season_code_type.code)?{id:where.season_code_type.code}:null},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'edited-snapshot'}},deleteMany:async({where}:any)=>deleted.push(['snapshots',where])},teamSlot:{createMany:async()=>{},deleteMany:async({where}:any)=>deleted.push(['slots',where])},transfer:{deleteMany:async({where}:any)=>deleted.push(['transfers',where])},chipUsage:{upsert:async()=>{},deleteMany:async({where}:any)=>deleted.push(['chips',where])},strategyScenario:{deleteMany:async({where}:any)=>deleted.push(['scenarios',where])}};
+ (prisma as any).$transaction=async(fn:any)=>fn(tx);
+ const body={email:'user@example.test',teamId:'owned',name:'Renamed',round:18,cashBalance:2,freeTransfers:3,totalPoints:-5,assets:assets.map((a,i)=>({code:a.code,type:a.type,isDoubled:i===0})),chips:{LL:'USED',WC:'AVAILABLE'}};
+ const request=(data:any,method='PATCH',origin='https://paddock.test')=>new NextRequest('https://paddock.test/api/team/manage',{method,headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(data)});
+ try{
+  const saved=await editTeam(request(body));assert.equal(saved.status,200);assert.equal((await saved.json()).teamId,'owned');assert.equal(edits[0].where.id,'owned');assert.equal(edits[0].data.name,'Renamed');assert.equal(snapshots[0].teamId,'owned');assert.equal(snapshots[0].freeTransfers,3);
+  assert.equal((await editTeam(request({...body,assets:body.assets.slice(0,6)}))).status,400);assert.equal((await editTeam(request({...body,assets:body.assets.map(a=>({...a,isDoubled:false}))}))).status,400);assert.equal((await editTeam(request({...body,teamId:'foreign'}))).status,404);assert.equal((await editTeam(request(body,'PATCH','https://evil.test'))).status,403);assert.equal(snapshots.length,1);
+  assert.equal((await deleteTeam(request({...body,teamId:'foreign'},'DELETE'))).status,404);assert.equal(deleted.length,0);
+  const removed=await deleteTeam(request({email:body.email,teamId:'owned'},'DELETE'));assert.equal(removed.status,200);assert.deepEqual((await removed.json()).teams,[{id:'remaining',name:'Remaining'}]);assert.deepEqual(deleted,[['transfers',{snapshot:{teamId:'owned'}}],['slots',{snapshot:{teamId:'owned'}}],['snapshots',{teamId:'owned'}],['chips',{teamId:'owned'}],['scenarios',{teamId:'owned'}],['team',{id:'owned'}]]);
+ }finally{(prisma as any).$transaction=original;await prisma.$disconnect()}
+});
+test('F1 re-import keeps a renamed team identity instead of creating a duplicate',async()=>{
+ const find=prisma.asset.findMany,transaction=prisma.$transaction;let stored={id:'owned',userId:'profile',name:'Local rename',season:2026,externalId:'legacy-name:Race Team'};
+ (prisma.asset as any).findMany=async()=>assets;
+ (prisma as any).$transaction=async(fn:any)=>fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{findFirst:async({where}:any)=>where.user.email==='user@example.test'&&(where.id===stored.id||where.externalId===stored.externalId)?stored:null,update:async({data}:any)=>{stored={...stored,...data};return stored},upsert:async()=>({id:'duplicate'})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async()=>({id:'snapshot'})},teamSlot:{createMany:async()=>{}},chipUsage:{upsert:async()=>{}}});
+ const request=(data:any,method='POST')=>new NextRequest('https://paddock.test/api/team/f1/import',{method,headers:{origin:'https://paddock.test','Content-Type':'application/json'},body:JSON.stringify(data)});
+ const f=fixture();const body={action:'save',export:f,email:'user@example.test',season:2026,round:18};
+ try{const first=await importF1Team(request(body));assert.equal(first.status,200);assert.equal((await first.json()).teamId,'owned');assert.equal(stored.externalId,'f1:1');
+  const edit=await editTeam(request({email:body.email,teamId:'owned',name:'Again',round:18,assets:assets.map((a,i)=>({...a,isDoubled:i===0})),cashBalance:0,freeTransfers:2,totalPoints:100},'PATCH'));assert.equal(edit.status,200);assert.equal(stored.externalId,'f1:1');
+  const second=await importF1Team(request(body));assert.equal(second.status,200);assert.equal((await second.json()).teamId,'owned');
+ }finally{(prisma.asset as any).findMany=find;(prisma as any).$transaction=transaction;await prisma.$disconnect()}
+});
+test('F1 sync handles swapped names and never adopts another numbered team by name',async()=>{
+ const find=prisma.asset.findMany,transaction=prisma.$transaction;let rows:Record<string,any>={one:{id:'one',name:'A',externalId:'f1:1',userId:'profile',season:2026},two:{id:'two',name:'B',externalId:'f1:2',userId:'profile',season:2026}};let nextId=0;
+ const checkName=(name:string,id?:string)=>{if(Object.values(rows).some(r=>r.id!==id&&r.name===name))throw Object.assign(new Error('duplicate name'),{code:'P2002'})};
+ (prisma.asset as any).findMany=async()=>assets;
+ (prisma as any).$transaction=async(fn:any)=>fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{findFirst:async({where}:any)=>where.user.email==='user@example.test'?Object.values(rows).find(r=>where.id?r.id===where.id:where.externalId?r.externalId===where.externalId:r.name===where.name):null,update:async({where,data}:any)=>{checkName(data.name,where.id);rows[where.id]={...rows[where.id],...data};return rows[where.id]},create:async({data}:any)=>{checkName(data.name);const id='new-'+(++nextId);rows[id]={id,...data};return rows[id]},upsert:async({create}:any)=>Object.values(rows).find(r=>r.name===create.name)??{id:'unexpected'}},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>({id:'snapshot-'+data.teamId})},teamSlot:{createMany:async()=>{}},chipUsage:{upsert:async()=>{}}});
+ const f=fixture();f.teams=[{...f.teams[0],teamno:1,teamname:'B'},{...f.teams[0],teamno:2,teamname:'A'}];
+ const send=()=>importF1Team(new NextRequest('https://paddock.test/api/team/f1/import',{method:'POST',headers:{origin:'https://paddock.test','Content-Type':'application/json'},body:JSON.stringify({action:'save',export:f,email:'user@example.test',season:2026,round:18})}));
+ try{const swap=await send();assert.equal(swap.status,200);assert.equal(rows.one.name,'B');assert.equal(rows.two.name,'A');
+  rows={one:{id:'one',name:'B',externalId:'f1:1',userId:'profile',season:2026}};f.teams=[{...f.teams[0],teamno:2,teamname:'B'},{...f.teams[0],teamno:1,teamname:'A'}];const imported=await send();assert.equal(imported.status,200);const j=await imported.json();assert.equal(j.teams.find((t:any)=>t.teamNo===1).teamId,'one');assert.equal(j.teams.find((t:any)=>t.teamNo===2).teamId,'new-1');assert.equal(rows.one.externalId,'f1:1');assert.equal(Object.keys(rows).length,2);
+ }finally{(prisma.asset as any).findMany=find;(prisma as any).$transaction=transaction;await prisma.$disconnect()}
 });

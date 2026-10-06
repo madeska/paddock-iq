@@ -12,17 +12,17 @@ export type TeamImport = {
   chips?:Record<string,'AVAILABLE'|'USED'|'LOCKED'|'UNKNOWN'>;
 };
 
-export async function saveTeamSnapshot(tx:Prisma.TransactionClient,body:TeamImport){
+export async function saveTeamSnapshot(tx:Prisma.TransactionClient,body:TeamImport,existingTeamId?:string,externalId?:string){
   const email=body.user.email.trim().toLowerCase(),teamName=body.team.name.trim(),season=Number(body.team.season),round=Number(body.round);
   const user=await tx.user.upsert({
     where:{email},
     update:{name:body.user.name?.trim() || undefined},
     create:{email,name:body.user.name?.trim() || undefined}
   });
-  const team=await tx.fantasyTeam.upsert({
+  const team=existingTeamId?await tx.fantasyTeam.update({where:{id:existingTeamId},data:{name:teamName,externalId}}):externalId?await tx.fantasyTeam.create({data:{userId:user.id,season,name:teamName,externalId}}):await tx.fantasyTeam.upsert({
     where:{userId_season_name:{userId:user.id,season,name:teamName}},
-    update:{},
-    create:{userId:user.id,season,name:teamName}
+    update:{externalId},
+    create:{userId:user.id,season,name:teamName,externalId}
   });
   const gp=await tx.grandPrix.upsert({
     where:{season_round:{season,round}},
