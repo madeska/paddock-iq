@@ -56,7 +56,8 @@
     "fantasy:check-joint": "tsx --test scripts/check-joint-weekend.ts",
     "fantasy:backtest-joint": "tsx scripts/backtest-joint-weekend.ts",
     "fantasy:check-progress": "tsx --test scripts/check-race-progress.ts",
-    "fantasy:backtest-progress": "tsx scripts/backtest-race-progress.ts"
+    "fantasy:backtest-progress": "tsx scripts/backtest-race-progress.ts",
+    "fantasy:backtest-recent-overtakes": "tsx scripts/backtest-recent-overtakes.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -49,3 +49,27 @@ test('race pace excludes non-classified sessions instead of fabricating a finish
  const one=fitOvertakeModel([good],{season:2026,round:3});const two=fitOvertakeModel([good,failed],{season:2026,round:3});
  assert.equal(one.racePace.FAST,two.racePace.FAST);assert.ok(two.racePace.FAST>0);
 });
+test('recent sessions can outweigh obsolete overtake counts',()=>{
+ const history:ComponentObservation[]=[];
+ for(let round=1;round<=8;round++)for(let i=1;i<=22;i++)history.push({season:2026,round,code:'R'+i,type:'DRIVER',team:'T',qualifying:{total:0,position:11,noTime:false},race:{total:0,failed:false,finishPosition:11,positionChange:0,overtakes:round<=6?10:0,fastestLap:false,dotd:false}});
+ const unweighted=fitOvertakeModel(history,{season:2026,round:9});const recent=fitOvertakeModel(history,{season:2026,round:9,halfLife:1} as any);
+ assert.ok(expectedRaceOvertakes(recent,'R1',11,true)<expectedRaceOvertakes(unweighted,'R1',11,true)-3);
+ assert.throws(()=>fitOvertakeModel(history,{season:2026,round:9,halfLife:0} as any));
+});
+test('pooled driver corrections distinguish actual overtake rates at equal pace and grid',()=>{
+ const history:ComponentObservation[]=[];
+ for(let round=1;round<=8;round++)for(const code of ['FAST','SLOW'])history.push({season:2026,round,code,type:'DRIVER',team:'T',qualifying:{total:0,position:11,noTime:false},race:{total:0,failed:false,finishPosition:11,positionChange:0,overtakes:code==='FAST'?10:0,fastestLap:false,dotd:false}});
+ const model=fitOvertakeModel(history,{season:2026,round:9,driverPrior:1} as any);
+ assert.ok(expectedRaceOvertakes(model,'FAST',11,true)>expectedRaceOvertakes(model,'SLOW',11,true)+6);
+ assert.ok(Number.isFinite(expectedRaceOvertakes(model,'NEW',11,true)));
+});
+test('weighted driver corrections also exclude target and future observations',()=>{
+ const options={season:2026,round:6,halfLife:2,driverPrior:5};const base=fitOvertakeModel(rows,options);
+ const future={...rows[0],round:6,race:{...rows[0].race!,overtakes:100,failed:true}};
+ assert.deepEqual(base,fitOvertakeModel([...rows,future,{...future,round:10}],options));
+});
+test('vanishing recency weights use finite pooled fallbacks',()=>{
+ const model=fitOvertakeModel(rows,{season:2026,round:1000,halfLife:.01,driverPrior:5});
+ assert.ok(Number.isFinite(expectedRaceOvertakes(model,'D1',11,true)));
+ assert.ok(Number.isFinite(expectedRaceOvertakes(model,'D1',11,false)));
+});
