@@ -261,7 +261,7 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
- const season=2026,round=16;
+ const season=2026,round=17;
 
  async function load(){
   setStatus('Loading market…');
