@@ -52,7 +52,7 @@ const gpName=(round:number)=>({16:'Bahrain GP in Malaysia',17:'Singapore GP',18:
 export async function GET(request:NextRequest){
  try{
   const season=Number(request.nextUrl.searchParams.get('season')??2026);
-  const startRound=Number(request.nextUrl.searchParams.get('round')??16);
+  const startRound=Number(request.nextUrl.searchParams.get('round')??17);
   const length=Math.max(1,Math.min(3,Number(request.nextUrl.searchParams.get('length')??3)));
 
   const startGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:startRound}}});

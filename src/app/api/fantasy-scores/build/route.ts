@@ -13,12 +13,12 @@ export async function GET(request: NextRequest) {
       meetingKey,
       complete: false,
       drivers,
+      scoringRulesVersion:'official-2026',
       missingInputs: [
         'driverOfDay',
-        'constructorQualifyingTeamwork',
         'constructorPitStopPoints',
       ],
-      note: 'Overtakes use the OpenF1 beta feed and carry an explicit quality flag. Missing Fantasy-specific inputs are never assumed to be zero.',
+      note: 'Qualifying, Sprint, race result, positions gained/lost and fastest-lap scoring are reconstructed from OpenF1. Overtakes use the OpenF1 beta feed and can differ from F1 Fantasy validation. Driver of the Day and constructor pit-stop points remain explicit external inputs and are never assumed to be zero.',
     });
   } catch (error) {
     return NextResponse.json(

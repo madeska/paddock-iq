@@ -34,7 +34,7 @@
     "fantasy:backtest-package-edge": "tsx scripts/backtest-package-edge.ts",
     "fantasy:backtest-horizon-package-edge": "tsx scripts/backtest-horizon-package-edge.ts",
     "fantasy:backtest-recommendations": "tsx scripts/backtest-recommendations.ts",
-    "fantasy:backtest-ci": "npm run fantasy:backtest-horizon-package-edge && npm run fantasy:backtest-recommendations && npm run fantasy:backtest-team-builder-weights && npm run fantasy:backtest-generated-teams && npm run fantasy:backtest-team-xpts-blends && npm run fantasy:backtest-boost-selector && npm run fantasy:backtest-team-builder-confidence && npm run fantasy:backtest-horizon-blend-grid && npm run fantasy:backtest-horizon-team-confidence",
+    "fantasy:backtest-ci": "npm run fantasy:check-scoring && npm run fantasy:backtest-horizon-package-edge && npm run fantasy:backtest-recommendations && npm run fantasy:backtest-team-builder-weights && npm run fantasy:backtest-generated-teams && npm run fantasy:backtest-team-xpts-blends && npm run fantasy:backtest-boost-selector && npm run fantasy:backtest-team-builder-confidence && npm run fantasy:backtest-horizon-blend-grid && npm run fantasy:backtest-horizon-team-confidence",
     "fantasy:backtest-team-builder-weights": "tsx scripts/backtest-team-builder-weights.ts",
     "fantasy:backtest-generated-teams": "tsx scripts/backtest-generated-teams.ts",
     "fantasy:backtest-risk-adjusted-teams": "tsx scripts/backtest-risk-adjusted-team-ranking.ts",
@@ -42,7 +42,8 @@
     "fantasy:backtest-boost-selector": "tsx scripts/backtest-boost-selector.ts",
     "fantasy:backtest-team-builder-confidence": "tsx scripts/backtest-team-builder-confidence.ts",
     "fantasy:backtest-horizon-blend-grid": "tsx scripts/backtest-horizon-blend-grid.ts",
-    "fantasy:backtest-horizon-team-confidence": "tsx scripts/backtest-horizon-team-confidence.ts"
+    "fantasy:backtest-horizon-team-confidence": "tsx scripts/backtest-horizon-team-confidence.ts",
+    "fantasy:check-scoring": "tsx scripts/check-fantasy-scoring.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
