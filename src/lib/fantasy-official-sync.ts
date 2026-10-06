@@ -33,6 +33,11 @@ const CONSTRUCTOR_CODES:Record<string,string>={
  'CADILLAC FORMULA 1 TEAM':'CAD',
 };
 
+const CURRENT_DRIVER_TEAM_2026:Record<string,string>={
+ LAW:'RACING BULLS',
+};
+const INACTIVE_DRIVER_CODES_2026=new Set(['TSU']);
+
 const GP_NAMES_2026:Record<number,string>={
  16:'Bahrain GP in Malaysia',
  17:'Singapore GP',
@@ -47,6 +52,17 @@ const GP_NAMES_2026:Record<number,string>={
 function constructorCode(name:unknown){
  const upper=String(name??'').trim().toUpperCase();
  return CONSTRUCTOR_CODES[upper]??null;
+}
+
+function normalizedTeam(name:unknown){return String(name??'').trim().toUpperCase()}
+
+function shouldUseDriverRow(row:FeedRow,season:number,markCurrent:boolean){
+ if(row.PositionName!=='DRIVER')return true;
+ const code=String(row.DriverTLA??'').trim().toUpperCase();
+ if(season===2026&&markCurrent&&INACTIVE_DRIVER_CODES_2026.has(code))return false;
+ const preferred=season===2026?CURRENT_DRIVER_TEAM_2026[code]:undefined;
+ if(preferred&&normalizedTeam(row.TeamName)!==preferred)return false;
+ return true;
 }
 
 function rowIdentity(row:FeedRow,teamIdToCode:Map<string,string>){
@@ -101,6 +117,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
  const processRows=async(round:number,rows:FeedRow[],saveScores:boolean,markCurrent:boolean)=>{
   const teamIdToCode=new Map<string,string>();
   for(const row of rows){
+   if(!shouldUseDriverRow(row,season,markCurrent))continue;
    if(row.PositionName!=='DRIVER'||row.TeamId==null)continue;
    const code=constructorCode(row.TeamName);
    if(code)teamIdToCode.set(String(row.TeamId),code);
@@ -114,6 +131,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   if(markCurrent)await prisma.asset.updateMany({where:{season},data:{active:false}});
 
   for(const row of rows){
+   if(!shouldUseDriverRow(row,season,markCurrent))continue;
    const identity=rowIdentity(row,teamIdToCode);
    if(!identity)continue;
    const asset=byKey.get(identity.type+':'+identity.code);
