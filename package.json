@@ -49,7 +49,10 @@
     "fantasy:check-team-import-ui": "tsx scripts/check-f1-team-import-ui.ts",
     "fantasy:check-components": "tsx --test scripts/check-component-calibration.ts",
     "fantasy:backtest-calibration": "tsx scripts/backtest-component-calibration.ts",
-    "fantasy:sync-components": "tsx scripts/sync-component-history.ts"
+    "fantasy:sync-components": "tsx scripts/sync-component-history.ts",
+    "fantasy:check-overtakes": "tsx --test scripts/check-overtake-model.ts",
+    "fantasy:backtest-overtakes": "tsx scripts/backtest-overtake-model.ts",
+    "fantasy:backtest-qualifying": "tsx scripts/backtest-qualifying-model.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -1,0 +1,507 @@
+{
+  "note": "Exploratory rolling evaluation on previously inspected rounds, not a new holdout. No target/future rounds train the model. Fixed Poisson ridge=8. Only race overtakes changed; sprint and other components unchanged.",
+  "metrics": [
+    {
+      "segment": "development",
+      "model": "current",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.652353348833918,
+      "RMSE": 14.569283556731317,
+      "Bias": 0.8822666670999572,
+      "overtakesMAE": 2.3444107744107745
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.302824272386957,
+      "RMSE": 19.694915233864563,
+      "Bias": 0.9202158610668241
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.644242164283124,
+      "RMSE": 14.632719598918442,
+      "Bias": 1.1038733590191485,
+      "overtakesMAE": 2.7096170033670033
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.358325114137802,
+      "RMSE": 19.827656076511452,
+      "Bias": 1.3664826960836605
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.274944764221484,
+      "RMSE": 15.418056061738966,
+      "Bias": -0.21574891210826666,
+      "overtakesMAE": 3.8543888888888898
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.900525438562262,
+      "RMSE": 25.430072392043776,
+      "Bias": 0.8515622511694981
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.277352592504313,
+      "RMSE": 15.426677372188612,
+      "Bias": 0.019369774760419536,
+      "overtakesMAE": 4.037424242424242
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.799881499168322,
+      "RMSE": 25.476297250790072,
+      "Bias": 1.323910736017983
+    }
+  ],
+  "byRound": [
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.324515207428716,
+        "RMSE": 19.759150523877533,
+        "Bias": 6.549490299525237
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.923663194444444,
+        "RMSE": 22.21064910208241,
+        "Bias": 13.047831044823232
+      },
+      "objective": 25.28634680465094
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.894927261616855,
+        "RMSE": 15.395229987004772,
+        "Bias": 3.124176946113822
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.173049439709594,
+        "RMSE": 21.52068691650107,
+        "Bias": 5.73026248816288
+      },
+      "objective": 18.98145198147165
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.19330782320401,
+        "RMSE": 10.985910377836342,
+        "Bias": 1.5021878522633485
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.320092674794823,
+        "RMSE": 16.476349229193215,
+        "Bias": -0.20153135357481214
+      },
+      "objective": 14.353354160601423
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.89507471136294,
+        "RMSE": 14.744058642411769,
+        "Bias": -6.334154408630994
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.546364684442082,
+        "RMSE": 21.21794809634697,
+        "Bias": -14.337022883867974
+      },
+      "objective": 21.66825705358398
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.258915997506033,
+        "RMSE": 13.39760772585556,
+        "Bias": -0.0028809368089562307
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.72160741632635,
+        "RMSE": 18.07510004177661,
+        "Bias": 1.7414010820485124
+      },
+      "objective": 17.11971970566921
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.34737909188495,
+        "RMSE": 11.339030800910407,
+        "Bias": 0.45478025013728407
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.132168224604444,
+        "RMSE": 17.95841225328468,
+        "Bias": -0.45964521119088886
+      },
+      "objective": 15.41346320418717
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.309635156923664,
+        "RMSE": 19.972578043772845,
+        "Bias": 6.944906966191902
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 20.534250315656564,
+        "RMSE": 22.87903127483843,
+        "Bias": 13.837458570075755
+      },
+      "objective": 25.576760314751944
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.84409392828352,
+        "RMSE": 15.404590477428597,
+        "Bias": 3.3297388148006917
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.12696989425505,
+        "RMSE": 21.612930615489887,
+        "Bias": 6.147415265940658
+      },
+      "objective": 18.907578875411048
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.285448796707316,
+        "RMSE": 11.072271947038821,
+        "Bias": 1.6932295189300157
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.32010530105745,
+        "RMSE": 16.54171091887748,
+        "Bias": 0.1858676363241793
+      },
+      "objective": 14.44550144723604
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.82978430732253,
+        "RMSE": 14.760100845994792,
+        "Bias": -6.168030671257253
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.40723589656329,
+        "RMSE": 21.067055288695947,
+        "Bias": -14.00149258083767
+      },
+      "objective": 21.533402255604173
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.242574457101993,
+        "RMSE": 13.401621142031148,
+        "Bias": 0.18692019955467992
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.783229891073825,
+        "RMSE": 18.11872208762319,
+        "Bias": 2.1251068901293206
+      },
+      "objective": 17.134189402638906
+    },
+    {
+      "segment": "development",
+      "model": "conditional-overtakes",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.353916339359698,
+        "RMSE": 11.33288945432249,
+        "Bias": 0.6364753258948597
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 13.978159386220604,
+        "RMSE": 17.95855568569777,
+        "Bias": -0.0954596051302833
+      },
+      "objective": 15.34299603247
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.22621064908286,
+        "RMSE": 14.35161693478796,
+        "Bias": 1.3529346388526187
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.03491040933012,
+        "RMSE": 21.13812132738182,
+        "Bias": 5.928777770899762
+      },
+      "objective": 17.74366585374792
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.85518901665575,
+        "RMSE": 18.87535488691337,
+        "Bias": -7.146137846678767
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.97166925177429,
+        "RMSE": 29.360167929892704,
+        "Bias": -11.09207197485548
+      },
+      "objective": 25.341023642542893
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.213136862282415,
+        "RMSE": 12.598965723251133,
+        "Bias": 5.564962191545773
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.03810291842981,
+        "RMSE": 19.366126905331253,
+        "Bias": 12.788794819363439
+      },
+      "objective": 16.23218832149732
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.284195264963275,
+        "RMSE": 16.160203140625534,
+        "Bias": 3.253126247819536
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.82335386951012,
+        "RMSE": 26.301295555474557,
+        "Bias": 8.012674081694298
+      },
+      "objective": 22.695872199718337
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.79599202812314,
+        "RMSE": 14.36830644240547,
+        "Bias": -4.103629792080493
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.634590743766964,
+        "RMSE": 29.288193115835973,
+        "Bias": -11.380363441254529
+      },
+      "objective": 24.11328740000662
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.26963552282023,
+        "RMSE": 14.376939317426798,
+        "Bias": 1.5521991590546387
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.005737429532138,
+        "RMSE": 21.299334358776324,
+        "Bias": 6.322029033526025
+      },
+      "objective": 17.7725042375863
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.727793183322417,
+        "RMSE": 18.8198746005811,
+        "Bias": -6.970604387082809
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.743872534602584,
+        "RMSE": 29.225159981032643,
+        "Bias": -10.739906570815075
+      },
+      "objective": 25.09972945062371
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.378080044100594,
+        "RMSE": 12.714286331736284,
+        "Bias": 5.875593504677084
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.205318827520717,
+        "RMSE": 19.702783741246286,
+        "Bias": 13.418157193100814
+      },
+      "objective": 16.480739457860953
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.275656754862268,
+        "RMSE": 16.205699988168593,
+        "Bias": 3.5062796569104435
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.74545614223739,
+        "RMSE": 26.519622730428345,
+        "Bias": 8.52521827361349
+      },
+      "objective": 22.648384825980962
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "conditional-overtakes",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.735597457416066,
+        "RMSE": 14.309088740290436,
+        "Bias": -3.8666190597572596
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.299022561948785,
+        "RMSE": 29.08516651302854,
+        "Bias": -10.905944249335336
+      },
+      "objective": 23.885108738390457
+    }
+  ],
+  "knownGrid": [
+    {
+      "segment": "development",
+      "n": 132,
+      "MAE": 2.4711106145356587,
+      "note": "Diagnostic using known start and classification, not a pre-weekend forecast"
+    },
+    {
+      "segment": "previously-inspected",
+      "n": 110,
+      "MAE": 3.7313060659980652,
+      "note": "Diagnostic using known start and classification, not a pre-weekend forecast"
+    }
+  ],
+  "qualifyingDiagnostics": [
+    {
+      "segment": "development",
+      "currentQualifyingPointsMAE": 1.6136595117845112,
+      "priorQualifyingMeanMAE": 1.071109908609909,
+      "note": "Qualifying-point error is only a proxy; it does not measure full grid-ranking error"
+    },
+    {
+      "segment": "previously-inspected",
+      "currentQualifyingPointsMAE": 1.8194318181818177,
+      "priorQualifyingMeanMAE": 1.2595013113608156,
+      "note": "Qualifying-point error is only a proxy; it does not measure full grid-ranking error"
+    }
+  ]
+}

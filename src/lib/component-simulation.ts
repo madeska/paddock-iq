@@ -1,3 +1,4 @@
+import {expectedRaceOvertakes,type OvertakeModel} from './overtake-model';
 import type {ComponentCalibration} from './component-calibration';
 import {
   constructorQualifyingPoints,
@@ -26,6 +27,9 @@ export type ComponentSimulationOptions={
   seed?:number;
   overtakeIntensity?:number;
   calibration?:ComponentCalibration;
+  overtakeModel?:OvertakeModel;
+  qualifyingPace?:Record<string,number>;
+  qualifyingNoise?:number;
   /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
   calibrationMode?:'all'|'reliability-dotd-pits';
 };
@@ -130,7 +134,7 @@ export function simulateComponentWeekend(
   }
 
   for(let sim=0;sim<simulations;sim++){
-    const rankedQuali=sampleRanking(driverState,1.05,r);
+    const rankedQuali=sampleRanking(options.qualifyingPace?driverState.map(d=>({...d,strength:options.qualifyingPace![d.code]??0})):driverState,options.qualifyingNoise??1.05,r);
     const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
     const quali=[...rankedQuali.filter(d=>!noTimes.has(d.code)),...rankedQuali.filter(d=>noTimes.has(d.code))];
     const qPos=new Map(quali.map((d,i)=>[d.code,i+1]));
@@ -179,7 +183,7 @@ export function simulateComponentWeekend(
       const start=qPos.get(d.code)??null,finish=finishPos.get(d.code)??null;
       const gain=isClassified&&start!=null&&finish!=null?start-finish:0;
       const extraOvertakes=isClassified?poisson(Math.max(.15,overtakeIntensity*(.45+.025*(start??11))),r):0;
-      const overtakes=d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(isClassified?d.events.raceOvertakesMean:d.events.failedRaceOvertakesMean,r):isClassified?Math.max(0,gain)+extraOvertakes:0;
+      const overtakes=options.overtakeModel?poisson(expectedRaceOvertakes(options.overtakeModel,d.code,start,isClassified),r):d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(isClassified?d.events.raceOvertakesMean:d.events.failedRaceOvertakesMean,r):isClassified?Math.max(0,gain)+extraOvertakes:0;
       const isFastest=fastest?.code===d.code,isDotd=dotd?.code===d.code;
       const full=raceDriverPoints({startPosition:start,finishPosition:finish,classified:isClassified,overtakes,fastestLap:isFastest,driverOfTheDay:isDotd});
       const noDotd=raceDriverPoints({startPosition:start,finishPosition:finish,classified:isClassified,overtakes,fastestLap:isFastest,driverOfTheDay:false});
