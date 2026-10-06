@@ -120,7 +120,7 @@ export async function GET(request:NextRequest){
      pointsStdDev:std(newest.slice(0,5))
     }):null;
     const expectedPriceDelta=priceModel?.expectedDelta??0;
-    const nextPrice=Math.max(3,Math.round((projectedPrice+expectedPriceDelta)*100)/100);
+    const nextPrice=Math.min(34,Math.max(3,Math.round((projectedPrice+expectedPriceDelta)*100)/100));
 
     rounds.push({
      round,
