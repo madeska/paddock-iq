@@ -4,7 +4,7 @@ const constructors:Record<string,string>={'MCLAREN':'MCL','RED BULL':'RBR','RED 
 const chipFields:Record<string,string>={LL:'islimitlesstaken',WC:'iswildcardtaken',FF:'isfinalfixtaken',AP:'isautopilottaken',NN:'isnonigativetaken',DRS:'isextradrstaken'};
 function row(value:unknown):Record<string,unknown>{if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Invalid F1 export structure');return value as Record<string,unknown>}
 function number(value:unknown,integer=false):number|undefined {if(value===undefined||value===null||value==='')return undefined;if(typeof value!=='number'&&typeof value!=='string')throw Error('Invalid numeric F1 field');const n=Number(value);if(!Number.isFinite(n)||(integer&&!Number.isInteger(n)))throw Error('Invalid numeric F1 field');return n}
-function flag(value:unknown){if(value===true||value===1||value==='1')return true;if(value===false||value===0||value==='0')return false;return undefined}
+function flag(value:unknown){if(value===true)return true;if(value===false||value===0||value==='0')return false;if((typeof value==='number'||typeof value==='string')&&Number.isInteger(Number(value))&&Number(value)>0)return true;return undefined}
 export function normalizeF1TeamExport(payload:unknown,market:MarketIdentity[],season:number,round:number):{season:number;round:number;capturedAt:string;teams:ImportedF1Team[]}{
  const input=row(payload);
  if(input.format!=='paddock-iq-f1-v1')throw Error('Use the Paddock IQ browser helper to export your current F1 team.');
@@ -22,7 +22,9 @@ export function normalizeF1TeamExport(payload:unknown,market:MarketIdentity[],se
   const assets:ImportedF1Team["assets"]=t.playerid.map(value=>{
    const pick=row(value);const p=catalog.get(String(pick.id??''));if(!p)throw Error('Unmapped F1 player. Export again or use manual setup.');
    const type=p.PositionName;if(type!=='DRIVER'&&type!=='CONSTRUCTOR')throw Error('Unknown F1 asset type');
-   const code=type==='DRIVER'?String(p.DriverTLA??'').trim().toUpperCase():constructors[String(p.TeamName??'').trim().toUpperCase()]??market.find(a=>a.type==='CONSTRUCTOR'&&a.name.toUpperCase()===String(p.TeamName??'').trim().toUpperCase())?.code;
+   const tla=String(p.DriverTLA??'').trim().toUpperCase();
+   const constructorTla=({HAA:'HAS',RBS:'RB'} as Record<string,string>)[tla]??tla;
+   const code=type==='DRIVER'?tla:market.find(a=>a.type==='CONSTRUCTOR'&&a.code===constructorTla)?.code??constructors[String(p.TeamName??'').trim().toUpperCase()]??market.find(a=>a.type==='CONSTRUCTOR'&&a.name.toUpperCase()===String(p.TeamName??'').trim().toUpperCase())?.code;
    if(!code||!market.some(a=>a.type===type&&a.code===code))throw Error('F1 asset is missing from the selected season market. Use manual setup or sync the market.');
    return {code,type,isDoubled:String(pick.id)===captain};
   });

@@ -57,3 +57,16 @@ test('API previews without writes and saves the selected team through TeamSnapsh
 });
 
 test('paid transfers leave zero free transfers rather than rejecting a valid F1 team',()=>{const f=fixture();f.teams[0].usersubsleft=-1;assert.equal(normalizeF1TeamExport(f,assets,2026,18).teams[0].freeTransfers,0)});
+test('live F1 constructor rows use DriverTLA even when TeamName is empty',()=>{
+ const f=fixture();f.players=f.players.map((p,i)=>i<5?p:{...p,DriverTLA:i===5?'MER':'RBR',TeamName:''});
+ assert.deepEqual(normalizeF1TeamExport(f,assets,2026,18).teams[0].assets.slice(5).map(a=>a.code),['MER','RBR']);
+});
+test('F1 constructor aliases match existing HAS and RB market codes',()=>{
+ const f=fixture();f.players=f.players.map((p,i)=>i<5?p:{...p,DriverTLA:i===5?'HAA':'RBS',TeamName:''});
+ const aliasMarket=[...market,{code:'HAS',name:'Haas',type:'CONSTRUCTOR' as const},{code:'RB',name:'Racing Bulls',type:'CONSTRUCTOR' as const}];
+ assert.deepEqual(normalizeF1TeamExport(f,aliasMarket,2026,18).teams[0].assets.slice(5).map(a=>a.code),['HAS','RB']);
+});
+test('live F1 positive chip markers are used, zero is available, missing is unknown',()=>{
+ const f=fixture() as any;Object.assign(f.teams[0],{isautopilottaken:4,isnonigativetaken:5,isextradrstaken:6,isfinalfixtaken:0});
+ assert.deepEqual(normalizeF1TeamExport(f,assets,2026,18).teams[0].chips,{LL:'USED',WC:'AVAILABLE',AP:'USED',NN:'USED',DRS:'USED',FF:'AVAILABLE'});
+});
