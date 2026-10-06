@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
 
 const MAIN_MODELS=[
   'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
@@ -20,9 +21,13 @@ const CURRENT_MODELS=[...MAIN_MODELS,...BOOST_MODELS];
 
 export async function GET(request:NextRequest) {
   const season = Number(request.nextUrl.searchParams.get('season') ?? 2026);
-  const round = Number(request.nextUrl.searchParams.get('round') ?? 16);
+  const round = Number(request.nextUrl.searchParams.get('round') ?? 17);
 
-  const gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
+  let gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
+  if (!gp) {
+    await syncOfficialFantasyMarket(prisma,season,round);
+    gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
+  }
   if (!gp) return NextResponse.json({error:'Grand Prix not found'}, {status:404});
 
   const assets = await prisma.asset.findMany({
