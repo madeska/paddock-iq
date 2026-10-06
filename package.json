@@ -60,7 +60,9 @@
     "fantasy:backtest-recent-overtakes": "tsx scripts/backtest-recent-overtakes.ts",
     "fantasy:sync-race-archive": "tsx scripts/sync-race-archive.ts",
     "fantasy:check-race-archive": "tsx --test scripts/check-race-archive.ts scripts/check-archive-pace.ts",
-    "fantasy:backtest-archive-pace": "tsx scripts/backtest-archive-pace.ts"
+    "fantasy:backtest-archive-pace": "tsx scripts/backtest-archive-pace.ts",
+    "fantasy:check-qualifying-form": "tsx --test scripts/check-qualifying-form.ts",
+    "fantasy:backtest-qualifying-form": "tsx scripts/backtest-qualifying-form.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
