@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import {getRememberedProfile,rememberProfile} from '../../lib/remembered-profile';
 import { type Mode } from '../../lib/optimizer';
 import styles from '../market-dashboard.module.css';
 
@@ -244,12 +245,16 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  async function load() {
+  useEffect(()=>{const profile=getRememberedProfile();if(profile){setEmail(profile.email);void load(profile.email)}},[]);
+
+  async function load(profileEmail=email) {
     setStatus('Loading…');
     try {
-      const response = await fetch('/api/team?email=' + encodeURIComponent(email));
+      const profile=getRememberedProfile();const sameProfile=profile?.email===profileEmail.trim().toLowerCase();
+      const response = await fetch('/api/team?email=' + encodeURIComponent(profileEmail)+(sameProfile&&profile?.teamId?'&teamId='+encodeURIComponent(profile.teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
       const json = await response.json();
       if (!response.ok) throw Error(json.error || 'Load failed');
+      rememberProfile({email:profileEmail,teamId:json.team.id,season:json.team.season});
       setData(json); setLocked((prev) => prev.filter((code) => json.snapshot.assets.some((a: Asset) => a.code === code))); setStatus('');
     } catch (error) {
       setData(null); setStatus(error instanceof Error ? error.message : 'Load failed');
@@ -358,7 +363,7 @@ export default function MyTeam() {
       </header>
       <section>
         <div className="inputs"><label>Paddock IQ email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label></div>
-        <button onClick={load}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
+        <button onClick={()=>void load()}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
         <p className="notice">{status}</p>
       </section>
       {data && <>

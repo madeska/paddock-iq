@@ -70,3 +70,4 @@ test('live F1 positive chip markers are used, zero is available, missing is unkn
  const f=fixture() as any;Object.assign(f.teams[0],{isautopilottaken:4,isnonigativetaken:5,isextradrstaken:6,isfinalfixtaken:0});
  assert.deepEqual(normalizeF1TeamExport(f,assets,2026,18).teams[0].chips,{LL:'USED',WC:'AVAILABLE',AP:'USED',NN:'USED',DRS:'USED',FF:'AVAILABLE'});
 });
+test('current team_info transfer balance overrides the completed-round top-level balance',()=>{const f=fixture() as any;f.teams[0].team_info.userSubsleft=2;assert.equal(normalizeF1TeamExport(f,assets,2026,18).teams[0].freeTransfers,2);f.teams[0].team_info.userSubsleft=0;f.teams[0].usersubsleft=3;assert.equal(normalizeF1TeamExport(f,assets,2026,18).teams[0].freeTransfers,0)});

@@ -31,7 +31,7 @@ export function normalizeF1TeamExport(payload:unknown,market:MarketIdentity[],se
   if(assets.filter(a=>a.type==='DRIVER').length!==5||assets.filter(a=>a.type==='CONSTRUCTOR').length!==2||new Set(assets.map(a=>a.type+':'+a.code)).size!==7)throw Error('Invalid or duplicate F1 team assets');
   if(assets.filter(a=>a.type==='DRIVER'&&a.isDoubled).length!==1||assets.some(a=>a.type==='CONSTRUCTOR'&&a.isDoubled))throw Error('F1 team must have one selected 2× driver');
   const chips:ImportedF1Team['chips']={};for(const [code,field] of Object.entries(chipFields)){const used=flag(t[field]);if(used!==undefined)chips[code]=used?'USED':'AVAILABLE'}
-  const cashBalance=number(t.team_info===undefined?undefined:row(t.team_info).teamBal);const remaining=number(t.usersubsleft,true);const freeTransfers=remaining===undefined?undefined:Math.max(0,remaining);const totalPoints=number(t.ovpoints,true);
+  const cashBalance=number(t.team_info===undefined?undefined:row(t.team_info).teamBal);const remaining=number(t.team_info===undefined?t.usersubsleft:row(t.team_info).userSubsleft??t.usersubsleft,true);const freeTransfers=remaining===undefined?undefined:Math.max(0,remaining);const totalPoints=number(t.ovpoints,true);
   if(cashBalance!==undefined&&cashBalance<0)throw Error('Invalid F1 cash balance');
   return {teamNo,name,cashBalance,freeTransfers,totalPoints,assets,chips};
  });

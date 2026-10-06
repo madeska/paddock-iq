@@ -23,7 +23,7 @@ const source = String.raw`async function exportF1TeamInBrowser(){
   const teams=data.userTeam.map((t)=>{
    const clean={};for(const key of fields)if(t[key]!==undefined)clean[key]=t[key];
    clean.playerid=Array.isArray(t.playerid)?t.playerid.map((p)=>({id:p.id})):[];
-   if(t.team_info?.teamBal!==undefined)clean.team_info={teamBal:t.team_info.teamBal};return clean;
+   const info={};for(const key of ['teamBal','userSubsleft','subsallowed'])if(t.team_info?.[key]!==undefined)info[key]=t.team_info[key];if(Object.keys(info).length)clean.team_info=info;return clean;
   });
   const players=rows.map((p)=>({PlayerId:p.PlayerId,DriverTLA:p.DriverTLA,TeamName:p.TeamName,PositionName:p.PositionName}));
   const blob=new Blob([JSON.stringify({format:'paddock-iq-f1-v1',capturedAt:new Date().toISOString(),season,round,teams,players})],{type:'application/json'});

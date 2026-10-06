@@ -7,7 +7,7 @@
 3. Run the bookmark from that tab. It downloads `paddock-iq-f1-team.json`.
 4. Select that file in Paddock IQ, preview the team, choose the exported team number, enter the existing Paddock IQ profile email, and save.
 
-The browser helper chooses the current season/round/phase from the official schedule. It uses the official client's priority: live, points processing, provisional points, current, upcoming. It refreshes the observed getteam request for that round and reads the matching public driver/constructor feed. There is no password form, token input, or background sync. Repeat the export after changing the lineup. Exports expire after 30 minutes. Manual setup remains available below the import flow.
+The browser helper chooses the current season/round/phase from the official schedule. It uses the official client's priority: live, points processing, provisional points, current, upcoming. It refreshes the observed getteam request for that round and reads the matching public driver/constructor feed. There is no password form, token input, or background sync. Repeat the export after changing the lineup. Exports expire after 30 minutes. Manual setup remains available below the import flow. A successful save remembers the profile email, selected team and season in this browser. Subsequent imports reuse that profile; Change profile allows a different email. My Team automatically loads the remembered selection. This is a browser preference, not account authentication.
 
 ## Verified public interface, 2026-10-06
 
@@ -22,9 +22,11 @@ The current client uses same-origin services at:
 - `GET /feeds/schedule/raceday_en.json`
 - `GET /feeds/drivers/{gameDayId}_en.json`
 
-The frontend unwraps `Data.Value`, checks `Meta.Success`, and receives `mdid` and `userTeam`. Team rows use `playerid[].id`, `capplayerid`, `teamname`, `team_info.teamBal`, `usersubsleft`, and `ovpoints`. Public player rows map `PlayerId` to `DriverTLA` and `PositionName`. Constructor rows can have empty `TeamName`; use their `DriverTLA`, including `HAA` → `HAS` and `RBS` → `RB`, with name-based fallback for older feeds. Positive numeric chip markers (including 4/5/6) mean used; zero means available. The old `fantasy-api.formula1.com/partner_games/f1` Bearer flow is not used. A public third-party OAuth registration/redirect flow has not been established by this inspection.
+The frontend unwraps `Data.Value`, checks `Meta.Success`, and receives `mdid` and `userTeam`. Team rows use `playerid[].id`, `capplayerid`, `teamname`, `team_info.teamBal`, `team_info.userSubsleft`, and `ovpoints`. The current My Team UI uses nested `team_info.userSubsleft`; the top-level `usersubsleft` may describe a completed-round balance and is only a legacy fallback when the nested field is absent. Public player rows map `PlayerId` to `DriverTLA` and `PositionName`. Constructor rows can have empty `TeamName`; use their `DriverTLA`, including `HAA` → `HAS` and `RBS` → `RB`, with name-based fallback for older feeds. Positive numeric chip markers (including 4/5/6) mean used; zero means available. The old `fantasy-api.formula1.com/partner_games/f1` Bearer flow is not used. A public third-party OAuth registration/redirect flow has not been established by this inspection.
 
 The helper reuses the user's browser session only on the F1 origin. It does not inspect cookies, local storage, passwords, or authorization headers. Request URLs and GUIDs are not exported. All requests remain on F1; only a whitelist of lineup/status fields is downloaded. No private F1 credentials reach Paddock IQ. No F1 team changes are made.
+
+After updating from an older helper, replace the saved bookmark URL using the freshly loaded import page and export again. Old files cannot contain the newly included current transfer field; saving the new export replaces the previous snapshot balance.
 
 ## API and persistence
 
@@ -32,7 +34,7 @@ The helper reuses the user's browser session only on the F1 origin. It does not 
 
 `POST /api/team/f1/import` takes `action: preview | save`, `export`, `season`, and `round`. Save also takes `teamNo` and `email`. The route rejects cross-origin submissions, exports above 100 KB, expired data, season/round mismatches, missing market mappings, duplicate picks, wrong 5+2 counts and invalid x2 selection. Responses use `Cache-Control: no-store`.
 
-Preview returns normalized teams without writes. Save revalidates the original export and delegates to the existing `/api/team/import` handler's atomic TeamSnapshot transaction. It never trusts a client-provided normalized lineup. Optional fields remain unknown when not supplied. Negative `usersubsleft` (paid transfers already used) maps to zero remaining free transfers. Chip flags map to existing codes `WC`, `LL`, `AP`, `NN`, `DRS`, `FF`; absent flags do not overwrite existing chip state.
+Preview returns normalized teams without writes. Save revalidates the original export and delegates to the existing `/api/team/import` handler's atomic TeamSnapshot transaction. It never trusts a client-provided normalized lineup. Optional fields remain unknown when not supplied. Negative remaining transfer balances (paid transfers already used) maps to zero remaining free transfers. Chip flags map to existing codes `WC`, `LL`, `AP`, `NN`, `DRS`, `FF`; absent flags do not overwrite existing chip state.
 
 ## Limits and validation
 
