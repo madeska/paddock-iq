@@ -150,7 +150,11 @@ function buildTeamView(current:any[],market:any[],scenario:any,horizon:boolean):
 }
 
 function myTeamPairwiseRate(mode:Mode|'horizon',scoreGap:number){
-  if(mode==='custom'||mode==='horizon')return null;
+  if(mode==='custom')return null;
+  if(mode==='horizon'){
+    if(scoreGap>=40)return null;
+    return scoreGap<5?.478:scoreGap<10?.529:scoreGap<20?.705:.786;
+  }
   const rates=mode==='points'
     ? [0.509,0.616,0.694]
     : mode==='balanced'
@@ -184,7 +188,7 @@ function diversifyScenarios(scenarios:any[],minAssetChanges:number,limit=25){
 
 function calibrateScenarioConfidence(scenarios:any[],mode:Mode|'horizon'){
   const raw=scenarios.map((scenario,index)=>{
-    if(mode==='custom'||mode==='horizon')return {...scenario,teamConfidence:null,teamConfidenceLabel:null};
+    if(mode==='custom')return {...scenario,teamConfidence:null,teamConfidenceLabel:null};
     const lower=scenarios.slice(index+1);
     if(!lower.length)return {...scenario,teamConfidence:null,teamConfidenceLabel:null};
     const rates=lower
@@ -321,7 +325,7 @@ export default function MyTeam() {
   const diversifiedScenarios = diversifyScenarios(optimizerRanked,teamDiversity,25);
   const calibratedScenarios = calibrateScenarioConfidence(diversifiedScenarios,mode);
   const confidenceFilteredScenarios = calibratedScenarios.filter((scenario:any) => {
-    if (confidenceFilter === 'ALL' || mode === 'custom' || mode === 'horizon') return true;
+    if (confidenceFilter === 'ALL' || mode === 'custom') return true;
     if (confidenceFilter === 'HIGH') return scenario.teamConfidenceLabel === 'HIGH';
     return scenario.teamConfidenceLabel === 'HIGH' || scenario.teamConfidenceLabel === 'MEDIUM';
   });
@@ -386,13 +390,13 @@ export default function MyTeam() {
           <div className={styles.confidenceFilters}>
             <span>Diversity:</span>
             {([0,1,2] as const).map((value)=><button key={value} className={teamDiversity===value?styles.confidenceFilterActive:''} onClick={()=>setTeamDiversity(value)}>{value===0?'Off':value+' asset'+(value===1?'':'s')}</button>)}
-            {mode!=='custom'&&mode!=='horizon'&&<>
+            {mode!=='custom'&&<>
               <span style={{marginLeft:8}}>Confidence:</span>
               <button className={confidenceFilter === 'ALL' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('ALL')}>All</button>
               <button className={confidenceFilter === 'MEDIUM_PLUS' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
               <button className={confidenceFilter === 'HIGH' ? styles.confidenceFilterActive : ''} onClick={() => setConfidenceFilter('HIGH')}>High only</button>
             </>}
-            <span style={{marginLeft:'auto'}}>{mode==='custom'||mode==='horizon'?'Empirical lineup confidence is not calibrated for this mode yet.':'Confidence = average historical pairwise ranking accuracy versus lower-ranked displayed teams.'}</span>
+            <span style={{marginLeft:'auto'}}>{mode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':mode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus lower-ranked displayed teams.'}</span>
           </div>
           {currentTeamView && <div className={styles.bestTeamsBoard}>
             <div className={styles.bestTeamsTitle}>
