@@ -1,3 +1,4 @@
+import {fitRaceProgress} from '../src/lib/race-progress-model';
 import {fitOvertakeModel} from '../src/lib/overtake-model';
 import {writeFile} from 'node:fs/promises';
 import data from '../src/data/component-history-2026.json';
@@ -30,14 +31,14 @@ function ridgeFit(rows:{x:number[];y:number}[],lambda=50){
 }
 
 
-export function forecast(round:number,priorStrength?:number,halfLife?:number,seeds=1,calibrationMode?:'all'|'reliability-dotd-pits',conditionalOvertakes=false,qualifyingNoise?:number,rankingCorrelation?:number,raceNoise?:number){
+export function forecast(round:number,priorStrength?:number,halfLife?:number,seeds=1,calibrationMode?:'all'|'reliability-dotd-pits',conditionalOvertakes=false,qualifyingNoise?:number,rankingCorrelation?:number,raceNoise?:number,gridRelativeProgress=false){
  const train:{x:number[];y:number}[]=[];
  for(const actual of history.filter(o=>o.type==='DRIVER'&&o.round<round&&o.round>=3)){const prior=history.filter(o=>o.type==='DRIVER'&&o.code===actual.code&&o.round<actual.round).sort((a,b)=>a.round-b.round).map(o=>o.actualPoints);if(prior.length>=2)train.push({x:features(prior,actual.priceBefore),y:actual.actualPoints})}
  const ridge=ridgeFit(train,50);const target=history.filter(o=>o.round===round);
  const baseline=new Map<string,number>();const drivers:any[]=[],constructors:any[]=[];
  for(const row of target){const scores=history.filter(o=>o.type===row.type&&o.code===row.code&&o.round<round).sort((a,b)=>a.round-b.round).map(o=>o.actualPoints);const e=ewma(scores);const b=row.type==='DRIVER'?.5*(ridge?.(features(scores,row.priceBefore))??e)+.5*e:.5*e+.5*mean(scores.slice(-3));baseline.set(row.type+':'+row.code,b);if(row.type==='DRIVER')drivers.push({code:row.code,team:row.team,baselineXPts:b,recentScores:scores.slice(-5)});else constructors.push({code:row.code,baselineXPts:b})}
- const calibration=priorStrength===undefined?undefined:calibrateComponents(history,{season:2026,round,priorStrength,halfLife});const results:any[]=[];const overtakeModel=conditionalOvertakes||qualifyingNoise!==undefined||raceNoise!==undefined?fitOvertakeModel(history,{season:2026,round}):undefined;
- for(let seed=0;seed<seeds;seed++)results.push(simulateComponentWeekend(drivers,constructors,{sprint:target.some(o=>o.sprint),simulations:1200,seed:202600+round+seed*1000,overtakeIntensity:1.8,calibration,calibrationMode,rankingCorrelation,racePace:raceNoise===undefined?undefined:overtakeModel!.racePace,raceNoise,qualifyingPace:qualifyingNoise===undefined?undefined:overtakeModel!.pace,qualifyingNoise,overtakeModel:conditionalOvertakes?overtakeModel:undefined}));
+ const calibration=priorStrength===undefined?undefined:calibrateComponents(history,{season:2026,round,priorStrength,halfLife});const results:any[]=[];const raceProgress=gridRelativeProgress?fitRaceProgress(history,{season:2026,round}).progress:undefined;const overtakeModel=conditionalOvertakes||qualifyingNoise!==undefined||raceNoise!==undefined?fitOvertakeModel(history,{season:2026,round}):undefined;
+ for(let seed=0;seed<seeds;seed++)results.push(simulateComponentWeekend(drivers,constructors,{sprint:target.some(o=>o.sprint),simulations:1200,seed:202600+round+seed*1000,overtakeIntensity:1.8,calibration,calibrationMode,rankingCorrelation,raceProgress,racePace:raceNoise===undefined||gridRelativeProgress?undefined:overtakeModel!.racePace,raceNoise,qualifyingPace:qualifyingNoise===undefined?undefined:overtakeModel!.pace,qualifyingNoise,overtakeModel:conditionalOvertakes?overtakeModel:undefined}));
  return target.map(actual=>{const sims=results.map(s=>actual.type==='DRIVER'?s.drivers.find((d:any)=>d.code===actual.code):s.constructors.find((c:any)=>c.code===actual.code));const c:any={};for(const key of Object.keys(sims[0]))if(typeof sims[0][key]==='number')c[key]=mean(sims.map(s=>s[key]));const base=baseline.get(actual.type+':'+actual.code)!;return {round,code:actual.code,type:actual.type,actual:actual.actualPoints,prediction:.75*base+.25*c.total,baseline:base,components:c,observed:actual}});
 }
 export function score(rows:ReturnType<typeof forecast>){const d=metric(rows.filter(r=>r.type==='DRIVER').map(r=>r.prediction-r.actual)),c=metric(rows.filter(r=>r.type==='CONSTRUCTOR').map(r=>r.prediction-r.actual));return {DRIVER:d,CONSTRUCTOR:c,objective:d.MAE+.5*c.MAE}}

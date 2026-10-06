@@ -32,6 +32,7 @@ export type ComponentSimulationOptions={
   qualifyingNoise?:number;
   racePace?:Record<string,number>;
   raceNoise?:number;
+  raceProgress?:Record<string,number>;
   /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
   rankingCorrelation?:number;
   /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
@@ -147,13 +148,13 @@ export function simulateComponentWeekend(
 
   for(let sim=0;sim<simulations;sim++){
     const form=correlation>0?new Map(driverState.map(d=>[d.code,standardNormal(r)])):undefined;
-    function rank<T extends {code:string;strength:number}>(items:T[],noise:number):T[]{
-      if(!form)return sampleRanking(items,noise,r);
+    function rank<T extends {code:string;strength:number}>(items:T[],noise:number,randomTies=false):T[]{
+      if(!form&&!randomTies)return sampleRanking(items,noise,r);
       return items.map(item=>{
-        const z=Math.sqrt(correlation)*form!.get(item.code)!+Math.sqrt(1-correlation)*standardNormal(r);
-        const shock=-Math.log(-Math.log(clamp(normalCdf(z),1e-9,1-1e-9)));
-        return {item,key:item.strength+noise*shock};
-      }).sort((a,b)=>b.key-a.key).map(entry=>entry.item);
+        const z=form?Math.sqrt(correlation)*form.get(item.code)!+Math.sqrt(1-correlation)*standardNormal(r):0;
+        const shock=form?-Math.log(-Math.log(clamp(normalCdf(z),1e-9,1-1e-9))):gumbel(r);
+        return {item,key:item.strength+noise*shock,shock};
+      }).sort((a,b)=>b.key-a.key||(randomTies?b.shock-a.shock:0)).map(entry=>entry.item);
     }
     const rankedQuali=rank(options.qualifyingPace?driverState.map(d=>({...d,strength:options.qualifyingPace![d.code]??0})):driverState,options.qualifyingNoise??1.05);
     const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
@@ -188,7 +189,7 @@ export function simulateComponentWeekend(
     }
 
     const classified=driverState.filter(d=>r()>=d.dnfProb);
-    const raceFinish=rank(options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0);
+    const raceFinish=rank(options.raceProgress?classified.map(d=>({...d,strength:(11.5-(qPos.get(d.code)??11.5)+(options.raceProgress![d.code]??0))/6})):options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0,options.raceProgress!==undefined);
     const finishPos=new Map(raceFinish.map((d,i)=>[d.code,i+1]));
     const fastest=chooseWeighted(classified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.fastestLapWeight)??Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
     const dotd=chooseWeighted(classified,d=>{
