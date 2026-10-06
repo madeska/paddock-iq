@@ -152,7 +152,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
 
  if(latestCompletedRound){
   const futureGps=await prisma.grandPrix.findMany({where:{season,round:{gt:latestCompletedRound}},select:{id:true}});
-  if(futureGps.length)await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:{in:futureGps.map(g=>g.id)}});
+  if(futureGps.length)await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:{in:futureGps.map(g=>g.id)}}});
  }
 
  const activeAssets=await prisma.asset.count({where:{season,active:true}});
