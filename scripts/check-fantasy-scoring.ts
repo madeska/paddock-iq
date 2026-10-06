@@ -19,7 +19,7 @@ eq(qualifyingDriverPoints({position:null,noTime:true}),-5,'quali no time');
 eq(raceDriverPoints({startPosition:15,finishPosition:7,classified:true,overtakes:6}),20,'race finish + positions + overtakes');
 eq(raceDriverPoints({startPosition:3,finishPosition:7,classified:true,overtakes:1,fastestLap:true}),13,'race losses + FL');
 eq(raceDriverPoints({startPosition:5,finishPosition:null,classified:false,overtakes:8}),-20,'race DNF override');
-eq(raceDriverPoints({startPosition:4,finishPosition:1,classified:true,overtakes:3,fastestLap:true,driverOfTheDay:true}),61,'race win full bonuses');
+eq(raceDriverPoints({startPosition:4,finishPosition:1,classified:true,overtakes:3,fastestLap:true,driverOfTheDay:true}),51,'race win full bonuses');
 
 eq(sprintDriverPoints({startPosition:12,finishPosition:6,classified:true,overtakes:5,fastestLap:true}),19,'sprint scoring');
 eq(sprintDriverPoints({startPosition:2,finishPosition:null,classified:false,overtakes:2}),-10,'sprint DNF override');
