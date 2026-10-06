@@ -57,7 +57,10 @@
     "fantasy:backtest-joint": "tsx scripts/backtest-joint-weekend.ts",
     "fantasy:check-progress": "tsx --test scripts/check-race-progress.ts",
     "fantasy:backtest-progress": "tsx scripts/backtest-race-progress.ts",
-    "fantasy:backtest-recent-overtakes": "tsx scripts/backtest-recent-overtakes.ts"
+    "fantasy:backtest-recent-overtakes": "tsx scripts/backtest-recent-overtakes.ts",
+    "fantasy:sync-race-archive": "tsx scripts/sync-race-archive.ts",
+    "fantasy:check-race-archive": "tsx --test scripts/check-race-archive.ts scripts/check-archive-pace.ts",
+    "fantasy:backtest-archive-pace": "tsx scripts/backtest-archive-pace.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

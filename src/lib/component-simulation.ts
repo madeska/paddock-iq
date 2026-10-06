@@ -33,6 +33,8 @@ export type ComponentSimulationOptions={
   racePace?:Record<string,number>;
   raceNoise?:number;
   raceProgress?:Record<string,number>;
+  raceStartingGrid?:Record<string,number>;
+  includeRankDiagnostics?:boolean;
   /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
   rankingCorrelation?:number;
   /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
@@ -119,6 +121,10 @@ export function simulateComponentWeekend(
 ){
   const correlation=options.rankingCorrelation??0;
   if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
+  if(options.raceStartingGrid){
+    const seen=new Set<number>();for(const driver of driverInputs){const start=options.raceStartingGrid[driver.code];if(!Number.isInteger(start)||start<1||start>driverInputs.length+1||start<=driverInputs.length&&seen.has(start))throw Error('Invalid known race grid');seen.add(start)}
+  }
+  const rankStats=options.includeRankDiagnostics?new Map(driverInputs.map(d=>[d.code,{starts:0,classifiedStarts:0,finishes:0,classified:0}])):undefined;
   const simulations=Math.max(200,options.simulations??3000);
   const r=rng32(options.seed??170026);
   const overtakeIntensity=options.overtakeIntensity??2.2;
@@ -161,6 +167,7 @@ export function simulateComponentWeekend(
     const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
     const quali=[...rankedQuali.filter(d=>!noTimes.has(d.code)),...rankedQuali.filter(d=>noTimes.has(d.code))];
     const qPos=new Map(quali.map((d,i)=>[d.code,i+1]));
+    const raceStart=options.raceStartingGrid?new Map(driverState.map(d=>[d.code,options.raceStartingGrid![d.code]])):qPos;
     const qPts=new Map(driverState.map(d=>{
       const noTime=noTimes.has(d.code);
       return [d.code,qualifyingDriverPoints({position:noTime?null:qPos.get(d.code)??null,noTime})] as const;
@@ -190,12 +197,12 @@ export function simulateComponentWeekend(
     }
 
     const classified=driverState.filter(d=>r()>=d.dnfProb);
-    const raceFinish=rank(options.raceProgress?classified.map(d=>({...d,strength:(11.5-(qPos.get(d.code)??11.5)+(options.raceProgress![d.code]??0))/6})):options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0,options.raceProgress!==undefined);
+    const raceFinish=rank(options.raceProgress?classified.map(d=>({...d,strength:(11.5-(raceStart.get(d.code)??11.5)+(options.raceProgress![d.code]??0))/6})):options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0,options.raceProgress!==undefined);
     const finishPos=new Map(raceFinish.map((d,i)=>[d.code,i+1]));
     const fastest=chooseWeighted(classified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.fastestLapWeight)??Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
     const dotd=chooseWeighted(classified,d=>{
       if(d.events)return d.events.dotdWeight;
-      const start=qPos.get(d.code)??22,finish=finishPos.get(d.code)??22,gain=Math.max(0,start-finish);
+      const start=raceStart.get(d.code)??22,finish=finishPos.get(d.code)??22,gain=Math.max(0,start-finish);
       return Math.exp(d.strength*.35)*(1+gain*.8)*(finish<=10?1.7:1);
     },r);
 
@@ -203,7 +210,8 @@ export function simulateComponentWeekend(
     const racePtsNoDotd=new Map<string,number>();
     for(const d of driverState){
       const isClassified=finishPos.has(d.code);
-      const start=qPos.get(d.code)??null,finish=finishPos.get(d.code)??null;
+      const start=raceStart.get(d.code)??null,finish=finishPos.get(d.code)??null;
+      if(rankStats){const stat=rankStats.get(d.code)!;stat.starts+=start??0;if(isClassified&&finish!==null){stat.classified++;stat.classifiedStarts+=start??0;stat.finishes+=finish}}
       const gain=isClassified&&start!=null&&finish!=null?start-finish:0;
       const extraOvertakes=isClassified?poisson(Math.max(.15,overtakeIntensity*(.45+.025*(start??11))),r):0;
       const overtakes=options.overtakeModel?poisson(expectedRaceOvertakes(options.overtakeModel,d.code,start,isClassified),r):d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(isClassified?d.events.raceOvertakesMean:d.events.failedRaceOvertakesMean,r):isClassified?Math.max(0,gain)+extraOvertakes:0;
@@ -281,5 +289,5 @@ export function simulateComponentWeekend(
     pitStops:a.pitStops/simulations,
     total:a.total/simulations,
   }));
-  return {drivers,constructors,simulations,overtakeIntensity};
+  return {drivers,constructors,simulations,overtakeIntensity,...(rankStats?{rankDiagnostics:[...rankStats].map(([code,s])=>({code,expectedStart:s.starts/simulations,finishProbability:s.classified/simulations,expectedClassifiedFinish:s.classified?s.finishes/s.classified:null,expectedClassifiedPositionChange:s.classified?(s.classifiedStarts-s.finishes)/s.classified:null}))}:{})};
 }
