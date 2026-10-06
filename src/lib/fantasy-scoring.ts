@@ -47,17 +47,15 @@ function positionsDelta(start:number|null,finish:number|null,classified:boolean)
 }
 
 export function sprintDriverPoints(input:DriverSprintInput){
- if(!input.classified)return -10;
- return positionalPoints(input.finishPosition,SPRINT_FINISH_POINTS)
-  +positionsDelta(input.startPosition,input.finishPosition,true)
+ return (input.classified?positionalPoints(input.finishPosition,SPRINT_FINISH_POINTS):-10)
+  +positionsDelta(input.startPosition,input.finishPosition,input.classified)
   +Math.max(0,input.overtakes)
   +(input.fastestLap?5:0);
 }
 
 export function raceDriverPoints(input:DriverRaceInput){
- if(!input.classified)return -20;
- return positionalPoints(input.finishPosition,RACE_FINISH_POINTS)
-  +positionsDelta(input.startPosition,input.finishPosition,true)
+ return (input.classified?positionalPoints(input.finishPosition,RACE_FINISH_POINTS):-20)
+  +positionsDelta(input.startPosition,input.finishPosition,input.classified)
   +Math.max(0,input.overtakes)
   +(input.fastestLap?10:0)
   +(input.driverOfTheDay?10:0);

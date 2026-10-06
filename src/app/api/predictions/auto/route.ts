@@ -214,9 +214,9 @@ export async function POST(request:NextRequest){
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const modelVersion=asset.type==='DRIVER'
     ?(practicePosition!=null
-      ?'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded'
-      :'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded')
-    :'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded';
+      ?'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded'
+      :'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded')
+    :'xpts-constructor-baseline75-component25-v2 + price-probability-v0.4-bounded';
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,

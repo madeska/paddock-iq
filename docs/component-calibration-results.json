@@ -1,0 +1,788 @@
+{
+  "dataset": {
+    "rounds": 16,
+    "drivers": 352,
+    "constructors": 176
+  },
+  "developmentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "holdoutRounds": [
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "selected": {
+    "priorStrength": 16,
+    "halfLife": 16
+  },
+  "metrics": [
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.652353348833918,
+      "RMSE": 14.569283556731317,
+      "Bias": 0.8822666670999572
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.302824272386957,
+      "RMSE": 19.694915233864563,
+      "Bias": 0.9202158610668241
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.751486968539412,
+      "RMSE": 14.572119422045226,
+      "Bias": 0.4905205601976003
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.42066573223281,
+      "RMSE": 19.739138359951966,
+      "Bias": -0.148033297182334
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.75328358049227,
+      "RMSE": 14.545174182527768,
+      "Bias": 0.3858651519484424
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.387915311357386,
+      "RMSE": 19.697891412074018,
+      "Bias": -0.3493106540846904
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.274944764221484,
+      "RMSE": 15.418056061738966,
+      "Bias": -0.21574891210826666
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.900525438562262,
+      "RMSE": 25.430072392043776,
+      "Bias": 0.8515622511694981
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.283217760286929,
+      "RMSE": 15.413503088061512,
+      "Bias": -0.4903884323102868
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.970702206239032,
+      "RMSE": 25.358468445446256,
+      "Bias": 0.0976885137957613
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.276694273506454,
+      "RMSE": 15.413525749313376,
+      "Bias": -0.6483423464517003
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 20.05254816583499,
+      "RMSE": 25.369306280736623,
+      "Bias": -0.2201725973153506
+    }
+  ],
+  "componentMetrics": [
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "dnfBrier": 0.1491497843013468,
+      "overtakesMAE": 2.3444107744107745,
+      "fastestLapBrier": 0.03614382131500187,
+      "dotdBrier": 0.042089371726524515,
+      "pitMAE": 3.052112794612795
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "dnfBrier": 0.13715037235783759,
+      "overtakesMAE": 2.6559743265993268,
+      "fastestLapBrier": 0.037834075710811814,
+      "dotdBrier": 0.04096243336139168,
+      "pitMAE": 2.971220538720538
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "dnfBrier": 0.1383592247708566,
+      "overtakesMAE": 2.333878367003368,
+      "fastestLapBrier": 0.0361591049382716,
+      "dotdBrier": 0.040891356855592975,
+      "pitMAE": 2.978148148148148
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "dnfBrier": 0.15897295735129072,
+      "overtakesMAE": 3.8543888888888898,
+      "fastestLapBrier": 0.04035304994388328,
+      "dotdBrier": 0.04138261083052751,
+      "pitMAE": 3.1533939393939394
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "dnfBrier": 0.13972021464646464,
+      "overtakesMAE": 4.044987373737374,
+      "fastestLapBrier": 0.041658738776655435,
+      "dotdBrier": 0.037940667789001126,
+      "pitMAE": 2.7854494949494955
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "dnfBrier": 0.13891051978114483,
+      "overtakesMAE": 3.856707070707068,
+      "fastestLapBrier": 0.03991602553310887,
+      "dotdBrier": 0.03755227553310887,
+      "pitMAE": 2.7852222222222225
+    }
+  ],
+  "byRound": [
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.324515207428716,
+        "RMSE": 19.759150523877533,
+        "Bias": 6.549490299525237
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.923663194444444,
+        "RMSE": 22.21064910208241,
+        "Bias": 13.047831044823232
+      },
+      "objective": 25.28634680465094
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.894927261616855,
+        "RMSE": 15.395229987004772,
+        "Bias": 3.124176946113822
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.173049439709594,
+        "RMSE": 21.52068691650107,
+        "Bias": 5.73026248816288
+      },
+      "objective": 18.98145198147165
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.19330782320401,
+        "RMSE": 10.985910377836342,
+        "Bias": 1.5021878522633485
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.320092674794823,
+        "RMSE": 16.476349229193215,
+        "Bias": -0.20153135357481214
+      },
+      "objective": 14.353354160601423
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.89507471136294,
+        "RMSE": 14.744058642411769,
+        "Bias": -6.334154408630994
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.546364684442082,
+        "RMSE": 21.21794809634697,
+        "Bias": -14.337022883867974
+      },
+      "objective": 21.66825705358398
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.258915997506033,
+        "RMSE": 13.39760772585556,
+        "Bias": -0.0028809368089562307
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.72160741632635,
+        "RMSE": 18.07510004177661,
+        "Bias": 1.7414010820485124
+      },
+      "objective": 17.11971970566921
+    },
+    {
+      "segment": "development",
+      "model": "uncalibrated",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.34737909188495,
+        "RMSE": 11.339030800910407,
+        "Bias": 0.45478025013728407
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.132168224604444,
+        "RMSE": 17.95841225328468,
+        "Bias": -0.45964521119088886
+      },
+      "objective": 15.41346320418717
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.279066975105485,
+        "RMSE": 19.644329721521547,
+        "Bias": 6.345007976292914
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.229016729797976,
+        "RMSE": 21.552389389495186,
+        "Bias": 12.286366398358586
+      },
+      "objective": 24.893575340004475
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.906875106142653,
+        "RMSE": 15.227938713487315,
+        "Bias": 2.683892855204731
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.038933278093435,
+        "RMSE": 21.06667397210962,
+        "Bias": 4.503772589172981
+      },
+      "objective": 18.92634174518937
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.195640525224208,
+        "RMSE": 11.031678142074854,
+        "Bias": 1.0402465643845613
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.752810625789142,
+        "RMSE": 16.820236722906703,
+        "Bias": -1.4307358990293568
+      },
+      "objective": 14.572045838118779
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.344380266918494,
+        "RMSE": 15.085239128031134,
+        "Bias": -6.8928854692370525
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 20.45261468444208,
+        "RMSE": 22.199000712103793,
+        "Bias": -15.695659247504341
+      },
+      "objective": 22.570687609139533
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.311491755081788,
+        "RMSE": 13.341862725483285,
+        "Bias": -0.3606902802433003
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.72925893147786,
+        "RMSE": 18.11286343173571,
+        "Bias": 0.8065904759879076
+      },
+      "objective": 17.17612122082072
+    },
+    {
+      "segment": "development",
+      "model": "calibrated",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.47146718276381,
+        "RMSE": 11.358807854112657,
+        "Bias": 0.12755171478374902
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.321360143796362,
+        "RMSE": 18.047144948413976,
+        "Bias": -1.3585341000797768
+      },
+      "objective": 15.63214725466199
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.324448919549928,
+        "RMSE": 19.54468951503696,
+        "Bias": 6.050989668212105
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.852791982323236,
+        "RMSE": 21.210690581112473,
+        "Bias": 11.696707307449497
+      },
+      "objective": 24.750844910711546
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.97176778291033,
+        "RMSE": 15.253330743932482,
+        "Bias": 2.5822009360128115
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.148377722537877,
+        "RMSE": 21.156763949878748,
+        "Bias": 4.316967033617425
+      },
+      "objective": 19.04595664417927
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.223670828254514,
+        "RMSE": 11.102822932049412,
+        "Bias": 0.9603349482229447
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.86738133285985,
+        "RMSE": 16.97585234483171,
+        "Bias": -1.5761399394333957
+      },
+      "objective": 14.657361494684439
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.182123322474043,
+        "RMSE": 14.949539695932662,
+        "Bias": -6.849498474287557
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 20.32178135110874,
+        "RMSE": 22.112389637686853,
+        "Bias": -15.59961126770636
+      },
+      "objective": 22.34301399802841
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.367855391445426,
+        "RMSE": 13.380042153901218,
+        "Bias": -0.46093649236451256
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.792289234508166,
+        "RMSE": 18.16792631747973,
+        "Bias": 0.6129288598262903
+      },
+      "objective": 17.264000008699508
+    },
+    {
+      "segment": "development",
+      "model": "hybrid",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.449835238319368,
+        "RMSE": 11.354585979090553,
+        "Bias": 0.032100325894859456
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.34487024480646,
+        "RMSE": 17.98134076571577,
+        "Bias": -1.5467159182615953
+      },
+      "objective": 15.622270360722599
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.22621064908286,
+        "RMSE": 14.35161693478796,
+        "Bias": 1.3529346388526187
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.03491040933012,
+        "RMSE": 21.13812132738182,
+        "Bias": 5.928777770899762
+      },
+      "objective": 17.74366585374792
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.85518901665575,
+        "RMSE": 18.87535488691337,
+        "Bias": -7.146137846678767
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.97166925177429,
+        "RMSE": 29.360167929892704,
+        "Bias": -11.09207197485548
+      },
+      "objective": 25.341023642542893
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.213136862282415,
+        "RMSE": 12.598965723251133,
+        "Bias": 5.564962191545773
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.03810291842981,
+        "RMSE": 19.366126905331253,
+        "Bias": 12.788794819363439
+      },
+      "objective": 16.23218832149732
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.284195264963275,
+        "RMSE": 16.160203140625534,
+        "Bias": 3.253126247819536
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.82335386951012,
+        "RMSE": 26.301295555474557,
+        "Bias": 8.012674081694298
+      },
+      "objective": 22.695872199718337
+    },
+    {
+      "segment": "holdout",
+      "model": "uncalibrated",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.79599202812314,
+        "RMSE": 14.36830644240547,
+        "Bias": -4.103629792080493
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.634590743766964,
+        "RMSE": 29.288193115835973,
+        "Bias": -11.380363441254529
+      },
+      "objective": 24.11328740000662
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.143797220319176,
+        "RMSE": 14.433243996694392,
+        "Bias": 0.9852704974384774
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.183445762865471,
+        "RMSE": 20.967003544035073,
+        "Bias": 5.030924235546227
+      },
+      "objective": 17.73552010175191
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.021164395443627,
+        "RMSE": 18.931429871842187,
+        "Bias": -7.480478124456545
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 25.310311928541967,
+        "RMSE": 29.56903188788401,
+        "Bias": -11.918063136471641
+      },
+      "objective": 25.67632035971461
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.12926059965615,
+        "RMSE": 12.5317633054364,
+        "Bias": 5.415991231949811
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.759472867924758,
+        "RMSE": 18.981657667541906,
+        "Bias": 12.271642041585663
+      },
+      "objective": 16.00899703361853
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.282165593246106,
+        "RMSE": 16.04736495516557,
+        "Bias": 3.004177384183173
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.827886697792945,
+        "RMSE": 25.97337332065582,
+        "Bias": 7.2908811524013695
+      },
+      "objective": 22.69610894214258
+    },
+    {
+      "segment": "holdout",
+      "model": "calibrated",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.839700992769604,
+        "RMSE": 14.373580083613733,
+        "Bias": -4.376903150666351
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.772393774069993,
+        "RMSE": 29.43462715288372,
+        "Bias": -12.186941724082812
+      },
+      "objective": 24.2258978798046
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.230255553652505,
+        "RMSE": 14.467633159402128,
+        "Bias": 0.941053325721305
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.4246136921584,
+        "RMSE": 21.10732382888834,
+        "Bias": 4.9409305486775414
+      },
+      "objective": 17.942562399731706
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.06847184493858,
+        "RMSE": 18.970190213033227,
+        "Bias": -7.584155523446444
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 25.391877585107625,
+        "RMSE": 29.63576205870954,
+        "Bias": -12.13321465162316
+      },
+      "objective": 25.764410637492393
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 7.941447458683057,
+        "RMSE": 12.398223076644255,
+        "Bias": 5.13849438851547
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.580546100247993,
+        "RMSE": 18.66223789310234,
+        "Bias": 11.711515778959402
+      },
+      "objective": 15.731720508807054
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.27222556799358,
+        "RMSE": 16.003249057165995,
+        "Bias": 2.816623722567012
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.948783162439415,
+        "RMSE": 25.86431553608748,
+        "Bias": 6.914492263512478
+      },
+      "objective": 22.746617149213286
+    },
+    {
+      "segment": "holdout",
+      "model": "hybrid",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.871070942264554,
+        "RMSE": 14.45280036277121,
+        "Bias": -4.553727645615846
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.916920289221512,
+        "RMSE": 29.61366327359835,
+        "Bias": -12.534586926103016
+      },
+      "objective": 24.32953108687531
+    }
+  ]
+}

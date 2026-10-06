@@ -3,6 +3,9 @@ import { prisma } from '../../../lib/prisma';
 import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
 
 const MAIN_MODELS=[
+  'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded',
+  'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded',
+  'xpts-constructor-baseline75-component25-v2 + price-probability-v0.4-bounded',
   'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded',
   'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded',
   'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded',

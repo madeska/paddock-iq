@@ -46,7 +46,10 @@
     "fantasy:backtest-component-simulation": "tsx scripts/backtest-component-simulation.ts",
     "fantasy:check-scoring": "tsx scripts/check-fantasy-scoring.ts",
     "fantasy:check-team-import": "tsx --test scripts/check-f1-team-import.ts",
-    "fantasy:check-team-import-ui": "tsx scripts/check-f1-team-import-ui.ts"
+    "fantasy:check-team-import-ui": "tsx scripts/check-f1-team-import-ui.ts",
+    "fantasy:check-components": "tsx --test scripts/check-component-calibration.ts",
+    "fantasy:backtest-calibration": "tsx scripts/backtest-component-calibration.ts",
+    "fantasy:sync-components": "tsx scripts/sync-component-history.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
