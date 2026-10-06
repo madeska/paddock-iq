@@ -5,9 +5,9 @@
 1. Open `/team/import`. Drag **Export F1 team** to the bookmarks bar (or copy its URL into a bookmark).
 2. Sign in on https://fantasy.formula1.com/en/ and open My Team until the lineup loads.
 3. Run the bookmark from that tab. It downloads `paddock-iq-f1-team.json`.
-4. Select that file in Paddock IQ, preview the team, choose the exported team number, enter the existing Paddock IQ profile email, and save.
+4. Select that file in Paddock IQ, preview the exported teams, choose which one to open initially, enter the Paddock IQ profile email once, and click Save all teams. Every exported team is saved under that email.
 
-The browser helper chooses the current season/round/phase from the official schedule. It uses the official client's priority: live, points processing, provisional points, current, upcoming. It refreshes the observed getteam request for that round and reads the matching public driver/constructor feed. There is no password form, token input, or background sync. Repeat the export after changing the lineup. Exports expire after 30 minutes. Manual setup remains available below the import flow. A successful save remembers the profile email, selected team and season in this browser. Subsequent imports reuse that profile; Change profile allows a different email. My Team automatically loads the remembered selection. This is a browser preference, not account authentication.
+The browser helper chooses the current season/round/phase from the official schedule. It uses the official client's priority: live, points processing, provisional points, current, upcoming. It refreshes the observed getteam request for that round and reads the matching public driver/constructor feed. There is no password form, token input, or background sync. Repeat the export after changing the lineup. Exports expire after 30 minutes. Manual setup remains available below the import flow. A successful save remembers the profile email, selected team and season in this browser. Subsequent imports reuse that profile; Change profile allows a different email. My Team automatically loads the remembered selection. Its Your teams selector lists all teams associated with that email for the selected season; switching updates the lineup, balances, chips and points and remembers the new selection. Team-specific optimizer results and locks are cleared when switching, and late responses from the previous team are ignored. This is a browser preference, not account authentication.
 
 ## Verified public interface, 2026-10-06
 
@@ -32,7 +32,7 @@ After updating from an older helper, replace the saved bookmark URL using the fr
 
 `GET /api/team/f1/helper` returns the standalone bookmarklet.
 
-`POST /api/team/f1/import` takes `action: preview | save`, `export`, `season`, and `round`. Save also takes `teamNo` and `email`. The route rejects cross-origin submissions, exports above 100 KB, expired data, season/round mismatches, missing market mappings, duplicate picks, wrong 5+2 counts and invalid x2 selection. Responses use `Cache-Control: no-store`.
+`POST /api/team/f1/import` takes `action: preview | save`, `export`, `season`, and `round`. Save also takes `email` and an optional `teamNo` to select which saved team opens initially. It always saves every exported team. The route rejects cross-origin submissions, exports above 100 KB, expired data, season/round mismatches, missing market mappings, duplicate picks, wrong 5+2 counts and invalid x2 selection. Responses use `Cache-Control: no-store`.
 
 Preview returns normalized teams without writes. Save revalidates the original export and delegates to the existing `/api/team/import` handler's atomic TeamSnapshot transaction. It never trusts a client-provided normalized lineup. Optional fields remain unknown when not supplied. Negative remaining transfer balances (paid transfers already used) maps to zero remaining free transfers. Chip flags map to existing codes `WC`, `LL`, `AP`, `NN`, `DRS`, `FF`; absent flags do not overwrite existing chip state.
 
@@ -41,7 +41,7 @@ Preview returns normalized teams without writes. Save revalidates the original e
 - F1's private interface is undocumented and may change. Public bundles/feed structure were inspected. A live authenticated export supplied by the user then confirmed private team retrieval and revealed the constructor TLA and numeric chip-marker formats covered by regression tests. Live saving to PostgreSQL remains to be verified.
 - The underlying Paddock IQ profile is still identified by email, as in manual setup. This change does not supply application account authentication/authorization. The existing prototype should remain private until that is implemented.
 - More than seven picks (Final Fix or swap history) are rejected rather than guessing the current seven. Use manual setup for those lineups.
-- Exported team numbers/names are offered as returned by F1. Only the selected team is saved. Renaming a team follows existing name-based TeamSnapshot behavior.
+- Exported team numbers/names are offered as returned by F1. All exported teams are saved under the same email. Duplicate exported names are rejected because existing team identity is name-based. Renaming a team follows existing name-based TeamSnapshot behavior.
 - API persistence tests use a database test double. A real PostgreSQL write was not exercised locally.
 - The browser flow is tested with controlled F1 and Paddock API responses, including actual bookmarklet navigation/download. The user has successfully exported a live team; complete the live preview/save before treating this integration as verified for deployment.
 

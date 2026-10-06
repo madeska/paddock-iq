@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../../../lib/prisma';
 import {normalizeF1TeamExport} from '../../../../../lib/f1-team-import';
-import {POST as persistTeamSnapshot} from '../../import/route';
+import {saveTeamSnapshot} from '../../../../../lib/team-snapshot-import';
 export async function POST(request:NextRequest){
  const headers={'Cache-Control':'no-store'};
  try{
@@ -13,10 +13,16 @@ export async function POST(request:NextRequest){
   const market=await prisma.asset.findMany({where:{season,active:true},select:{code:true,name:true,type:true}});
   const imported=normalizeF1TeamExport(body.export,market,season,round);
   if(body.action==='preview')return NextResponse.json(imported,{headers});
-  const team=imported.teams.find(t=>t.teamNo===Number(body.teamNo));if(!team)throw Error('Select an exported F1 team.');
+  const team=imported.teams.find(t=>t.teamNo===Number(body.teamNo??imported.teams[0].teamNo));if(!team)throw Error('Select an exported F1 team.');
   const email=typeof body.email==='string'?body.email.trim().toLowerCase():'';if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)throw Error('Enter your Paddock IQ profile email.');
-  // Both import flows use the existing validation and atomic TeamSnapshot transaction.
-  const result=await persistTeamSnapshot(new NextRequest(new URL('/api/team/import',request.url),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:{email},team:{name:team.name,season},round,assets:team.assets,cashBalance:team.cashBalance,freeTransfers:team.freeTransfers,totalPoints:team.totalPoints,chips:team.chips})}));
-  result.headers.set('Cache-Control','no-store');return result;
+  if(new Set(imported.teams.map(t=>t.name)).size!==imported.teams.length)throw Error('Exported teams must have distinct names.');
+  // All teams share one transaction: either every snapshot is saved, or none is.
+  const saved=await prisma.$transaction(async tx=>{
+   const results=[];
+   for(const t of imported.teams){const result=await saveTeamSnapshot(tx,{user:{email},team:{name:t.name,season},round,assets:t.assets,cashBalance:t.cashBalance,freeTransfers:t.freeTransfers,totalPoints:t.totalPoints,chips:t.chips});results.push({teamNo:t.teamNo,name:t.name,...result})}
+   return results;
+  });
+  const selected=saved.find(t=>t.teamNo===team.teamNo)!;
+  return NextResponse.json({ok:true,userId:selected.userId,teamId:selected.teamId,snapshotId:selected.snapshotId,teams:saved},{headers});
  }catch(error){return NextResponse.json({error:error instanceof Error?error.message:'F1 team import failed.'},{status:400,headers})}
 }

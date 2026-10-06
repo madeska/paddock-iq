@@ -40,7 +40,8 @@ test('helper refuses other origins without reading session or sending requests',
 import {NextRequest} from 'next/server';
 import {prisma} from '../src/lib/prisma';
 import {POST as importF1Team} from '../src/app/api/team/f1/import/route';
-test('API previews without writes and saves the selected team through TeamSnapshot',async()=>{
+import {POST as importManualTeam} from '../src/app/api/team/import/route';
+test('API previews without writes and preserves single-team and manual snapshot behavior',async()=>{
  const originalFind=prisma.asset.findMany;const originalTransaction=prisma.$transaction;
  let snapshots:any[]=[];let slots:any[]=[];
  (prisma.asset as any).findMany=async()=>assets;
@@ -53,6 +54,7 @@ test('API previews without writes and saves the selected team through TeamSnapsh
   assert.equal((await send(input,'https://evil.test')).status,403);
   assert.equal((await send({...input,action:'save',teamNo:3,email:'user@example.test'})).status,400);
   assert.equal((await send({...input,round:17})).status,400);assert.equal(snapshots.length,1);
+  const manual=await importManualTeam(new NextRequest('https://paddock.test/api/team/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:{email:'user@example.test'},team:{name:'Manual',season:2026},round:18,assets:assets.map((a,i)=>({code:a.code,type:a.type,isDoubled:i===0}))})}));assert.equal(manual.status,200);assert.equal((await manual.json()).snapshotId,'snapshot');assert.equal(snapshots.length,2);assert.deepEqual(slots.filter(s=>s.isDoubled).map(s=>s.assetId),['VER']);
  }finally{(prisma.asset as any).findMany=originalFind;(prisma as any).$transaction=originalTransaction;await prisma.$disconnect()}
 });
 
@@ -71,3 +73,15 @@ test('live F1 positive chip markers are used, zero is available, missing is unkn
  assert.deepEqual(normalizeF1TeamExport(f,assets,2026,18).teams[0].chips,{LL:'USED',WC:'AVAILABLE',AP:'USED',NN:'USED',DRS:'USED',FF:'AVAILABLE'});
 });
 test('current team_info transfer balance overrides the completed-round top-level balance',()=>{const f=fixture() as any;f.teams[0].team_info.userSubsleft=2;assert.equal(normalizeF1TeamExport(f,assets,2026,18).teams[0].freeTransfers,2);f.teams[0].team_info.userSubsleft=0;f.teams[0].usersubsleft=3;assert.equal(normalizeF1TeamExport(f,assets,2026,18).teams[0].freeTransfers,0)});
+test('one save persists all exported teams in one transaction with separate snapshots',async()=>{
+ const originalFind=prisma.asset.findMany,originalTransaction=prisma.$transaction;const snapshots:any[]=[];const slotBatches:any[]=[];let transactions=0;
+ (prisma.asset as any).findMany=async()=>assets;
+ (prisma as any).$transaction=async(fn:any)=>{transactions++;return fn({user:{upsert:async()=>({id:'profile'})},fantasyTeam:{upsert:async({create}:any)=>({id:create.name})},grandPrix:{upsert:async()=>({id:'gp'})},asset:{findUnique:async({where}:any)=>({id:where.season_code_type.code})},teamSnapshot:{create:async({data}:any)=>{snapshots.push(data);return {id:'snapshot-'+data.teamId}}},teamSlot:{createMany:async({data}:any)=>slotBatches.push(data)},chipUsage:{upsert:async()=>({})}})};
+ const f=fixture();f.teams.push({...f.teams[0],teamno:2,teamname:'Second',capplayerid:'2',team_info:{teamBal:0.4},usersubsleft:3,ovpoints:100});
+ const send=()=>importF1Team(new NextRequest('https://paddock.test/api/team/f1/import',{method:'POST',headers:{origin:'https://paddock.test','Content-Type':'application/json'},body:JSON.stringify({action:'save',export:f,season:2026,round:18,email:'user@example.test',teamNo:2})}));
+ try{
+  const response=await send();assert.equal(response.status,200);const json=await response.json();assert.equal(json.teams.length,2);assert.equal(json.teamId,'Second');assert.equal(transactions,1);
+  assert.deepEqual(snapshots.map(s=>[s.teamId,s.cashBalance,s.freeTransfers]),[['Race Team',0,0],['Second',0.4,3]]);assert.deepEqual(slotBatches.map(batch=>batch.filter((s:any)=>s.isDoubled).map((s:any)=>s.assetId)),[['VER'],['NOR']]);
+  f.teams[1].playerid=[{id:'1'}];assert.equal((await send()).status,400);assert.equal(transactions,1);assert.equal(snapshots.length,2);
+ }finally{(prisma.asset as any).findMany=originalFind;(prisma as any).$transaction=originalTransaction;await prisma.$disconnect()}
+});
