@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import {getRememberedProfile,rememberProfile} from '../../lib/remembered-profile';
 import { type Mode } from '../../lib/optimizer';
 import styles from '../market-dashboard.module.css';
+import TeamEditor from './team-editor';
 
 type Score = { round: number; name: string; points: number };
 type Asset = {
@@ -17,7 +19,7 @@ type Asset = {
 type Data = {
   user: { name: string | null; email: string };
   teams: { id: string; name: string }[];
-  team: { name: string; season: number };
+  team: { id: string; name: string; season: number };
   snapshot: {
     grandPrix: { round: number; name: string };
     cashBalance: number | null; freeTransfers: number | null; totalPoints: number | null;
@@ -230,6 +232,8 @@ function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
 
 export default function MyTeam() {
   const [email, setEmail] = useState('');
+  const loadGeneration=useRef(0);
+  const [editingTeam,setEditingTeam]=useState(false),[deletingTeam,setDeletingTeam]=useState(false);
   const [data, setData] = useState<Data | null>(null);
   const [status, setStatus] = useState('');
   const [mode, setMode] = useState<Mode | 'horizon'>('balanced');
@@ -244,20 +248,40 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  async function load() {
+  useEffect(()=>{const profile=getRememberedProfile();if(profile){setEmail(profile.email);void load(profile.email)}},[]);
+
+  async function load(profileEmail=email,selectedTeamId?:string) {
+    const generation=++loadGeneration.current;
+    setEditingTeam(false);
+    const changingTeam=Boolean(data&&(data.user.email!==profileEmail.trim().toLowerCase()||(selectedTeamId&&selectedTeamId!==data.team.id)));
+    setData(null);setRecs([]);setCurrentTeamView(null);setHoveredScenario(null);setFocusedScenario(null);if(changingTeam)setLocked([]);
     setStatus('Loading…');
     try {
-      const response = await fetch('/api/team?email=' + encodeURIComponent(email));
+      const profile=getRememberedProfile();const sameProfile=profile?.email===profileEmail.trim().toLowerCase();
+      const teamId=selectedTeamId??(sameProfile?profile?.teamId:undefined);
+      const response = await fetch('/api/team?email=' + encodeURIComponent(profileEmail)+(teamId?'&teamId='+encodeURIComponent(teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
       const json = await response.json();
+      if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Load failed');
+      rememberProfile({email:profileEmail,teamId:json.team.id,season:json.team.season});
       setData(json); setLocked((prev) => prev.filter((code) => json.snapshot.assets.some((a: Asset) => a.code === code))); setStatus('');
     } catch (error) {
+      if(generation!==loadGeneration.current)return;
       setData(null); setStatus(error instanceof Error ? error.message : 'Load failed');
     }
   }
 
+  async function removeTeam(){
+    if(!data||editingTeam||deletingTeam||!window.confirm('Delete "'+data.team.name+'" and its saved history from Paddock IQ?'))return;
+    const ownerEmail=data.user.email,season=data.team.season;setDeletingTeam(true);++loadGeneration.current;setStatus('Deleting team…');
+    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:ownerEmail,teamId:data.team.id})});const json=await response.json();if(!response.ok)throw Error(json.error||'Delete failed.');
+      setData(null);setRecs([]);setLocked([]);setCurrentTeamView(null);const next=json.teams[0];rememberProfile({email:ownerEmail,season,teamId:next?.id});
+      if(next)await load(ownerEmail,next.id);else setStatus('Team deleted. No teams left for this profile.');
+    }catch(error){setStatus(error instanceof Error?error.message:'Delete failed.')}finally{setDeletingTeam(false)}
+  }
   async function generatePredictions() {
-    if (!data) return;
+    if (!data||editingTeam||deletingTeam) return;
+    const generation=loadGeneration.current;
     setStatus('Generating xPts + price probabilities…');
     try {
       const response = await fetch('/api/predictions/auto', {
@@ -265,16 +289,19 @@ export default function MyTeam() {
         body: JSON.stringify({ season: data.team.season, round: data.snapshot.grandPrix.round }),
       });
       const json = await response.json();
+      if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Prediction failed');
       setStatus('Generated ' + json.created + ' predictions. Reloading team…');
       await load();
     } catch (error) {
+      if(generation!==loadGeneration.current)return;
       setStatus(error instanceof Error ? error.message : 'Prediction failed');
     }
   }
 
   async function optimize() {
-    if (!data) return;
+    if (!data||editingTeam||deletingTeam) return;
+    const generation=loadGeneration.current;
     setStatus('Calculating…');
     try {
       const marketResponse = await fetch('/api/market?season=' + data.team.season + '&round=' + data.snapshot.grandPrix.round);
@@ -301,11 +328,13 @@ export default function MyTeam() {
         if([...optimizeCurrent,...optimizeMarket].some((a:any)=>!Array.isArray(a.horizonPoints)||a.horizonPoints.length<3))throw Error('Incomplete 3-GP horizon');
         endpoint='/api/optimize/horizon';
       }
+      if(generation!==loadGeneration.current)return;
       const response = await fetch(endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ current: optimizeCurrent, market: optimizeMarket, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode: mode==='horizon'?'points':mode, weight: customWeight, maxChanges: 3, locked }),
       });
       const json = await response.json();
+      if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Optimization failed');
       const scenarios = Array.isArray(json.scenarios) ? json.scenarios : Array.isArray(json.proposals) ? json.proposals : Array.isArray(json) ? json : [];
       const horizonMode=mode==='horizon';
@@ -313,6 +342,7 @@ export default function MyTeam() {
       setCurrentTeamView(buildCurrentTeamView(optimizeCurrent,horizonMode));
       setRecs(enriched); setStatus(enriched.length ? '' : 'No valid transfer scenarios found.');
     } catch (error) {
+      if(generation!==loadGeneration.current)return;
       setRecs([]); setStatus(error instanceof Error ? error.message : 'Optimization failed');
     }
   }
@@ -358,12 +388,15 @@ export default function MyTeam() {
       </header>
       <section>
         <div className="inputs"><label>Paddock IQ email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label></div>
-        <button onClick={load}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
+        <button disabled={editingTeam||deletingTeam} onClick={()=>void load()}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
         <p className="notice">{status}</p>
       </section>
       {data && <>
         <section>
+          <label>Your teams<select disabled={editingTeam||deletingTeam} value={data.team.id} onChange={event=>void load(data.user.email,event.target.value)}>{data.teams.map(team=><option key={team.id} value={team.id}>{team.name}</option>)}</select></label>
           <h2>{data.team.name} · {data.team.season}</h2>
+          <p><button disabled={editingTeam||deletingTeam} onClick={()=>{++loadGeneration.current;setStatus('');setEditingTeam(true)}}>Edit team</button> <button disabled={editingTeam||deletingTeam} onClick={()=>void removeTeam()}>Delete team</button></p>
+          {editingTeam&&<TeamEditor key={data.team.id} data={data} onCancel={()=>setEditingTeam(false)} onSaved={()=>load(data.user.email,data.team.id)}/>}
           <div className="stats">
             <article><small>GP</small><strong>{data.snapshot.grandPrix.name}</strong></article>
             <article><small>Points</small><strong>{data.snapshot.totalPoints ?? '—'}</strong></article>

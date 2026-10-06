@@ -31,5 +31,8 @@ jobs:
       - name: TypeScript check
         run: npx tsc -p tsconfig.ci.json --noEmit
 
+      - name: Check F1 team import
+        run: npm run fantasy:check-team-import
+
       - name: Run selected fantasy backtest
         run: npm run fantasy:backtest-ci
