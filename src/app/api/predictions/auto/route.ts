@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../lib/openf1-weekend';
+import { syncOfficialFantasyMarket } from '../../../../lib/fantasy-official-sync';
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
@@ -79,7 +80,8 @@ function features(historyChronological:number[],price:number){
 export async function POST(request:NextRequest){
  try{
   const body=await request.json().catch(()=>({}));
-  const season=Number(body.season??2026),round=Number(body.round??16);
+  const season=Number(body.season??2026),round=Number(body.round??17);
+  const officialSync=await syncOfficialFantasyMarket(prisma,season,round);
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
@@ -226,6 +228,7 @@ export async function POST(request:NextRequest){
    }:null,
    constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
    driverTrainingRows:driverTraining.length,
+   officialSync,
    predictions:created
   });
  }catch(error){
