@@ -147,7 +147,11 @@ function diversifyTeams(teams:BuilderTeam[],minAssetChanges:number,limit=25){
 }
 
 function empiricalPairwiseRate(mode:BuilderMode,scoreGap:number){
- if(mode==='custom'||mode==='horizon')return null;
+ if(mode==='custom')return null;
+ if(mode==='horizon'){
+  if(scoreGap>=40)return null;
+  return scoreGap<5?.478:scoreGap<10?.529:scoreGap<20?.705:.786;
+ }
  const utilityGap=mode==='points'?scoreGap/20:scoreGap;
  const rates=mode==='points'
   ? [0.509,0.616,0.694]
@@ -163,7 +167,7 @@ function confidenceLabel(value:number):'HIGH'|'MEDIUM'|'LOW'{
 
 function calibrateTeamConfidence(teams:BuilderTeam[],mode:BuilderMode){
  const raw=teams.map((team,index)=>{
-  if(mode==='custom'||mode==='horizon')return {...team,confidence:null,confidenceLabel:null};
+  if(mode==='custom')return {...team,confidence:null,confidenceLabel:null};
   const lower=teams.slice(index+1);
   if(!lower.length)return {...team,confidence:null,confidenceLabel:null};
   const rates=lower
@@ -289,7 +293,7 @@ export default function Home(){
   const diversified=diversifyTeams(optimizerRanked,builderDiversity,25);
   const calibrated=calibrateTeamConfidence(diversified,builderMode);
   const filtered=calibrated.filter(team=>{
-   if(builderConfidenceFilter==='ALL'||builderMode==='custom'||builderMode==='horizon')return true;
+   if(builderConfidenceFilter==='ALL'||builderMode==='custom')return true;
    if(builderConfidenceFilter==='HIGH')return team.confidenceLabel==='HIGH';
    return team.confidenceLabel==='HIGH'||team.confidenceLabel==='MEDIUM';
   });
@@ -400,12 +404,12 @@ export default function Home(){
    {builderStatus&&<div className={styles.builderStatus}>{builderStatus}</div>}
    <div className={styles.builderResultControls}>
     <div className={styles.builderControlGroup}><span>Diversity</span>{([0,1,2] as const).map(value=><button type="button" key={value} className={builderDiversity===value?styles.builderControlActive:''} onClick={()=>setBuilderDiversity(value)}>{value===0?'Off':value+' asset'+(value===1?'':'s')}</button>)}</div>
-    {builderMode!=='custom'&&builderMode!=='horizon'?<div className={styles.builderControlGroup}><span>Confidence</span>
+    {builderMode!=='custom'?<div className={styles.builderControlGroup}><span>Confidence</span>
      <button type="button" className={builderConfidenceFilter==='ALL'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('ALL')}>All</button>
      <button type="button" className={builderConfidenceFilter==='MEDIUM_PLUS'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('MEDIUM_PLUS')}>Medium+</button>
      <button type="button" className={builderConfidenceFilter==='HIGH'?styles.builderControlActive:''} onClick={()=>setBuilderConfidenceFilter('HIGH')}>High only</button>
     </div>:null}
-    <small>{builderMode==='custom'||builderMode==='horizon'?'Empirical lineup confidence is not calibrated for this mode yet.':'Confidence = average historical pairwise ranking accuracy versus the lower-ranked displayed teams. It is not a win probability.'}</small>
+    <small>{builderMode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':builderMode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; pairs with gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus the lower-ranked displayed teams. It is not a win probability.'}</small>
    </div>
 
    {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
