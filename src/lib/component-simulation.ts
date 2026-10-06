@@ -30,6 +30,10 @@ export type ComponentSimulationOptions={
   overtakeModel?:OvertakeModel;
   qualifyingPace?:Record<string,number>;
   qualifyingNoise?:number;
+  racePace?:Record<string,number>;
+  raceNoise?:number;
+  /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
+  rankingCorrelation?:number;
   /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
   calibrationMode?:'all'|'reliability-dotd-pits';
 };
@@ -66,6 +70,12 @@ function rng32(seed:number){
     t=(t+Math.imul(t^(t>>>7),61|t))^t;
     return ((t^(t>>>14))>>>0)/4294967296;
   };
+}
+const standardNormal=(r:()=>number)=>Math.sqrt(-2*Math.log(clamp(r(),1e-9,1)))*Math.cos(2*Math.PI*r());
+function normalCdf(x:number){
+ const a=Math.abs(x),t=1/(1+.2316419*a);
+ const tail=Math.exp(-a*a/2)/Math.sqrt(2*Math.PI)*t*(.319381530+t*(-.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
+ return x>=0?1-tail:tail;
 }
 const gumbel=(r:()=>number)=>-Math.log(-Math.log(clamp(r(),1e-9,1-1e-9)));
 const poisson=(lambda:number,r:()=>number)=>{
@@ -106,6 +116,8 @@ export function simulateComponentWeekend(
   constructorInputs:ComponentConstructorInput[],
   options:ComponentSimulationOptions
 ){
+  const correlation=options.rankingCorrelation??0;
+  if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
   const simulations=Math.max(200,options.simulations??3000);
   const r=rng32(options.seed??170026);
   const overtakeIntensity=options.overtakeIntensity??2.2;
@@ -134,7 +146,16 @@ export function simulateComponentWeekend(
   }
 
   for(let sim=0;sim<simulations;sim++){
-    const rankedQuali=sampleRanking(options.qualifyingPace?driverState.map(d=>({...d,strength:options.qualifyingPace![d.code]??0})):driverState,options.qualifyingNoise??1.05,r);
+    const form=correlation>0?new Map(driverState.map(d=>[d.code,standardNormal(r)])):undefined;
+    function rank<T extends {code:string;strength:number}>(items:T[],noise:number):T[]{
+      if(!form)return sampleRanking(items,noise,r);
+      return items.map(item=>{
+        const z=Math.sqrt(correlation)*form!.get(item.code)!+Math.sqrt(1-correlation)*standardNormal(r);
+        const shock=-Math.log(-Math.log(clamp(normalCdf(z),1e-9,1-1e-9)));
+        return {item,key:item.strength+noise*shock};
+      }).sort((a,b)=>b.key-a.key).map(entry=>entry.item);
+    }
+    const rankedQuali=rank(options.qualifyingPace?driverState.map(d=>({...d,strength:options.qualifyingPace![d.code]??0})):driverState,options.qualifyingNoise??1.05);
     const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
     const quali=[...rankedQuali.filter(d=>!noTimes.has(d.code)),...rankedQuali.filter(d=>noTimes.has(d.code))];
     const qPos=new Map(quali.map((d,i)=>[d.code,i+1]));
@@ -145,10 +166,10 @@ export function simulateComponentWeekend(
 
     let sprintPts=new Map<string,number>();
     if(options.sprint){
-      const sprintGrid=sampleRanking(driverState,1.15,r);
+      const sprintGrid=rank(driverState,1.15);
       const sgPos=new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
       const sprintClassified=driverState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
-      const sprintFinish=sampleRanking(sprintClassified,1.2,r);
+      const sprintFinish=rank(sprintClassified,1.2);
       const sfPos=new Map(sprintFinish.map((d,i)=>[d.code,i+1]));
       const sprintFastest=chooseWeighted(sprintClassified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.sprintFastestLapWeight)??Math.exp(d.strength*.8),r);
       sprintPts=new Map(driverState.map(d=>{
@@ -167,7 +188,7 @@ export function simulateComponentWeekend(
     }
 
     const classified=driverState.filter(d=>r()>=d.dnfProb);
-    const raceFinish=sampleRanking(classified,1.0,r);
+    const raceFinish=rank(options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0);
     const finishPos=new Map(raceFinish.map((d,i)=>[d.code,i+1]));
     const fastest=chooseWeighted(classified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.fastestLapWeight)??Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
     const dotd=chooseWeighted(classified,d=>{

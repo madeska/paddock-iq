@@ -43,3 +43,9 @@ test('optional qualifying pace orders the grid independently from overall xPts',
  assert.equal(result.drivers.find(d=>d.code==='A1')!.qualifying,10);
  assert.equal(result.drivers.find(d=>d.code==='B2')!.qualifying,7);
 });
+test('race pace excludes non-classified sessions instead of fabricating a finish',()=>{
+ const good={...rows[0],code:'FAST',round:1,race:{...rows[0].race!,finishPosition:1,positionChange:0}};
+ const failed={...good,round:2,race:{...good.race,failed:true,finishPosition:null}};
+ const one=fitOvertakeModel([good],{season:2026,round:3});const two=fitOvertakeModel([good,failed],{season:2026,round:3});
+ assert.equal(one.racePace.FAST,two.racePace.FAST);assert.ok(two.racePace.FAST>0);
+});

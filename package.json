@@ -52,7 +52,9 @@
     "fantasy:sync-components": "tsx scripts/sync-component-history.ts",
     "fantasy:check-overtakes": "tsx --test scripts/check-overtake-model.ts",
     "fantasy:backtest-overtakes": "tsx scripts/backtest-overtake-model.ts",
-    "fantasy:backtest-qualifying": "tsx scripts/backtest-qualifying-model.ts"
+    "fantasy:backtest-qualifying": "tsx scripts/backtest-qualifying-model.ts",
+    "fantasy:check-joint": "tsx --test scripts/check-joint-weekend.ts",
+    "fantasy:backtest-joint": "tsx scripts/backtest-joint-weekend.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -1,5 +1,5 @@
 import type {ComponentObservation} from './component-calibration';
-export type OvertakeModel={season:number;beforeRound:number;trainingSessions:number;coefficients:number[];pace:Record<string,number>;failedMean:Record<string,number>;globalFailedMean:number};
+export type OvertakeModel={season:number;beforeRound:number;trainingSessions:number;coefficients:number[];pace:Record<string,number>;racePace:Record<string,number>;failedMean:Record<string,number>;globalFailedMean:number};
 const clamp=(x:number,a:number,b:number)=>Math.max(a,Math.min(b,x));
 function paceFor(rows:ComponentObservation[],code:string){
  const positions=rows.filter(o=>o.code===code&&o.qualifying?.position!=null&&!o.qualifying.noTime).map(o=>o.qualifying!.position!);
@@ -41,9 +41,9 @@ export function fitOvertakeModel(history:ComponentObservation[],options:{season:
   beta=beta.map((b,i)=>b+clamp(step[i],-.5,.5));if(Math.max(...step.map(Math.abs))<1e-7)break;
  }
  const failures=rows.filter(o=>o.race?.failed),globalFailedMean=(failures.reduce((n,o)=>n+o.race!.overtakes,0)+3*1.5)/(failures.length+3);
- const pace:Record<string,number>={},failedMean:Record<string,number>={};
- for(const code of [...new Set(rows.map(o=>o.code))]){pace[code]=paceFor(rows,code);const own=failures.filter(o=>o.code===code);failedMean[code]=(own.reduce((n,o)=>n+o.race!.overtakes,0)+5*globalFailedMean)/(own.length+5)}
- return {season:options.season,beforeRound:options.round,trainingSessions:samples.length,coefficients:beta,pace,failedMean,globalFailedMean};
+ const pace:Record<string,number>={},racePace:Record<string,number>={},failedMean:Record<string,number>={};
+ for(const code of [...new Set(rows.map(o=>o.code))]){pace[code]=paceFor(rows,code);const finishes=rows.filter(o=>o.code===code&&o.race&&!o.race.failed&&o.race.finishPosition!=null).map(o=>o.race!.finishPosition!);racePace[code]=(11.5-(finishes.reduce((n,p)=>n+p,0)+5*11.5)/(finishes.length+5))/6;const own=failures.filter(o=>o.code===code);failedMean[code]=(own.reduce((n,o)=>n+o.race!.overtakes,0)+5*globalFailedMean)/(own.length+5)}
+ return {season:options.season,beforeRound:options.round,trainingSessions:samples.length,coefficients:beta,pace,racePace,failedMean,globalFailedMean};
 }
 export function expectedRaceOvertakes(model:OvertakeModel,code:string,start:number|null,classified:boolean){
  if(!classified)return clamp(model.failedMean[code]??model.globalFailedMean,0,25);
