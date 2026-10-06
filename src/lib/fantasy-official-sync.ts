@@ -85,35 +85,33 @@ export type OfficialFantasySyncResult={
  skipped:string[];
 };
 
-export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,maxRound=30):Promise<OfficialFantasySyncResult>{
+export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,targetRound=17):Promise<OfficialFantasySyncResult>{
  const existingAssets=await prisma.asset.findMany({where:{season}});
  const byKey=new Map(existingAssets.map(a=>[a.type+':'+a.code,a]));
- let latestCompletedRound=0,currentRound:number|null=null,scoresSaved=0,pricesSaved=0;
+ const completedRound=Math.max(1,targetRound-1);
+ const [completedRows,currentRows]=await Promise.all([
+  fetchRound(completedRound),
+  fetchRound(targetRound),
+ ]);
+ if(!currentRows)throw new Error('Official F1 Fantasy current round '+targetRound+' feed is unavailable');
+
+ let scoresSaved=0,pricesSaved=0;
  const skipped=new Set<string>();
 
- for(let round=1;round<=maxRound;round++){
-  const rows=await fetchRound(round);
-  if(!rows)break;
-
+ const processRows=async(round:number,rows:FeedRow[],saveScores:boolean,markCurrent:boolean)=>{
   const teamIdToCode=new Map<string,string>();
   for(const row of rows){
    if(row.PositionName!=='DRIVER'||row.TeamId==null)continue;
    const code=constructorCode(row.TeamName);
    if(code)teamIdToCode.set(String(row.TeamId),code);
   }
-
-  const points=rows.map(row=>Number(row.GamedayPoints)).filter(Number.isFinite);
-  const completed=points.some(value=>value!==0);
   const gp=await prisma.grandPrix.upsert({
    where:{season_round:{season,round}},
    update:{name:GP_NAMES_2026[round]??'Round '+round},
    create:{season,round,name:GP_NAMES_2026[round]??'Round '+round},
   });
 
-  if(!completed){
-   currentRound=round;
-   await prisma.asset.updateMany({where:{season},data:{active:false}});
-  }
+  if(markCurrent)await prisma.asset.updateMany({where:{season},data:{active:false}});
 
   for(const row of rows){
    const identity=rowIdentity(row,teamIdToCode);
@@ -121,19 +119,18 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
    const asset=byKey.get(identity.type+':'+identity.code);
    if(!asset){skipped.add(identity.type+':'+identity.code);continue}
 
-   if(!completed&&!asset.active)await prisma.asset.update({where:{id:asset.id},data:{active:true}});
-   else if(!completed)await prisma.asset.update({where:{id:asset.id},data:{active:true}});
+   if(markCurrent)await prisma.asset.update({where:{id:asset.id},data:{active:true}});
 
    const price=Number(row.Value);
    if(Number.isFinite(price)&&price>0){
-    const source=completed?'Official F1 Fantasy round feed':'Official F1 Fantasy current round feed';
+    const source=markCurrent?'Official F1 Fantasy current round feed':'Official F1 Fantasy round feed';
     const existing=await prisma.priceHistory.findFirst({where:{assetId:asset.id,grandPrixId:gp.id,source}});
     if(existing)await prisma.priceHistory.update({where:{id:existing.id},data:{price}});
     else await prisma.priceHistory.create({data:{assetId:asset.id,grandPrixId:gp.id,price,source}});
     pricesSaved++;
    }
 
-   if(completed){
+   if(saveScores){
     const fantasyPoints=Number(row.GamedayPoints);
     if(Number.isFinite(fantasyPoints)){
      await prisma.fantasyRoundScore.upsert({
@@ -145,16 +142,23 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
     }
    }
   }
+ };
 
-  if(completed)latestCompletedRound=round;
-  else break;
- }
+ const completedHasScores=Boolean(completedRows?.some(row=>Number.isFinite(Number(row.GamedayPoints))&&Number(row.GamedayPoints)!==0));
+ if(completedRows)await processRows(completedRound,completedRows,completedHasScores,false);
+ await processRows(targetRound,currentRows,false,true);
 
- if(latestCompletedRound){
-  const futureGps=await prisma.grandPrix.findMany({where:{season,round:{gt:latestCompletedRound}},select:{id:true}});
-  if(futureGps.length)await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:{in:futureGps.map(g=>g.id)}}});
- }
+ const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}},select:{id:true}});
+ if(targetGp)await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:targetGp.id}});
 
  const activeAssets=await prisma.asset.count({where:{season,active:true}});
- return {season,latestCompletedRound,currentRound,scoresSaved,pricesSaved,activeAssets,skipped:[...skipped]};
+ return {
+  season,
+  latestCompletedRound:completedHasScores?completedRound:Math.max(0,completedRound-1),
+  currentRound:targetRound,
+  scoresSaved,
+  pricesSaved,
+  activeAssets,
+  skipped:[...skipped]
+ };
 }
