@@ -14,3 +14,55 @@
  .grid>section:nth-child(2) .probMid small,
  .grid>section:nth-child(2) .probLow small{display:block;margin:1px 0 0;font-size:7px;line-height:1.05}
 }
+
+/* Constructor boards: preserve table-cell layout so fixed table width truly fits every column. */
+@media(min-width:1051px){
+ .grid>section:nth-child(2) .marketTable{
+  width:100%;
+  min-width:0!important;
+  table-layout:fixed;
+ }
+ .grid>section:nth-child(2) .marketTable th,
+ .grid>section:nth-child(2) .marketTable td{
+  min-width:0!important;
+  width:auto;
+  padding:4px 2px;
+  overflow:hidden;
+  text-overflow:clip;
+ }
+ .grid>section:nth-child(2) .marketTable th:first-child,
+ .grid>section:nth-child(2) .marketTable td:first-child{
+  width:54px!important;
+ }
+ .grid>section:nth-child(2) .assetCell{
+  display:table-cell!important;
+  min-width:0!important;
+  width:54px!important;
+  text-align:left!important;
+ }
+ .grid>section:nth-child(2) .assetCell .code{
+  min-width:25px;
+  height:21px;
+  padding:0 3px;
+  font-size:9px;
+ }
+ .grid>section:nth-child(2) .marketTable th:nth-child(2),
+ .grid>section:nth-child(2) .marketTable td:nth-child(2){
+  width:40px;
+ }
+ .grid>section:nth-child(2) .marketTable th:nth-child(3),
+ .grid>section:nth-child(2) .marketTable td:nth-child(3),
+ .grid>section:nth-child(2) .marketTable th:nth-child(4),
+ .grid>section:nth-child(2) .marketTable td:nth-child(4),
+ .grid>section:nth-child(2) .marketTable th:nth-child(5),
+ .grid>section:nth-child(2) .marketTable td:nth-child(5){
+  width:42px;
+ }
+ .grid>section:nth-child(2) .marketTable th small{font-size:7px}
+ .grid>section:nth-child(2) .probStrong small,
+ .grid>section:nth-child(2) .probMid small,
+ .grid>section:nth-child(2) .probLow small{
+  font-size:6px;
+  line-height:1;
+ }
+}
