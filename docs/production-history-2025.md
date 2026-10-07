@@ -26,3 +26,7 @@ R6–14 has already been used in prior research, so this comparison is explorato
 The ensemble constructor delta is -0.1011 points, race-block bootstrap interval [-1.0400,+0.6933]; it does not establish a robust improvement. Removing components worsens constructor MAE by0.6356, interval [+0.1933,+1.0911]. These results supersede neither the earlier frozen price-free report nor its scope; they add a better-aligned comparator. No production model activation follows.
 
 Next: incorporate timestamp-validated pre-lock practice information and resolve cold-start coverage, freeze the resulting policy, then use the reserved error evaluation once. Reusing the exploratory segment to select changes must not be presented as independent validation.
+
+## Later scoring-profile correction
+
+The initial results above preserve the original 2026 Sprint scoring assumption. A full archived-session audit found that 2025 requires Sprint NC -20, and historical constructor race DSQ differs too. See components-2025-rules-aware.md and the separate rules-aware reports for corrected values and parameter selection. Initial snapshots are retained for provenance, not presented as the final 2025 scoring replay.

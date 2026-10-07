@@ -22,6 +22,7 @@ export type ComponentConstructorInput={
 };
 
 export type ComponentSimulationOptions={
+  scoringSeason?:number;
   sprint:boolean;
   simulations?:number;
   seed?:number;
@@ -186,6 +187,7 @@ export function simulateComponentWeekend(
         const gain=classified?(sgPos.get(d.code)!-sfPos.get(d.code)!):0;
         const overtakes=d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(classified?d.events.sprintOvertakesMean:d.events.failedSprintOvertakesMean,r):classified?Math.max(0,gain)+poisson(Math.max(.15,overtakeIntensity*.32),r):0;
         const pts=sprintDriverPoints({
+          season:options.scoringSeason,
           startPosition:sgPos.get(d.code)??null,
           finishPosition:sfPos.get(d.code)??null,
           classified,
@@ -252,6 +254,7 @@ export function simulateComponentWeekend(
       const sprint=options.sprint?constructorSprintPoints([sprintPts.get(d1.code)??0,sprintPts.get(d2.code)??0],0):0;
       const pit=teamPit.get(c.code)!;
       const race=constructorRacePoints({
+        season:options.scoringSeason,
         driverRacePointsExcludingDotD:[racePtsNoDotd.get(d1.code)??0,racePtsNoDotd.get(d2.code)??0],
         bestPitStopSeconds:pit.seconds,
         fastestPitStop:fastestPit===c.code,

@@ -81,7 +81,10 @@
     "fantasy:check-prelock-archive": "tsx --test scripts/check-prelock-session-archive.ts",
     "fantasy:sync-prelock-2025": "tsx scripts/sync-prelock-practice-2025.ts",
     "fantasy:check-prelock-residual": "tsx --test scripts/check-prelock-residual.ts scripts/check-prelock-residual-frames.ts",
-    "fantasy:backtest-prelock-residual": "tsx scripts/backtest-prelock-residual-2025.ts"
+    "fantasy:backtest-prelock-residual": "tsx scripts/backtest-prelock-residual-2025.ts",
+    "fantasy:check-tools-components": "tsx --test scripts/check-fantasy-tools-components.ts",
+    "fantasy:sync-components-2025": "tsx scripts/sync-fantasy-components-2025.ts",
+    "fantasy:backtest-production-calibration": "tsx scripts/backtest-production-calibration-2025.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

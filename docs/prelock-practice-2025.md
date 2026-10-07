@@ -26,3 +26,7 @@ Select ridge from 10/50/200 and residual weight from 0/.25/.5/1 using R6–10 MA
 Constructor delta -0.3056 has race-block interval [-1.1522,+0.5389]. Driver MAE worsens0.0654, interval [-0.4108,+0.5910]. Constructor RMSE also worsens21.4272→21.6120 and mean error shifts from-0.1922 to+2.5867. Thus the simple residual model does not establish a robust full-forecast improvement and is not activated. Full grid and per-round results are in prelock-residual-2025-results.json.
 
 Next research should use the newly found official-session component breakdowns to calibrate coherent simulation rather than extrapolate this weak correction. Reserved R15–21 forecast errors remain unused. Cold-start coverage is still outstanding; passing leakage tests is not evidence that the overall accuracy objective is achieved.
+
+## Later scoring-profile correction
+
+The initial results above preserve the original 2026 Sprint scoring assumption. A full archived-session audit found that 2025 requires Sprint NC -20, and historical constructor race DSQ differs too. See components-2025-rules-aware.md and the separate rules-aware reports for corrected values and parameter selection. Initial snapshots are retained for provenance, not presented as the final 2025 scoring replay.

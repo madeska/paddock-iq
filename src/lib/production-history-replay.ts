@@ -1,8 +1,8 @@
-import {forecastProductionBaselines,simulateProductionForecast,PRODUCTION_FORECAST_CONFIG,type ProductionPractice} from './production-forecast';
+import {forecastProductionBaselines,simulateProductionForecast,PRODUCTION_FORECAST_CONFIG,type ProductionPractice,type ProductionComponentOverrides} from './production-forecast';
 import type {ArchivedFantasyPrice} from './fantasy-price-archive';
 export type ReplayScore={season:number;round:number;code:string;type:'DRIVER'|'CONSTRUCTOR';actualPoints:number};
 /** Replay with explicitly supplied pre-lock practice. Target labels and later quotes never enter forecast inputs. */
-export function replayProductionHistory(history:readonly ReplayScore[],prices:readonly ArchivedFantasyPrice[],options:{season:number;round:number;sprint:boolean;practice?:ProductionPractice|null}){
+export function replayProductionHistory(history:readonly ReplayScore[],prices:readonly ArchivedFantasyPrice[],options:{season:number;round:number;sprint:boolean;practice?:ProductionPractice|null;componentOverrides?:ProductionComponentOverrides}){
  const roster=prices.filter(p=>p.round===options.round),teams=Object.fromEntries(roster.filter(p=>p.type==='DRIVER').map(p=>[p.code,p.team]));
  const assets=roster.map(row=>({season:options.season,code:row.code,type:row.type,currentPrice:row.priceBefore,prices:prices.filter(p=>p.code===row.code&&p.type===row.type&&p.round<=options.round).map(p=>({round:p.round,price:p.priceBefore})),scores:history.filter(h=>h.season===options.season&&h.code===row.code&&h.type===row.type&&h.round<options.round).map(h=>({round:h.round,points:h.actualPoints}))}));
  const production=forecastProductionBaselines(assets,options),component=simulateProductionForecast(production.baselines,teams,options);

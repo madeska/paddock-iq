@@ -18,3 +18,7 @@ test('cold-start coverage is explicit rather than a fabricated zero projection',
 });
 
 test('explicit sprint practice input retains the deployed no-modifier policy',()=>{const options={season:2025,round:6,sprint:true};assert.deepEqual(replayProductionHistory(history,prices,{...options,practice:{isSprint:true,positions:new Map([['NOR',1]])}}),replayProductionHistory(history,prices,options))});
+
+import components from '../src/data/component-history-2025.json';
+import {calibrateComponents,type ComponentObservation} from '../src/lib/component-calibration';
+test('future component labels cannot influence a calibrated shared replay',()=>{const observed=components.observations as ComponentObservation[],changed=observed.map(r=>r.round>=9?{...r,pitPoints:99999,race:r.race?{...r.race,failed:true,overtakes:99999}:undefined}:r),options={season:2025,round:9,sprint:false};const first=calibrateComponents(observed,options),second=calibrateComponents(changed,options);assert.deepEqual(second,first);assert.deepEqual(replayProductionHistory(history,prices,{...options,componentOverrides:{calibration:first}}),replayProductionHistory(history,prices,{...options,componentOverrides:{calibration:second}}))});

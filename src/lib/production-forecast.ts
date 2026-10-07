@@ -1,5 +1,6 @@
 import {applyPracticePositionModifier} from './openf1-weekend';
-import {simulateComponentWeekend} from './component-simulation';
+import {simulateComponentWeekend,type ComponentSimulationOptions} from './component-simulation';
+export type ProductionComponentOverrides=Pick<ComponentSimulationOptions,'calibration'|'calibrationMode'>;
 export const PRODUCTION_FORECAST_CONFIG=Object.freeze({ewmaAlpha:.25,ridgeLambda:50,driverRidgeWeight:.5,constructorEwmaWeight:.5,firstTrainingRound:6,componentWeight:.25,overtakeIntensity:1.2,simulations:3000});
 const EWMA_ALPHA=PRODUCTION_FORECAST_CONFIG.ewmaAlpha,RIDGE_LAMBDA=PRODUCTION_FORECAST_CONFIG.ridgeLambda,DRIVER_RIDGE_WEIGHT=PRODUCTION_FORECAST_CONFIG.driverRidgeWeight,CONSTRUCTOR_EWMA_WEIGHT=PRODUCTION_FORECAST_CONFIG.constructorEwmaWeight;
 export type ProductionForecastAsset={season:number;code:string;type:'DRIVER'|'CONSTRUCTOR';currentPrice:number|null;prices:{round:number;price:number}[];scores:{round:number;points:number}[]};
@@ -101,9 +102,11 @@ export function forecastProductionBaselines(assets:readonly ProductionForecastAs
  }
  return {baselines,trainingRows:driverTraining.length};
 }
-export function simulateProductionForecast(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>,options:{round:number;sprint:boolean;seed?:number;simulations?:number}){
+export function simulateProductionForecast(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>,options:{season?:number;round:number;sprint:boolean;seed?:number;simulations?:number;componentOverrides?:ProductionComponentOverrides}){
+ const calibration=options.componentOverrides?.calibration;
+ if(calibration&&(calibration.season!==(options.season??2026)||calibration.beforeRound!==options.round||calibration.sourceRounds.some(r=>!Number.isInteger(r)||r<1||r>=options.round)))throw Error('Calibration identity or cutoff mismatch');
  const rows=[...baselines.values()];
- const result=simulateComponentWeekend(rows.filter(r=>r.type==='DRIVER'&&Object.hasOwn(teams,r.code)&&teams[r.code]).map(r=>({code:r.code,team:teams[r.code],baselineXPts:r.rawXPts,recentScores:r.chronological.slice(-5)})),rows.filter(r=>r.type==='CONSTRUCTOR').map(r=>({code:r.code,baselineXPts:r.rawXPts})),{sprint:options.sprint,simulations:options.simulations??PRODUCTION_FORECAST_CONFIG.simulations,seed:options.seed??202600+options.round,overtakeIntensity:PRODUCTION_FORECAST_CONFIG.overtakeIntensity});
+ const result=simulateComponentWeekend(rows.filter(r=>r.type==='DRIVER'&&Object.hasOwn(teams,r.code)&&teams[r.code]).map(r=>({code:r.code,team:teams[r.code],baselineXPts:r.rawXPts,recentScores:r.chronological.slice(-5)})),rows.filter(r=>r.type==='CONSTRUCTOR').map(r=>({code:r.code,baselineXPts:r.rawXPts})),{scoringSeason:options.season??2026,sprint:options.sprint,simulations:options.simulations??PRODUCTION_FORECAST_CONFIG.simulations,seed:options.seed??202600+options.round,overtakeIntensity:PRODUCTION_FORECAST_CONFIG.overtakeIntensity,...options.componentOverrides});
  const supported=supportedProductionConstructors(baselines,teams);return {...result,constructors:result.constructors.filter(c=>supported.has(c.code))};
 }
 export function supportedProductionConstructors(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>){

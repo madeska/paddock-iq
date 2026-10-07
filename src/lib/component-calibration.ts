@@ -1,4 +1,4 @@
-export type SessionComponent={total:number;failed:boolean;overtakes:number;fastestLap:boolean;dotd:boolean;finishPosition:number|null;positionChange:number};
+export type SessionComponent={total:number;failed:boolean;disqualified?:boolean;overtakes:number;fastestLap:boolean;dotd:boolean;finishPosition:number|null;positionChange:number};
 export type ComponentObservation={season:number;round:number;code:string;type:'DRIVER'|'CONSTRUCTOR';team:string;qualifying?:{total:number;position:number|null;noTime:boolean};race?:SessionComponent;sprint?:SessionComponent;pitPoints?:number};
 export type DriverEventRates={dnfProbability:number;sprintDnfProbability:number;noTimeProbability:number;raceOvertakesMean:number;failedRaceOvertakesMean:number;sprintOvertakesMean:number;failedSprintOvertakesMean:number;fastestLapWeight:number;sprintFastestLapWeight:number;dotdWeight:number};
 export type ComponentCalibration={version:string;season:number;beforeRound:number;sourceRounds:number[];driverSessions:number;constructorSessions:number;globalDriverRates:DriverEventRates;drivers:Record<string,DriverEventRates>;pitPoints:Record<string,{points:number;probability:number}[]>};

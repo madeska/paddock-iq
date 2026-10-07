@@ -35,3 +35,6 @@ test('unsupported constructor components are omitted rather than returned as zer
  const {baselines}=forecastProductionBaselines(assets,{season:2026,round:9});
  const result=simulateProductionForecast(baselines,{D0:'C8',D1:'C8',D2:'C9'},{round:9,sprint:true});assert.deepEqual(result.constructors.map(r=>r.code),['C8']);
 });
+
+import {calibrateComponents} from '../src/lib/component-calibration';
+test('shared production simulation rejects calibration from another year or cutoff',()=>{const calibration=calibrateComponents([],{season:2025,round:9});assert.throws(()=>simulateProductionForecast(new Map(),{}, {season:2025,round:8,sprint:false,componentOverrides:{calibration}}));assert.throws(()=>simulateProductionForecast(new Map(),{}, {season:2026,round:9,sprint:false,componentOverrides:{calibration}}));assert.throws(()=>simulateProductionForecast(new Map(),{}, {season:2025,round:9,sprint:false,componentOverrides:{calibration:{...calibration,sourceRounds:[1,9]}}}))});
