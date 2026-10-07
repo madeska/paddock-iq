@@ -48,7 +48,7 @@ function positionsDelta(start:number|null,finish:number|null,classified:boolean)
 }
 
 export function sprintNotClassifiedPenalty(season=2026){
- if(season===2025)return 20;
+ if(season===2024||season===2025)return 20;
  if(season===2026)return 10;
  throw Error('Unsupported Sprint scoring season');
 }
@@ -106,6 +106,7 @@ export function pitStopTimePoints(bestStopSeconds:number|null){
 
 /** Extra constructor penalty beyond driver totals that already contain their NC/DSQ deduction. */
 export function constructorRaceDsqExtraPenalty(season=2026){
+ if(season===2024)return 0;
  if(season===2025)return 10;
  if(season===2026)return 20;
  throw Error('Unsupported constructor scoring season');

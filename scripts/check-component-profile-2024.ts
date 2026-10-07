@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';import {test} from 'node:test';import {simulateComponentWeekend} from '../src/lib/component-simulation';import {sprintNotClassifiedPenalty,constructorRaceDsqExtraPenalty} from '../src/lib/fantasy-scoring';
+const drivers=Array.from({length:20},(_,i)=>({code:'D'+i,team:'T'+Math.floor(i/2),baselineXPts:10+i,recentScores:[10]})),constructors=Array.from({length:10},(_,i)=>({code:'T'+i,baselineXPts:20+i}));
+test('2024 failure profile is explicit without changing current defaults',()=>{assert.equal(sprintNotClassifiedPenalty(2024),20);assert.equal(constructorRaceDsqExtraPenalty(2024),0);assert.equal(sprintNotClassifiedPenalty(),10);assert.equal(constructorRaceDsqExtraPenalty(),20)});
+test('2024 individual stop podium conserves exactly18 expected points',()=>{const result=simulateComponentWeekend(drivers,constructors,{scoringSeason:2024,sprint:true,simulations:500,seed:567});assert.ok(Math.abs(result.constructors.reduce((n,c)=>n+c.pitStops,0)-18)<1e-9);for(const c of result.constructors)assert.ok(c.pitStops>=0&&c.pitStops<=18)});
+test('historical pit profile is deterministic',()=>{const options={scoringSeason:2024,sprint:false,simulations:200,seed:567};assert.deepEqual(simulateComponentWeekend(drivers,constructors,options),simulateComponentWeekend(drivers,constructors,options))});
+
+test('driver-only historical simulation does not require a pit field',()=>assert.equal(simulateComponentWeekend(drivers,[],{scoringSeason:2024,sprint:true,simulations:200,seed:567}).drivers.length,20));
+test('partial historical constructor field is explicitly rejected',()=>assert.throws(()=>simulateComponentWeekend(drivers,constructors.slice(0,1),{scoringSeason:2024,sprint:true}),/complete ten-constructor/));

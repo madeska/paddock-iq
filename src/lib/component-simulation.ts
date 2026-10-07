@@ -1,3 +1,4 @@
+import {pitPodiumAwards2024} from './pit-podium-2024';
 import {expectedRaceOvertakes,type OvertakeModel} from './overtake-model';
 import type {ComponentCalibration} from './component-calibration';
 import {
@@ -122,6 +123,7 @@ export function simulateComponentWeekend(
   constructorInputs:ComponentConstructorInput[],
   options:ComponentSimulationOptions
 ){
+  if(options.scoringSeason===2024&&constructorInputs.length!==0&&(constructorInputs.length!==10||new Set(constructorInputs.map(c=>c.code)).size!==10))throw Error('2024 pit adapter requires a complete ten-constructor field');
   const correlation=options.rankingCorrelation??0;
   if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
   if(options.raceStartingGrid){
@@ -149,7 +151,7 @@ export function simulateComponentWeekend(
   for(const d of driverState)dAcc.set(d.code,{code:d.code,qualifying:0,sprint:0,raceFinish:0,positions:0,overtakes:0,fastestLap:0,driverOfTheDay:0,dnfPenalty:0,total:0});
   for(const c of constructorState)cAcc.set(c.code,{code:c.code,qualifying:0,sprint:0,raceDrivers:0,pitStops:0,total:0});
 
-  const q2Cutoff=Math.min(driverState.length,Math.floor((driverState.length+10)/2));
+  const q2Cutoff=Math.min(driverState.length,options.scoringSeason===2024?15:Math.floor((driverState.length+10)/2));
   const teamDrivers=new Map<string,typeof driverState>();
   for(const d of driverState){
     const list=teamDrivers.get(d.team)??[];
@@ -246,6 +248,8 @@ export function simulateComponentWeekend(
     }
     const fastestPit=[...teamPit.entries()].sort((a,b)=>a[1].seconds-b[1].seconds)[0]?.[0]??null;
 
+    // Historical research adapter: two synthetic stops per constructor, not inferred physical stop counts.
+    const historicalPit=options.scoringSeason===2024&&constructorState.length>0?pitPodiumAwards2024(constructorState.flatMap(c=>[0,1].map(i=>({id:c.code+':'+i,team:c.code,seconds:Math.exp(Math.log(2.48)-.10*c.strength+.08*(gumbel(r)-.577))})))):undefined;
     for(const c of constructorState){
       const ds=teamDrivers.get(c.code)??[];
       if(ds.length<2)continue;
@@ -253,7 +257,7 @@ export function simulateComponentWeekend(
       const qp:[number,number]=[qPts.get(d1.code)??0,qPts.get(d2.code)??0];
       const q2Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=q2Cutoff).length;
       const q3Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=10).length;
-      const qualifying=constructorQualifyingPoints(qp,q2Count,q3Count,0);
+      const qualifying=constructorQualifyingPoints(qp,q2Count,q3Count,0)+(options.scoringSeason===2024&&ds.every(d=>noTimes.has(d.code))?1:0);
       const sprint=options.sprint?constructorSprintPoints([sprintPts.get(d1.code)??0,sprintPts.get(d2.code)??0],0):0;
       const pit=teamPit.get(c.code)!;
       const race=constructorRacePoints({
@@ -269,7 +273,7 @@ export function simulateComponentWeekend(
       a.sprint+=sprint;
       a.raceDrivers+=raceDrivers;
       const observedPit=options.calibration?.pitPoints[c.code];
-      const pitPoints=observedPit?.length?(chooseWeighted(observedPit,x=>x.probability,r)?.points??0):race-raceDrivers;
+      const pitPoints=historicalPit?historicalPit[c.code]??0:observedPit?.length?(chooseWeighted(observedPit,x=>x.probability,r)?.points??0):race-raceDrivers;
       a.pitStops+=pitPoints;
       a.total+=qualifying+sprint+raceDrivers+pitPoints;
     }

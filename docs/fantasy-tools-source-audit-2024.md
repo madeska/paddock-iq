@@ -51,3 +51,13 @@ A separate2024 OpenF1 collector uses the same completed-session cutoff and ident
 The2024 collector completed all24 weekends:24 practices, six SQ sessions, zero exclusions. Australia has19 practice positions and the source field remains explicit. Session completion precedes both calendar/provider lock; exact historical publication timestamps are not supplied. Output: src/data/prelock-practice-2024.json.
 
 Research-only causalQuoteFromPriorChanges reconstructs a quote from an initial value plus all strictly previous race changes. Four tests establish finite output, target/future changes cannot influence it and reject missing/duplicate/invalid prior changes. This avoids consuming target outcome adjustments but does not certify initial quote timing, correct disputed historical deltas, or invent entrant prices. No production path enables reconstruction. It is an additional possible sensitivity input, not a substitute for source provenance.
+
+## Frozen historical simulation adapter assumptions
+
+scoringSeason2024 uses Sprint NC20, no additional constructor race DSQ beyond its already-scored driver totals, qualifying teamwork0 when both drivers have no time, and a fixed Q2 cutoff15 even with a19-car supplied field. Explicit DSQ subtypes still are not sampled; failure simulation remains the legacy NC approximation.
+
+For independent research comparison, the2024 pit adapter models exactly two synthetic distinct stops per constructor. Each stop seconds=exp(log2.48 -0.10*constructorStrength +0.08*(Gumbel-0.577)); the top three receive10/5/3. This is a fixed heuristic, not inferred historical stop counts or calibrated speed distributions. Both reference and candidate use it identically. No target pit labels enter. Future empirical stop-count modeling is separate work. Pit allocation sums18 with full supported membership; missing-driver constructors retain the shared fallback behavior.
+
+21 targeted tests passed, including unchanged2026 golden forecasts, deterministic2024 outcomes and total pit award conservation. Current type checks pass. Historical comparison remains a limited adapter evaluation, not exact2026 production parity across season rules. No2024 forecast errors computed yet.
+
+Historical pit comparison requires ten unique supplied constructors; partial fields are rejected explicitly. Driver-only calls skip pit allocation. Review identified this edge before activation and regression tests cover it.
