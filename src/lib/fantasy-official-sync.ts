@@ -2,7 +2,8 @@ import {AssetType,PrismaClient} from '@prisma/client';
 
 const BASE='https://fantasy.formula1.com/feeds/drivers';
 
-type FeedRow={
+export type FeedRow={
+ IsActive?:string|number|boolean;
  PlayerId?:string|number;
  PositionName?:string;
  DriverTLA?:string;
@@ -33,11 +34,6 @@ const CONSTRUCTOR_CODES:Record<string,string>={
  'CADILLAC FORMULA 1 TEAM':'CAD',
 };
 
-const CURRENT_DRIVER_TEAM_2026:Record<string,string>={
- LAW:'RACING BULLS',
-};
-const INACTIVE_DRIVER_CODES_2026=new Set(['TSU']);
-
 const GP_NAMES_2026:Record<number,string>={
  16:'Bahrain GP in Malaysia',
  17:'Singapore GP',
@@ -54,15 +50,25 @@ function constructorCode(name:unknown){
  return CONSTRUCTOR_CODES[upper]??null;
 }
 
-function normalizedTeam(name:unknown){return String(name??'').trim().toUpperCase()}
-
-function shouldUseDriverRow(row:FeedRow,season:number,markCurrent:boolean){
- if(row.PositionName!=='DRIVER')return true;
- const code=String(row.DriverTLA??'').trim().toUpperCase();
- if(season===2026&&markCurrent&&INACTIVE_DRIVER_CODES_2026.has(code))return false;
- const preferred=season===2026?CURRENT_DRIVER_TEAM_2026[code]:undefined;
- if(preferred&&normalizedTeam(row.TeamName)!==preferred)return false;
- return true;
+export function usableOfficialRow(row:FeedRow){return row.IsActive==null||row.IsActive===true||row.IsActive===1||row.IsActive==='1'}
+export function officialFantasyPoints(value:unknown):number|null{
+ if(typeof value!=='number'&&typeof value!=='string'||typeof value==='string'&&value.trim()==='')return null;
+ const result=Number(value);return Number.isFinite(result)?result:null;
+}
+/** Current or historical snapshot membership; inactive alternate IDs cannot override an active row. */
+export function officialDriverTeams(rows:readonly FeedRow[]):Record<string,string>{
+ const aliases:Record<string,string>={RBS:'RB',HAA:'HAS',AMR:'AST'},known=new Set(Object.values(CONSTRUCTOR_CODES)),byId=new Map<string,string>();
+ for(const row of rows.filter(r=>r.PositionName==='CONSTRUCTOR')){
+  const token=String(row.DriverTLA??'').trim().toUpperCase(),team=constructorCode(row.TeamName)??constructorCode(row.FUllName)??constructorCode(row.DisplayName)??aliases[token]??(known.has(token)?token:null);
+  if(team&&row.PlayerId!=null){const id=String(row.PlayerId);if(byId.has(id)&&byId.get(id)!==team)throw Error('Ambiguous official constructor identity');byId.set(id,team)}
+ }
+ const result:Record<string,string>={};
+ for(const row of rows.filter(r=>r.PositionName==='DRIVER'&&usableOfficialRow(r))){
+  const code=String(row.DriverTLA??'').trim().toUpperCase();if(!code)continue;
+  const team=byId.get(String(row.TeamId??''))??constructorCode(row.TeamName);if(!team)continue;
+  if(Object.hasOwn(result,code))throw Error('Ambiguous official driver membership: '+code);result[code]=team;
+ }
+ return result;
 }
 
 function rowIdentity(row:FeedRow,teamIdToCode:Map<string,string>){
@@ -99,6 +105,7 @@ export type OfficialFantasySyncResult={
  pricesSaved:number;
  activeAssets:number;
  skipped:string[];
+ driverTeams:Record<string,string>;
 };
 
 export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,targetRound=17):Promise<OfficialFantasySyncResult>{
@@ -111,6 +118,9 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   fetchRound(targetRound),
  ]);
  if(!currentRows)throw new Error('Official F1 Fantasy current round '+targetRound+' feed is unavailable');
+ const driverTeams=officialDriverTeams(currentRows);
+ if(olderRows)officialDriverTeams(olderRows);
+ if(completedRows)officialDriverTeams(completedRows);
 
  let scoresSaved=0,pricesSaved=0;
  const skipped=new Set<string>();
@@ -118,7 +128,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
  const processRows=async(round:number,rows:FeedRow[],saveScores:boolean,markCurrent:boolean)=>{
   const teamIdToCode=new Map<string,string>();
   for(const row of rows){
-   if(!shouldUseDriverRow(row,season,markCurrent))continue;
+   if(!usableOfficialRow(row))continue;
    if(row.PositionName!=='DRIVER'||row.TeamId==null)continue;
    const code=constructorCode(row.TeamName);
    if(code)teamIdToCode.set(String(row.TeamId),code);
@@ -132,7 +142,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   if(markCurrent)await prisma.asset.updateMany({where:{season},data:{active:false}});
 
   for(const row of rows){
-   if(!shouldUseDriverRow(row,season,markCurrent))continue;
+   if(!usableOfficialRow(row))continue;
    const identity=rowIdentity(row,teamIdToCode);
    if(!identity)continue;
    const asset=byKey.get(identity.type+':'+identity.code);
@@ -150,8 +160,8 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
    }
 
    if(saveScores){
-    const fantasyPoints=Number(row.GamedayPoints);
-    if(Number.isFinite(fantasyPoints)){
+    const fantasyPoints=officialFantasyPoints(row.GamedayPoints);
+    if(fantasyPoints!==null){
      await prisma.fantasyRoundScore.upsert({
       where:{assetId_grandPrixId:{assetId:asset.id,grandPrixId:gp.id}},
       update:{points:fantasyPoints,source:'Official F1 Fantasy round feed'},
@@ -163,8 +173,8 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   }
  };
 
- const olderHasScores=Boolean(olderRows?.some(row=>Number.isFinite(Number(row.GamedayPoints))&&Number(row.GamedayPoints)!==0));
- const completedHasScores=Boolean(completedRows?.some(row=>Number.isFinite(Number(row.GamedayPoints))&&Number(row.GamedayPoints)!==0));
+ const olderHasScores=Boolean(olderRows?.some(row=>usableOfficialRow(row)&&officialFantasyPoints(row.GamedayPoints)!==null&&officialFantasyPoints(row.GamedayPoints)!==0));
+ const completedHasScores=Boolean(completedRows?.some(row=>usableOfficialRow(row)&&officialFantasyPoints(row.GamedayPoints)!==null&&officialFantasyPoints(row.GamedayPoints)!==0));
  if(olderRows)await processRows(completedRounds[0],olderRows,olderHasScores,false);
  if(completedRows)await processRows(completedRounds[1],completedRows,completedHasScores,false);
  await processRows(targetRound,currentRows,false,true);
@@ -180,6 +190,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   scoresSaved,
   pricesSaved,
   activeAssets,
-  skipped:[...skipped]
+  skipped:[...skipped],
+  driverTeams
  };
 }

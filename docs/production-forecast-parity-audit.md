@@ -27,3 +27,7 @@ These placeholders can be persisted and later used by the route's unfiltered sco
 Extract a pure forecast function shared by the API and benchmark, retaining tested default math while making all feature timing and simulation settings explicit. Resolve historical/current market rows and team membership from verified feed metadata. Distinguish played scores from inactive placeholders; reconcile generated bad rows safely and retain provenance. Add parity fixtures for the actual production settings before selecting another predictive model or consuming reserved 2025 R15–21 Fantasy errors.
 
 No model is yet proven superior to the full production pipeline. The independent 2025 reference remains explicitly a price-free adaptation, with its own documented settings.
+
+## Implemented first parity/input stage
+
+`production-forecast.ts` now supplies the API's baseline math and simulation configuration, with pre-refactor golden parity fixtures. Constructor membership comes from the official current feed (component25-v4), and new synchronization excludes explicit inactive/empty point records. Existing generated inactive zeros have not yet been reconciled. See `shared-production-forecast.md`; no predictive-superiority conclusion follows from refactor parity alone.

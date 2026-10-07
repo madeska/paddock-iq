@@ -1,99 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
-import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../lib/openf1-weekend';
+import { getPracticeSnapshot } from '../../../../lib/openf1-weekend';
 import { syncOfficialFantasyMarket } from '../../../../lib/fantasy-official-sync';
-import { simulateComponentWeekend } from '../../../../lib/component-simulation';
+import {forecastProductionBaselines,simulateProductionForecast,productionSampleStdDev as sampleStdDev,PRODUCTION_FORECAST_CONFIG} from '../../../../lib/production-forecast';
 
-const EWMA_ALPHA=.25;
-const RIDGE_LAMBDA=50;
-const DRIVER_RIDGE_WEIGHT=.5;
-const CONSTRUCTOR_EWMA_WEIGHT=.5;
 const DRIVER_REACTIVATION_ROUND_2026:Record<string,number>={LAW:15,HAD:15};
-const COMPONENT_WEIGHT=.25;
-const COMPONENT_OVERTAKE_INTENSITY=1.2;
+const COMPONENT_WEIGHT=PRODUCTION_FORECAST_CONFIG.componentWeight;
+const COMPONENT_OVERTAKE_INTENSITY=PRODUCTION_FORECAST_CONFIG.overtakeIntensity;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
-const DRIVER_TEAM_2026:Record<string,string>={
- VER:'RBR',LIN:'RBR',
- RUS:'MER',ANT:'MER',
- LEC:'FER',HAM:'FER',
- PIA:'MCL',NOR:'MCL',
- HAD:'RB',LAW:'RB',
- HUL:'AUD',BOR:'AUD',
- OCO:'HAS',BEA:'HAS',
- PER:'CAD',BOT:'CAD',
- ALO:'AST',STR:'AST',
- SAI:'WIL',ALB:'WIL',
- GAS:'ALP',COL:'ALP',
-};
-
-const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
-const sampleStdDev=(xs:number[])=>{
- if(xs.length<2)return 0;
- const m=mean(xs);
- return Math.sqrt(xs.reduce((s,x)=>s+(x-m)**2,0)/(xs.length-1));
-};
-const ewmaChronological=(scores:number[])=>{
- if(!scores.length)return null;
- let value=scores[0];
- for(const score of scores.slice(1))value=EWMA_ALPHA*score+(1-EWMA_ALPHA)*value;
- return value;
-};
-const constructorXPts=(scoresChronological:number[])=>{
- const e=ewmaChronological(scoresChronological);
- if(e==null)return null;
- const recent=scoresChronological.slice(-3);
- const mean3=mean(recent);
- return Math.max(-5,CONSTRUCTOR_EWMA_WEIGHT*e+(1-CONSTRUCTOR_EWMA_WEIGHT)*mean3);
-};
-
-function solve(A:number[][],b:number[]){
- const n=b.length,M=A.map((r,i)=>[...r,b[i]]);
- for(let i=0;i<n;i++){
-  let pivot=i;
-  for(let j=i+1;j<n;j++)if(Math.abs(M[j][i])>Math.abs(M[pivot][i]))pivot=j;
-  [M[i],M[pivot]]=[M[pivot],M[i]];
-  const d=M[i][i];
-  if(Math.abs(d)<1e-10)return null;
-  for(let k=i;k<=n;k++)M[i][k]/=d;
-  for(let j=0;j<n;j++){
-   if(j===i)continue;
-   const f=M[j][i];
-   for(let k=i;k<=n;k++)M[j][k]-=f*M[i][k];
-  }
- }
- return M.map(r=>r[n]);
-}
-
-type TrainingRow={x:number[];y:number};
-function fitRidge(rows:TrainingRow[],lambda=RIDGE_LAMBDA){
- if(!rows.length)return null;
- const d=rows[0].x.length;
- const means=Array(d).fill(0),sds=Array(d).fill(1);
- for(let j=0;j<d;j++){
-  const vals=rows.map(r=>r.x[j]);
-  means[j]=mean(vals);
-  const s=sampleStdDev(vals);
-  sds[j]=s>1e-8?s:1;
- }
- const X=rows.map(r=>[1,...r.x.map((v,j)=>(v-means[j])/sds[j])]);
- const p=d+1,A=Array.from({length:p},()=>Array(p).fill(0)),b=Array(p).fill(0);
- for(let i=0;i<X.length;i++)for(let a=0;a<p;a++){
-  b[a]+=X[i][a]*rows[i].y;
-  for(let c=0;c<p;c++)A[a][c]+=X[i][a]*X[i][c];
- }
- for(let j=1;j<p;j++)A[j][j]+=lambda;
- const beta=solve(A,b);
- if(!beta)return null;
- return {predict:(x:number[])=>beta[0]+x.reduce((s,v,j)=>s+beta[j+1]*(v-means[j])/sds[j],0)};
-}
-
-function features(historyChronological:number[],price:number){
- const e=ewmaChronological(historyChronological)??0;
- const season=mean(historyChronological);
- return [e,season,price];
-}
-
 export async function POST(request:NextRequest){
  try{
   const body=await request.json().catch(()=>({}));
@@ -112,66 +27,20 @@ export async function POST(request:NextRequest){
    }
   });
 
-  const driverTraining:TrainingRow[]=[];
-  for(const asset of assets.filter(a=>a.type==='DRIVER')){
-   const scoreMap=new Map(asset.fantasyScores.map(s=>[s.grandPrix.round,s.points]));
-   const priceMap=new Map(asset.prices.map(p=>[p.grandPrix.round,Number(p.price)]));
-   for(let target=6;target<round;target++){
-    const history=[...scoreMap.entries()].filter(([r])=>r<target).sort((a,b)=>a[0]-b[0]).map(([,v])=>v);
-    const y=scoreMap.get(target),price=priceMap.get(target);
-    if(history.length<2||y==null||price==null)continue;
-    driverTraining.push({x:features(history,price),y});
-   }
-  }
-  const driverModel=fitRidge(driverTraining,RIDGE_LAMBDA);
-
+  const production=forecastProductionBaselines(assets.map(asset=>{
+   const currentPriceRow=asset.prices.filter(p=>p.grandPrix.round===round).sort((a,b)=>+new Date(b.recordedAt)-+new Date(a.recordedAt))[0];
+   return {season:asset.season,code:asset.code,type:asset.type,currentPrice:currentPriceRow?Number(currentPriceRow.price):null,prices:asset.prices.map(p=>({round:p.grandPrix.round,price:Number(p.price)})),scores:asset.fantasyScores.map(s=>({round:s.grandPrix.round,points:s.points}))};
+  }),{season,round,practice:practiceSnapshot});
   const baselineByCode=new Map<string,{
-   asset:(typeof assets)[number];
-   current:number;
-   scoreRows:(typeof assets)[number]['fantasyScores'];
-   chronological:number[];
-   rawXPts:number;
-   boostXPts:number|null;
-   practicePosition:number|null;
+   asset:(typeof assets)[number];current:number;scoreRows:(typeof assets)[number]['fantasyScores'];chronological:number[];rawXPts:number;boostXPts:number|null;practicePosition:number|null;
   }>();
-
   for(const asset of assets){
-   const currentPriceRow=asset.prices
-    .filter(p=>p.grandPrix.round===round)
-    .sort((a,b)=>+new Date(b.recordedAt)-+new Date(a.recordedAt))[0];
-   const current=currentPriceRow?Number(currentPriceRow.price):null;
-   if(current==null)continue;
-
+   const baseline=production.baselines.get(asset.code);if(!baseline)continue;
    const scoreRows=asset.fantasyScores.slice().sort((a,b)=>a.grandPrix.round-b.grandPrix.round);
-   const chronological=scoreRows.map(s=>s.points);
-   if(!chronological.length)continue;
-
-   let rawXPts:number|null=null;
-   let boostXPts:number|null=null;
-   let practicePosition:number|null=null;
-   if(asset.type==='DRIVER'){
-    const e=ewmaChronological(chronological);
-    const ridge=driverModel?driverModel.predict(features(chronological,current)):null;
-    rawXPts=ridge!=null&&e!=null?DRIVER_RIDGE_WEIGHT*ridge+(1-DRIVER_RIDGE_WEIGHT)*e:null;
-    boostXPts=ridge;
-    if(rawXPts==null)rawXPts=e==null?null:.7*e+.3*mean(chronological);
-    practicePosition=practiceSnapshot?.isSprint?null:(practiceSnapshot?.positions.get(asset.code)??null);
-    if(rawXPts!=null&&practicePosition!=null)rawXPts=applyPracticePositionModifier(rawXPts,practicePosition);
-    if(boostXPts!=null&&practicePosition!=null)boostXPts=applyPracticePositionModifier(boostXPts,practicePosition);
-   }else rawXPts=constructorXPts(chronological);
-   if(rawXPts==null)continue;
-   baselineByCode.set(asset.code,{asset,current,scoreRows,chronological,rawXPts,boostXPts,practicePosition});
+   baselineByCode.set(asset.code,{...baseline,asset,scoreRows});
   }
 
-  const component=simulateComponentWeekend(
-   [...baselineByCode.values()]
-    .filter(x=>x.asset.type==='DRIVER'&&DRIVER_TEAM_2026[x.asset.code])
-    .map(x=>({code:x.asset.code,team:DRIVER_TEAM_2026[x.asset.code],baselineXPts:x.rawXPts,recentScores:x.chronological.slice(-5)})),
-   [...baselineByCode.values()]
-    .filter(x=>x.asset.type==='CONSTRUCTOR')
-    .map(x=>({code:x.asset.code,baselineXPts:x.rawXPts})),
-   {sprint:SPRINT_ROUNDS_2026.has(round),simulations:3000,seed:202600+round,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY}
-  );
+  const component=simulateProductionForecast(production.baselines,officialSync.driverTeams,{sprint:SPRINT_ROUNDS_2026.has(round),round});
   const componentDriverByCode=new Map(component.drivers.map(x=>[x.code,x]));
   const componentConstructorByCode=new Map(component.constructors.map(x=>[x.code,x]));
 
@@ -216,7 +85,7 @@ export async function POST(request:NextRequest){
     ?(practicePosition!=null
       ?'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded'
       :'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded')
-    :'xpts-constructor-baseline75-component25-v3 + price-probability-v0.4-bounded';
+    :'xpts-constructor-baseline75-component25-v4 + price-probability-v0.4-bounded';
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
@@ -234,7 +103,9 @@ export async function POST(request:NextRequest){
      ?(practicePosition!=null
        ?'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + validated normal-GP Practice modifier from '+practiceSnapshot?.sessionName+' + bounded rolling-3 PPM price model'
        :'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + bounded rolling-3 PPM price model')
-     :'75% constructor baseline + 25% component simulation (driver scoring/quali teamwork/pit stops) + bounded rolling-3 PPM price model',
+     :componentXPts==null
+      ?'Constructor baseline; official driver lineup incomplete + bounded rolling-3 PPM price model'
+      :'75% constructor baseline + 25% component simulation (official driver lineup/quali teamwork/pit stops) + bounded rolling-3 PPM price model',
     modelVersion
    }});
 
@@ -267,7 +138,7 @@ export async function POST(request:NextRequest){
     drivers:practiceSnapshot.positions.size
    }:null,
    constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
-   driverTrainingRows:driverTraining.length,
+   driverTrainingRows:production.trainingRows,
    componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
    officialSync,
    predictions:created
