@@ -45,3 +45,9 @@ The importer now accepts an explicitly requested2024 season while keeping defaul
 An exact Internet Archive CDX query for2024 JSON captures of fantasy.formula1.com/feeds/drivers/*_en.json returnedHTTP200 with zero rows. The logged query is in official-price-archive-search-2024.json. This establishes only no matches for that pattern/filter, not absence of all official archives. No disputed price is repaired.
 
 A separate2024 OpenF1 collector uses the same completed-session cutoff and identity parser as2025, with its own pinned calendar hash/cache/output. It collects context only, not forecast errors. A19-driver Australian practice field is retained honestly rather than filling a missing car; this agrees with the active-source coverage issue already recorded. Retrospective provider publication timestamps remain unknown.
+
+## Completed pre-lock archive and causal quote helper
+
+The2024 collector completed all24 weekends:24 practices, six SQ sessions, zero exclusions. Australia has19 practice positions and the source field remains explicit. Session completion precedes both calendar/provider lock; exact historical publication timestamps are not supplied. Output: src/data/prelock-practice-2024.json.
+
+Research-only causalQuoteFromPriorChanges reconstructs a quote from an initial value plus all strictly previous race changes. Four tests establish finite output, target/future changes cannot influence it and reject missing/duplicate/invalid prior changes. This avoids consuming target outcome adjustments but does not certify initial quote timing, correct disputed historical deltas, or invent entrant prices. No production path enables reconstruction. It is an additional possible sensitivity input, not a substitute for source provenance.
