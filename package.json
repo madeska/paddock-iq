@@ -72,7 +72,11 @@
     "fantasy:backtest-point-independent": "tsx scripts/backtest-point-history-independent.ts",
     "fantasy:check-production-forecast": "tsx --test scripts/check-production-forecast.ts",
     "fantasy:check-official-context": "tsx --test scripts/check-official-forecast-context.ts",
-    "fantasy:check-history-reconciliation": "tsx --test scripts/check-official-history-reconciliation.ts"
+    "fantasy:check-history-reconciliation": "tsx --test scripts/check-official-history-reconciliation.ts",
+    "fantasy:check-price-archive": "tsx --test scripts/check-fantasy-price-archive.ts",
+    "fantasy:sync-prices-2025": "tsx scripts/sync-fantasy-prices-2025.ts",
+    "fantasy:check-production-replay": "tsx --test scripts/check-production-history-replay.ts",
+    "fantasy:backtest-production-history": "tsx scripts/backtest-production-history-2025.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
