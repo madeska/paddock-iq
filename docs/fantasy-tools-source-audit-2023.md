@@ -5,3 +5,11 @@ Public source https://f1fantasytools.com/api/statistics/2023, pinned SHA256 cbcd
 Three constructor session sums disagree with reported totals: ALF R11Q sum-21/reported-16; FER R19R sum-12/reported-2; MER R19R sum-19/reported-9. Their weekend totals disagree by the same5/10/10. Historical source component DSQ fields are CTQ-20/CTR-35, while drivers areQ-15/R-25; do not silently apply2024 rules or overwrite totals. These cases need primary historical-score/rule evidence or explicit exclusion in a frozen validation cohort, including causal handling of their later training history.
 
 All other session sums match. No2023 forecast errors have been computed. Script records discrepancies, not success of a complete scoring replay. See fantasy-tools-source-audit-2023.json for observed awards and exact cases.
+
+## Primary rules and component discrepancy investigation
+
+Internet Archive recovered official HTML/client snapshots. The English rule defaults in rules.6de99bd2.chunk.js were captured2023-10-18 before AustinR19. They specify constructor inheritance of both driver totals, excluding DOTD in the race, and10/5/3 pit awards. The source reported R19FER(-2) andMER(-9) exactly match those inherited driver totals plus pit awards; their separate CTDSQ fields(-35) instead of driver penalties(-25) explain the ten-point component mismatch. Preserve reported totals and flag inconsistent fields rather than treating this as a bad race total.
+
+ALF R11 similarly reconstructs-16 from driver-15 and teamwork-1. However its earlier rules chunk40383c50 could not be recovered, so October defaults alone do not establish the exact July rule. Runtime English translation overrides also remain a limitation. Hash manifest and exact cases: official-rules-2023-evidence.json. Raw source is unmodified; no forecast errors computed.
+
+Official F1's2023-04-27 Baku mini-league article sets joining before Friday qualifying: https://www.formula1.com/en/latest/article/f1-fantasy-more-chances-to-win-amazing-prizes-as-latest-mini-leagues-launch.5M4zAwtUOQUNAk8AwnZPxJ. Therefore do not import Saturday SQ results into that Friday prediction context.
