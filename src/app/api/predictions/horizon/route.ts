@@ -1,3 +1,4 @@
+import {EXCLUDED_SCORE_SOURCE} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
@@ -62,7 +63,7 @@ export async function GET(request:NextRequest){
    where:{season,active:true},
    include:{
     prices:{include:{grandPrix:true}},
-    fantasyScores:{where:{grandPrix:{round:{lt:startRound}}},include:{grandPrix:true}}
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:startRound}}},include:{grandPrix:true}}
    }
   });
 

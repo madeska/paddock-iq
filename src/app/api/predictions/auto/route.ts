@@ -1,3 +1,4 @@
+import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
@@ -14,6 +15,7 @@ export async function POST(request:NextRequest){
   const body=await request.json().catch(()=>({}));
   const season=Number(body.season??2026),round=Number(body.round??17);
   const officialSync=await syncOfficialFantasyMarket(prisma,season,round);
+  const historyReconciliation=await reconcileOfficialHistory(prisma,season,round);
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
@@ -23,7 +25,7 @@ export async function POST(request:NextRequest){
    where:{season,active:true},
    include:{
     prices:{include:{grandPrix:true}},
-    fantasyScores:{where:{grandPrix:{round:{lt:round}}},include:{grandPrix:true}}
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:round}}},include:{grandPrix:true}}
    }
   });
 
@@ -140,7 +142,7 @@ export async function POST(request:NextRequest){
    constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
    driverTrainingRows:production.trainingRows,
    componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
-   officialSync,
+   officialSync,historyReconciliation,
    predictions:created
   });
  }catch(error){

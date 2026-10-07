@@ -71,7 +71,8 @@
     "fantasy:check-point-reference": "tsx --test scripts/check-point-history-reference.ts",
     "fantasy:backtest-point-independent": "tsx scripts/backtest-point-history-independent.ts",
     "fantasy:check-production-forecast": "tsx --test scripts/check-production-forecast.ts",
-    "fantasy:check-official-context": "tsx --test scripts/check-official-forecast-context.ts"
+    "fantasy:check-official-context": "tsx --test scripts/check-official-forecast-context.ts",
+    "fantasy:check-history-reconciliation": "tsx --test scripts/check-official-history-reconciliation.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

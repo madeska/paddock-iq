@@ -13,3 +13,5 @@ Missing active flags retain compatibility with older feed shapes; this is not pr
 No new experimental model or tuned hyperparameter is activated. The baseline equations are preserved; official membership and ingestion eligibility are corrected. Earlier reports labeled “current” retain their separate historical research configuration and are not silently reinterpreted as full API replays. Reserved 2025 R15–21 Fantasy-score errors remain unused.
 
 Commands: `npm run fantasy:check-production-forecast`, `npm run fantasy:check-official-context`. Next gate: reconcile generated historical placeholders safely, then construct source-timed benchmarks using the shared deployed predictor and known quote/practice availability before selecting a new model.
+
+Historical generated-zero reconciliation is now implemented before automatic prediction training. See official-history-reconciliation.md for its source, season and concurrency guards. Unknown records are preserved; no blanket history reset or historical price repair is performed.

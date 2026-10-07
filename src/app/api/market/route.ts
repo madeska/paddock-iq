@@ -1,3 +1,4 @@
+import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
@@ -47,7 +48,7 @@ export async function GET(request:NextRequest) {
         orderBy:{createdAt:'desc'}
       },
       fantasyScores:{
-        where:{grandPrix:{round:{lt:round}}},
+        where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:round}}},
         orderBy:{grandPrix:{round:'desc'}},
         take:2,
         include:{grandPrix:true}

@@ -1,3 +1,4 @@
+import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
 
@@ -45,7 +46,7 @@ export async function GET(request:NextRequest){
    slots:{include:{asset:{include:{
     prices:targetGp?{where:{grandPrixId:targetGp.id},orderBy:{recordedAt:'desc'},take:1}:{orderBy:{recordedAt:'desc'},take:1},
     predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:{in:CURRENT_MODELS}},orderBy:{createdAt:'desc'}}:{orderBy:{createdAt:'desc'}},
-    fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE}},orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}
   }
