@@ -29,3 +29,9 @@ Production scoring remains unchanged. Price timing anchors, historical pit-rank 
 All 240 constructor pit awards match their archived rank descriptions. Every race assigns each of ranks1/2/3 exactly once and conserves 18 points: 10+5+3. Multiple stops by the same constructor can occupy multiple ranks (maximum18), so a single-best-stop-per-team simulation is insufficient to reproduce the allocation mechanism. Separate overall-fastest/world-record fields are zero throughout this source season. No seconds or physical stop counts are inferred. Reproduce with scripts/audit-fantasy-tools-pit-rules-2024.ts.
 
 Price timing remains pending: search of official articles did not find reliable midseason2024 anchors. The 678 matching price transitions and independent secondary launch list support source consistency but do not resolve Red Bull R13/R14 or prove publication timing for every quote. Do not silently change29 to29.1. The next benchmark must retain this limitation or obtain contemporaneous source evidence.
+
+## Implemented historical pit scoring helper
+
+Research module src/lib/pit-podium-2024.ts allocates10/5/3 to distinct individual stops and permits repeated constructors. Source-ranked input requires all three ranks; observed/simulated time input validates identities, finite positive times and rejects unresolved ties affecting podium selection. No historical stop durations are inferred from awards. Six tests pass, including replay of all24 source-ranked podium allocations and repeated-team, incomplete-input and tie cases. Type checks pass.
+
+No production caller enables this helper. It implements scoring, not the stop-count/pace distribution needed for forecasting; fitting that distribution must remain past-only and separately validated. Current2026 pit scoring is unchanged.
