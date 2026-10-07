@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "status": "frozen-before-reserved-forecast-errors",
+  "selectedFrom": "Exploratory 2025 R6–14 weight diagnostic",
+  "candidate": {
+    "componentWeight": 0.5,
+    "qualifyingPace": false,
+    "racePace": false,
+    "conditionalOvertakes": false,
+    "calibration": false
+  },
+  "reference": {
+    "componentWeight": 0.25
+  },
+  "evaluation": {
+    "season": 2025,
+    "rounds": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "samePairedCohort": true,
+    "allowTuning": false,
+    "metrics": [
+      "MAE",
+      "RMSE",
+      "Bias"
+    ],
+    "interval": "paired race-block bootstrap",
+    "activation": "Require convincing improvement for both drivers and constructors; report missing coverage and retrospective source limits. Do not claim global optimality."
+  }
+}
