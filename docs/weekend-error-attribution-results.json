@@ -1,0 +1,126 @@
+{
+  "note": "Post-hoc attribution on previously inspected R12–16. Component swaps are arithmetic counterfactuals, not realizable coherent simulations and not additive causal effects. They use forecast expectations only, no observed components as oracle replacements. Actual scores enter evaluation only. Negative MAE delta is better. Fixed candidate: historical qualifying pace/noise 0.3. No parameter selection or production activation.",
+  "rounds": [
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "current": {
+    "DRIVER": {
+      "n": 110,
+      "MAE": 11.274944764221484,
+      "RMSE": 15.418056061738966,
+      "Bias": -0.21574891210826666
+    },
+    "CONSTRUCTOR": {
+      "n": 55,
+      "MAE": 19.89845473149155,
+      "RMSE": 25.43229595326558,
+      "Bias": 0.8807541703614165
+    },
+    "objective": 21.224172129967258
+  },
+  "candidate": {
+    "DRIVER": {
+      "n": 110,
+      "MAE": 11.41213704674754,
+      "RMSE": 15.579120867106935,
+      "Bias": -0.30465358382543856
+    },
+    "CONSTRUCTOR": {
+      "n": 55,
+      "MAE": 20.11447872139054,
+      "RMSE": 25.60052364684795,
+      "Bias": 0.7099145238967706
+    },
+    "objective": 21.46937640744281
+  },
+  "components": [
+    {
+      "type": "DRIVER",
+      "component": "qualifying",
+      "meanComponentShift": 0.0015277777777777664,
+      "swapIntoCurrentMAEDelta": -0.0476647727272681,
+      "restoreCurrentInCandidateMAEDelta": 0.0606483585858566
+    },
+    {
+      "type": "DRIVER",
+      "component": "sprint",
+      "meanComponentShift": 0.0019141414141414348,
+      "swapIntoCurrentMAEDelta": 0.005892676767677685,
+      "restoreCurrentInCandidateMAEDelta": -0.006755050505050875
+    },
+    {
+      "type": "DRIVER",
+      "component": "raceFinish",
+      "meanComponentShift": -4.4408920985006264e-17,
+      "swapIntoCurrentMAEDelta": -0.0018737373737387486,
+      "restoreCurrentInCandidateMAEDelta": 0.001351010101007688
+    },
+    {
+      "type": "DRIVER",
+      "component": "positions",
+      "meanComponentShift": -0.02418939393939396,
+      "swapIntoCurrentMAEDelta": 0.10003073394865325,
+      "restoreCurrentInCandidateMAEDelta": -0.10529618040000166
+    },
+    {
+      "type": "DRIVER",
+      "component": "overtakes",
+      "meanComponentShift": -0.3339621212121212,
+      "swapIntoCurrentMAEDelta": 0.06160506677252364,
+      "restoreCurrentInCandidateMAEDelta": -0.07112951373332876
+    },
+    {
+      "type": "DRIVER",
+      "component": "fastestLap",
+      "meanComponentShift": -7.065055611250995e-18,
+      "swapIntoCurrentMAEDelta": 0.00037878787878931064,
+      "restoreCurrentInCandidateMAEDelta": -0.0005050505050583354
+    },
+    {
+      "type": "DRIVER",
+      "component": "driverOfTheDay",
+      "meanComponentShift": -4.54182146437564e-18,
+      "swapIntoCurrentMAEDelta": 0.009090909090909705,
+      "restoreCurrentInCandidateMAEDelta": -0.01069444444444656
+    },
+    {
+      "type": "DRIVER",
+      "component": "dnfPenalty",
+      "meanComponentShift": -0.0009090909090909049,
+      "swapIntoCurrentMAEDelta": 0.0036111111111161165,
+      "restoreCurrentInCandidateMAEDelta": -0.003661616161620529
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "component": "qualifying",
+      "meanComponentShift": 0.028328282828282817,
+      "swapIntoCurrentMAEDelta": -0.22153156565656218,
+      "restoreCurrentInCandidateMAEDelta": 0.2485647018509809
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "component": "sprint",
+      "meanComponentShift": 0.003828282828282829,
+      "swapIntoCurrentMAEDelta": 0.0098055555555554,
+      "restoreCurrentInCandidateMAEDelta": -0.0098055555555554
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "component": "raceDrivers",
+      "meanComponentShift": -0.7181212121212112,
+      "swapIntoCurrentMAEDelta": 0.4489801058913798,
+      "restoreCurrentInCandidateMAEDelta": -0.42848989898988776
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "component": "pitStops",
+      "meanComponentShift": 0.0026060606060604725,
+      "swapIntoCurrentMAEDelta": -0.0007398989898916852,
+      "restoreCurrentInCandidateMAEDelta": 0.0007398989899023434
+    }
+  ]
+}
