@@ -76,7 +76,12 @@
     "fantasy:check-price-archive": "tsx --test scripts/check-fantasy-price-archive.ts",
     "fantasy:sync-prices-2025": "tsx scripts/sync-fantasy-prices-2025.ts",
     "fantasy:check-production-replay": "tsx --test scripts/check-production-history-replay.ts",
-    "fantasy:backtest-production-history": "tsx scripts/backtest-production-history-2025.ts"
+    "fantasy:backtest-production-history": "tsx scripts/backtest-production-history-2025.ts",
+    "fantasy:check-practice-cutoff": "tsx --test scripts/check-practice-cutoff.ts",
+    "fantasy:check-prelock-archive": "tsx --test scripts/check-prelock-session-archive.ts",
+    "fantasy:sync-prelock-2025": "tsx scripts/sync-prelock-practice-2025.ts",
+    "fantasy:check-prelock-residual": "tsx --test scripts/check-prelock-residual.ts scripts/check-prelock-residual-frames.ts",
+    "fantasy:backtest-prelock-residual": "tsx scripts/backtest-prelock-residual-2025.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

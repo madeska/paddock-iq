@@ -1,4 +1,6 @@
-type OpenF1Session={
+export type OpenF1Session={
+  year:number;
+  is_cancelled?:boolean;
   meeting_key:number;
   session_key:number;
   session_name:string;
@@ -38,44 +40,39 @@ async function tryJson<T>(url:string):Promise<T|null>{
   return null;
 }
 
-export async function getPracticeSnapshot(season:number,deadline:Date|null):Promise<PracticeSnapshot|null>{
+/** Result tables are eligible only after their session ends and before forecast time and lock. */
+export function selectPracticeContext(sessions:readonly OpenF1Session[],season:number,deadline:Date,asOf:Date){
+  const deadlineMs=+deadline,cutoff=Math.min(deadlineMs,+asOf);
+  if(!Number.isFinite(deadlineMs)||!Number.isFinite(cutoff))return null;
+  const groups=new Map<number,OpenF1Session[]>();
+  for(const session of sessions){
+    if(session.year!==season||!Number.isInteger(session.meeting_key)||session.meeting_key<1||!Number.isInteger(session.session_key)||session.session_key<1||!Number.isFinite(Date.parse(session.date_start)))continue;
+    const list=groups.get(session.meeting_key)??[];list.push(session);groups.set(session.meeting_key,list);
+  }
+  const candidates=[...groups.entries()].map(([meetingKey,list])=>({meetingKey,list,nearest:Math.min(...list.map(s=>Math.abs(Date.parse(s.date_start)-deadlineMs)))})).filter(m=>m.nearest<=5*24*60*60*1000).sort((a,b)=>a.nearest-b.nearest);
+  const meeting=candidates[0];if(!meeting||candidates[1]?.nearest===meeting.nearest)return null;
+  const isSprint=meeting.list.some(s=>(s.session_name||'').toLowerCase().includes('sprint')||(s.session_type||'').toLowerCase().includes('sprint'));
+  const practices=meeting.list.filter(s=>{
+    const name=(s.session_name||'').toLowerCase(),type=(s.session_type||'').toLowerCase(),start=Date.parse(s.date_start),end=Date.parse(s.date_end);
+    return !s.is_cancelled&&(name.startsWith('practice')||type==='practice')&&Number.isFinite(end)&&end>start&&end<cutoff;
+  }).sort((a,b)=>Date.parse(b.date_start)-Date.parse(a.date_start));
+  return {meeting,isSprint,practices};
+}
+
+export async function getPracticeSnapshot(season:number,deadline:Date|null,asOf=new Date()):Promise<PracticeSnapshot|null>{
   if(!deadline)return null;
   const sessions=await tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season);
   if(!sessions?.length)return null;
 
-  const deadlineMs=+deadline;
-  const groups=new Map<number,OpenF1Session[]>();
-  for(const session of sessions){
-    const list=groups.get(session.meeting_key)??[];
-    list.push(session);
-    groups.set(session.meeting_key,list);
-  }
-
-  const candidates=[...groups.entries()].map(([meetingKey,list])=>{
-    const nearest=Math.min(...list.map(s=>Math.abs(+new Date(s.date_start)-deadlineMs)));
-    return {meetingKey,list,nearest};
-  }).filter(x=>x.nearest<=5*24*60*60*1000).sort((a,b)=>a.nearest-b.nearest);
-
-  const meeting=candidates[0];
-  if(!meeting)return null;
-
-  const isSprint=meeting.list.some(s=>{
-    const n=(s.session_name||'').toLowerCase(),t=(s.session_type||'').toLowerCase();
-    return n.includes('sprint')||t.includes('sprint');
-  });
+  const context=selectPracticeContext(sessions,season,deadline,asOf);
+  if(!context)return null;
+  const {meeting,isSprint,practices}=context;
 
   // Sprint-weekend data is deliberately not applied in v1: backtest showed no MAE gain,
   // even though Sprint Qualifying is available before team lock.
   if(isSprint)return {
     meetingKey:meeting.meetingKey,sessionKey:0,sessionName:'Sprint weekend',isSprint:true,positions:new Map()
   };
-
-  const practices=meeting.list
-    .filter(s=>{
-      const n=(s.session_name||'').toLowerCase(),t=(s.session_type||'').toLowerCase();
-      return (n.startsWith('practice')||t==='practice') && +new Date(s.date_start)<deadlineMs;
-    })
-    .sort((a,b)=>+new Date(b.date_start)-+new Date(a.date_start));
 
   if(!practices.length)return null;
 
@@ -95,7 +92,7 @@ export async function getPracticeSnapshot(season:number,deadline:Date|null):Prom
   const positions=new Map<string,number>();
   for(const result of results){
     const code=codeByNumber.get(result.driver_number);
-    if(code&&Number.isFinite(result.position))positions.set(code,result.position);
+    if(code&&Number.isInteger(result.position)&&result.position>0)positions.set(code,result.position);
   }
   if(!positions.size)return null;
 

@@ -16,3 +16,5 @@ test('unrelated seasons cannot influence replay',()=>{
 test('cold-start coverage is explicit rather than a fabricated zero projection',()=>{
  const rows=replayProductionHistory(history,prices,{season:2025,round:7,sprint:false});assert.equal(rows.length,30);assert.equal(rows.find(r=>r.code==='COL')?.prediction,null);assert.equal(rows.filter(r=>r.prediction!==null).length,29);
 });
+
+test('explicit sprint practice input retains the deployed no-modifier policy',()=>{const options={season:2025,round:6,sprint:true};assert.deepEqual(replayProductionHistory(history,prices,{...options,practice:{isSprint:true,positions:new Map([['NOR',1]])}}),replayProductionHistory(history,prices,options))});
