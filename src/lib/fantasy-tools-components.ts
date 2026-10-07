@@ -9,8 +9,9 @@ function sessionTotal(session:any){
  if(Math.abs(sum-total)>1e-6)throw Error('Session component total mismatch');return total;
 }
 /** Source scoring failure means explicit Fantasy NC/DSQ, not an inferred physical DNF. */
-export function parseFantasyToolsComponents(payload:any,throughRound:number):FantasyToolsObservation[]{
- if(payload?.seasonResult?.season!==2025||!Number.isInteger(throughRound)||throughRound<1||throughRound>24)throw Error('Invalid component archive scope');
+export function parseFantasyToolsComponents(payload:any,throughRound:number,options:{season:2024|2025}={season:2025}):FantasyToolsObservation[]{
+ const season=options.season;
+ if(![2024,2025].includes(season)||payload?.seasonResult?.season!==season||!Number.isInteger(throughRound)||throughRound<1||throughRound>24)throw Error('Invalid component archive scope');
  const observations:FantasyToolsObservation[]=[],rounds=payload.seasonResult.raceResults;
  for(let round=1;round<=throughRound;round++){
   const day=rounds?.[String(round)];if(!day||!Array.isArray(day.drivers)||!Array.isArray(day.constructors))throw Error('Missing component round '+round);const seen=new Set<string>();
@@ -25,7 +26,7 @@ export function parseFantasyToolsComponents(payload:any,throughRound:number):Fan
    const ncQ=points(phases.Q.notClassifiedPoints?.points),dqQ=points(phases.Q.disqualifiedPoints?.points),noTime=ncQ<0||dqQ<0,qPosition=position(raw.qualifyingPosition);
    if(type==='DRIVER'&&!noTime&&qPosition===null)throw Error('Unknown qualifying observation');
    if(type==='CONSTRUCTOR'&&Object.entries(phases.Q).every(([key,v])=>key==='totalPoints'||points((v as any).points)===0))throw Error('Unplayed constructor qualifying placeholder');
-   const row:FantasyToolsObservation={season:2025,round,code,type,team,actualPoints,priceBefore:raw.price,qualifying:{total:qTotal,position:qPosition,noTime}};
+   const row:FantasyToolsObservation={season,round,code,type,team,actualPoints,priceBefore:raw.price,qualifying:{total:qTotal,position:qPosition,noTime}};
    const parseSession=(phase:any,total:number,finish:unknown):SessionComponent=>{
     const failed=points(phase.notClassifiedPoints?.points)<0||points(phase.disqualifiedPoints?.points)<0,finishPosition=position(finish),overtakes=points(phase.overtakes?.points);
     if(type==='DRIVER'&&!failed&&finishPosition===null)throw Error('Unknown played race observation');

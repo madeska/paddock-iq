@@ -35,3 +35,7 @@ Price timing remains pending: search of official articles did not find reliable 
 Research module src/lib/pit-podium-2024.ts allocates10/5/3 to distinct individual stops and permits repeated constructors. Source-ranked input requires all three ranks; observed/simulated time input validates identities, finite positive times and rejects unresolved ties affecting podium selection. No historical stop durations are inferred from awards. Six tests pass, including replay of all24 source-ranked podium allocations and repeated-team, incomplete-input and tie cases. Type checks pass.
 
 No production caller enables this helper. It implements scoring, not the stop-count/pace distribution needed for forecasting; fitting that distribution must remain past-only and separately validated. Current2026 pit scoring is unchanged.
+
+## Normalized component archive
+
+The importer now accepts an explicitly requested2024 season while keeping default2025 behavior and rejecting mismatched/unsupported seasons. The pinned2024 source produces719 normalized observations in src/data/component-history-2024.json. Session and weekend conservation/identity guards are shared with2025;13 importer tests pass. Missing Williams R3 and disputed Red Bull R14 quote remain explicit metadata; prices are retained as retrospective source quotes, not certified pre-event inputs. No production path consumes this archive and no2024 forecast errors have yet been computed. Reproduce with scripts/sync-fantasy-components-2024.ts using the pinned cache.
