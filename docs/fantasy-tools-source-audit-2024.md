@@ -15,3 +15,11 @@ Reproduce with scripts/audit-fantasy-tools-source-2024.ts; discrepancy details a
 The constructor audit checks 538 sessions where two active source drivers exist. Three Q discrepancies remain: Aston Martin R8 expected3/reported1, Haas R8 expected-31/reported-30, Williams R15 expected-21/reported-20. Final promoted qualifying positions may not encode original Q2/Q3 progression; blanket -1 teamwork after no classified drivers may also be inappropriate in DSQ cases. Do not patch totals or infer missing progression until source/FIA session evidence resolves these differences. Williams R3 has only one active source driver and is explicitly uncheckable. All other checked constructor sessions match.
 
 Audit script intentionally exits nonzero while these constructor discrepancies remain. Its report preserves exact cases for investigation. No 2024 forecast errors have been computed.
+
+## Resolution of the three Q discrepancies
+
+FIA original Monaco classification lists Alonso16 with no Q2 lap, while the final F1 result promotes him14 after the Haas DSQs. Thus final position alone falsely credits Q2. Primary evidence: https://api.fia.com/events/fia-formula-one-world-championship/season-2024/monaco-grand-prix/qualifying-classification and https://www.formula1.com/en/results/2024/races/1236/monaco/qualifying. The audit records the explicit historical progression correction; this is past scoring replay only, never a pre-event forecast feature.
+
+The HAA R8 and WIL R15 archived teamwork fields are zero with no classified driver, rather than -1. Applying this observed historical-source behavior resolves the other two cases. This does not prove the same behavior for other seasons or replace primary historical rules corroboration. All 1078 driver and 538 checkable constructor sessions now replay. Williams R3 remains uncheckable from the active-only cohort. The initial discrepancy report is retained as fantasy-tools-driver-rule-replay-2024-initial.json.
+
+Production scoring remains unchanged. Price timing anchors, historical pit-rank simulation and explicit one-car coverage policy remain necessary before model comparison on 2024. No forecast errors have been evaluated.
