@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "status": "frozen-before-next-coherent-model-comparison",
+  "selectionData": "consumed2025 R6–24",
+  "candidate": "Full coherent constructor identity; final unrounded driver predictions unchanged; same QT/pit/DOTD expectation corrections",
+  "halfVariant": "diagnostic only, no further tuning",
+  "reference": "Shared production25% blend",
+  "parameters": {
+    "coherentWeight": 1,
+    "driverComponentWeight": 0.25
+  },
+  "validation": {
+    "supplementary": "2024 already consumed by other candidate evaluations; source/adapter limits prevent fully blind claim",
+    "independent": "2023 if complete causal inputs and year scoring can be verified, or genuinely new pre-lock forecasts",
+    "driverGate": "exactly unchanged for this constructor-only hypothesis",
+    "constructorGate": "Convincing held-out MAE/RMSE improvement, report bias and race-block uncertainty, no source-invalid activation"
+  },
+  "note": "No claim of global optimality. All current2025 errors consumed; this protocol does not relabel them as independent."
+}

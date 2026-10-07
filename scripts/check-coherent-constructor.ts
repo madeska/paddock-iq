@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';import {test} from 'node:test';import {coherentConstructorForecast} from '../src/lib/coherent-constructor';
+const driverComponents=[{code:'A',total:20},{code:'B',total:20}],constructors=[{code:'T',total:60}],teams={A:'T',B:'T'};
+test('replaces simulated driver totals while preserving only constructor scoring extras',()=>assert.equal(coherentConstructorForecast(new Map([['A',15],['B',20]]),driverComponents,constructors,teams).get('T'),55));
+test('missing projected teammate retains explicit unsupported status',()=>assert.equal(coherentConstructorForecast(new Map([['A',15]]),driverComponents,constructors,teams).size,0));
+test('duplicate or nonfinite component identity cannot fabricate a constructor total',()=>{assert.throws(()=>coherentConstructorForecast(new Map([['A',15],['B',20]]),[...driverComponents,driverComponents[0]],constructors,teams));assert.throws(()=>coherentConstructorForecast(new Map([['A',NaN],['B',20]]),driverComponents,constructors,teams))});
