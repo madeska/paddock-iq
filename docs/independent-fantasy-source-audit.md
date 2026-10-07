@@ -16,3 +16,7 @@ The older `15-Netherlands/driver_data/NOR.json` preserves R6 United States and R
 Decision: do not admit `latest` into independent validation. Audit the older snapshot against event chronology and sum-of-components checks. No benchmark scores have been computed on either snapshot yet. Preserve a later untouched subset only after validating identifiers/completeness without examining model error. Do not execute the source repository's scraper or assume a source asset's current team applies to past races.
 
 Samples are cached outside the repository under `../simulation-research/fantasy-2025-public`. No source code or third-party dataset is redistributed by this audit. Production models are unchanged.
+
+## Follow-up recovery
+
+The country collision was traced to the pinned author's country-name round Map and stable per-asset numeric sorting. Chronological occurrences were recovered with older snapshot anchors, while lossy team-swap records remain unknown. See `independent-fantasy-2025.md` for evidence, strict recovery rules and model-evaluation partition limits. No ambiguous score is invented.

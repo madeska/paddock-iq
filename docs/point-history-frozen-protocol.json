@@ -1,0 +1,56 @@
+{
+  "version": "point-history-team-v1",
+  "developmentSeason": 2026,
+  "developmentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "selectionObjective": "per-type MAE",
+  "selected": {
+    "DRIVER": {
+      "alpha": 0.25,
+      "ridge": 200,
+      "sprintFactor": 1.3
+    },
+    "CONSTRUCTOR": {
+      "alpha": 0.15,
+      "ridge": 10,
+      "sprintFactor": 1.3
+    }
+  },
+  "independentSeason": 2025,
+  "independentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "independentComparator": "price-free adaptation of current historical baseline and component blend; exact production comparator unavailable without historical prices",
+  "featureDefinition": "normalized own EWMA, last-3 mean, overall mean, current-team driver EWMA, trend, score SD, n/(n+5); separate pooled ridge per type; no target/future labels",
+  "candidateGrid": {
+    "alpha": [
+      0.15,
+      0.25,
+      0.4
+    ],
+    "ridge": [
+      10,
+      50,
+      200
+    ],
+    "sprintFactor": [
+      1,
+      1.3
+    ]
+  },
+  "noProductionActivation": true
+}

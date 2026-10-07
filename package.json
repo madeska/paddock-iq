@@ -62,7 +62,12 @@
     "fantasy:check-race-archive": "tsx --test scripts/check-race-archive.ts scripts/check-archive-pace.ts",
     "fantasy:backtest-archive-pace": "tsx scripts/backtest-archive-pace.ts",
     "fantasy:check-qualifying-form": "tsx --test scripts/check-qualifying-form.ts",
-    "fantasy:backtest-qualifying-form": "tsx scripts/backtest-qualifying-form.ts"
+    "fantasy:backtest-qualifying-form": "tsx scripts/backtest-qualifying-form.ts",
+    "fantasy:sync-totals-2025": "tsx scripts/sync-fantasy-totals-2025.ts --extended",
+    "fantasy:check-total-archive": "tsx --test scripts/check-fantasy-total-archive.ts",
+    "fantasy:check-point-history": "tsx --test scripts/check-point-history-model.ts",
+    "fantasy:backtest-point-history": "tsx scripts/backtest-point-history-2026.ts",
+    "fantasy:backtest-point-ensemble": "tsx scripts/backtest-point-history-ensemble.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
