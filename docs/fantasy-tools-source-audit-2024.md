@@ -7,3 +7,11 @@ Public retrospective source: https://f1fantasytools.com/api/statistics/2024. Pin
 Historical source awards differ from current rules: driver qualifying DSQ -15, race DSQ -25; constructor qualifying DSQ can be -30. Race pit awards contain 3/5/8/10/13/15/18, with separate overall-fastest and world-record fields zero. These are observed source values, not a complete validated rules specification. Replaying with current 2025/26 scoring would not be a valid independent benchmark. Next work must reconstruct and corroborate year-specific scoring before calculating model errors, and resolve or explicitly exclude disputed prices/coverage.
 
 Reproduce with scripts/audit-fantasy-tools-source-2024.ts; discrepancy details and observed award sets in fantasy-tools-source-audit-2024.json. This is a source audit, not evidence of improved predictive accuracy.
+
+## Driver and constructor scoring replay
+
+1078 driver sessions reproduce exactly with source-supported historical position tables, Q NC -5/DSQ -15, race NC -20/DSQ -25 and Sprint NC -20. This is source replay, not independent official rules corroboration.
+
+The constructor audit checks 538 sessions where two active source drivers exist. Three Q discrepancies remain: Aston Martin R8 expected3/reported1, Haas R8 expected-31/reported-30, Williams R15 expected-21/reported-20. Final promoted qualifying positions may not encode original Q2/Q3 progression; blanket -1 teamwork after no classified drivers may also be inappropriate in DSQ cases. Do not patch totals or infer missing progression until source/FIA session evidence resolves these differences. Williams R3 has only one active source driver and is explicitly uncheckable. All other checked constructor sessions match.
+
+Audit script intentionally exits nonzero while these constructor discrepancies remain. Its report preserves exact cases for investigation. No 2024 forecast errors have been computed.
