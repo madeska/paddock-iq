@@ -32,6 +32,8 @@ export type ComponentSimulationOptions={
   qualifyingPace?:Record<string,number>;
   qualifyingNoise?:number;
   racePace?:Record<string,number>;
+  /** Research-only pre-lock sprint pace; qualifying order is a signal, not an actual starting grid. */
+  sprintPace?:Record<string,number>;
   raceNoise?:number;
   raceProgress?:Record<string,number>;
   raceStartingGrid?:Record<string,number>;
@@ -176,9 +178,10 @@ export function simulateComponentWeekend(
 
     let sprintPts=new Map<string,number>();
     if(options.sprint){
-      const sprintGrid=rank(driverState,1.15);
+      const sprintState=options.sprintPace?driverState.map(d=>({...d,strength:options.sprintPace![d.code]??0})):driverState;
+      const sprintGrid=rank(sprintState,1.15);
       const sgPos=new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
-      const sprintClassified=driverState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
+      const sprintClassified=sprintState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
       const sprintFinish=rank(sprintClassified,1.2);
       const sfPos=new Map(sprintFinish.map((d,i)=>[d.code,i+1]));
       const sprintFastest=chooseWeighted(sprintClassified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.sprintFastestLapWeight)??Math.exp(d.strength*.8),r);
