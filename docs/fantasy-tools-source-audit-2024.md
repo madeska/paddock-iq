@@ -23,3 +23,9 @@ FIA original Monaco classification lists Alonso16 with no Q2 lap, while the fina
 The HAA R8 and WIL R15 archived teamwork fields are zero with no classified driver, rather than -1. Applying this observed historical-source behavior resolves the other two cases. This does not prove the same behavior for other seasons or replace primary historical rules corroboration. All 1078 driver and 538 checkable constructor sessions now replay. Williams R3 remains uncheckable from the active-only cohort. The initial discrepancy report is retained as fantasy-tools-driver-rule-replay-2024-initial.json.
 
 Production scoring remains unchanged. Price timing anchors, historical pit-rank simulation and explicit one-car coverage policy remain necessary before model comparison on 2024. No forecast errors have been evaluated.
+
+## Pit award identity audit
+
+All 240 constructor pit awards match their archived rank descriptions. Every race assigns each of ranks1/2/3 exactly once and conserves 18 points: 10+5+3. Multiple stops by the same constructor can occupy multiple ranks (maximum18), so a single-best-stop-per-team simulation is insufficient to reproduce the allocation mechanism. Separate overall-fastest/world-record fields are zero throughout this source season. No seconds or physical stop counts are inferred. Reproduce with scripts/audit-fantasy-tools-pit-rules-2024.ts.
+
+Price timing remains pending: search of official articles did not find reliable midseason2024 anchors. The 678 matching price transitions and independent secondary launch list support source consistency but do not resolve Red Bull R13/R14 or prove publication timing for every quote. Do not silently change29 to29.1. The next benchmark must retain this limitation or obtain contemporaneous source evidence.
