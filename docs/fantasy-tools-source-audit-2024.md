@@ -39,3 +39,9 @@ No production caller enables this helper. It implements scoring, not the stop-co
 ## Normalized component archive
 
 The importer now accepts an explicitly requested2024 season while keeping default2025 behavior and rejecting mismatched/unsupported seasons. The pinned2024 source produces719 normalized observations in src/data/component-history-2024.json. Session and weekend conservation/identity guards are shared with2025;13 importer tests pass. Missing Williams R3 and disputed Red Bull R14 quote remain explicit metadata; prices are retained as retrospective source quotes, not certified pre-event inputs. No production path consumes this archive and no2024 forecast errors have yet been computed. Reproduce with scripts/sync-fantasy-components-2024.ts using the pinned cache.
+
+## Further price/source checks and pre-lock collection
+
+An exact Internet Archive CDX query for2024 JSON captures of fantasy.formula1.com/feeds/drivers/*_en.json returnedHTTP200 with zero rows. The logged query is in official-price-archive-search-2024.json. This establishes only no matches for that pattern/filter, not absence of all official archives. No disputed price is repaired.
+
+A separate2024 OpenF1 collector uses the same completed-session cutoff and identity parser as2025, with its own pinned calendar hash/cache/output. It collects context only, not forecast errors. A19-driver Australian practice field is retained honestly rather than filling a missing car; this agrees with the active-source coverage issue already recorded. Retrospective provider publication timestamps remain unknown.
