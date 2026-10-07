@@ -3,7 +3,8 @@ export type PointRoster={code:string;type:'DRIVER'|'CONSTRUCTOR';team:string};
 export type PointHistoryOptions={season:number;round:number;sprint:boolean;alpha:number;ridge:number;sprintFactor:number};
 const mean=(xs:number[])=>xs.length?xs.reduce((n,x)=>n+x,0)/xs.length:0;
 const ewma=(xs:number[],alpha:number)=>xs.reduce((n,x,i)=>i?alpha*x+(1-alpha)*n:x,0);
-function fitRidge(rows:{x:number[];y:number}[],lambda:number){
+export function fitPointHistoryRidge(rows:{x:number[];y:number}[],lambda:number){
+ if(!rows.length)return null;
  const d=rows[0].x.length,centers=Array.from({length:d},(_,j)=>mean(rows.map(r=>r.x[j])));
  const scales=centers.map((m,j)=>Math.sqrt(mean(rows.map(r=>(r.x[j]-m)**2)))||1);
  const vectors=rows.map(r=>[1,...r.x.map((v,j)=>(v-centers[j])/scales[j])]),n=d+1;
@@ -34,7 +35,7 @@ export function forecastPointHistory(history:PointHistoryRow[],roster:PointRoste
  const result:Record<string,number>={};
  for(const type of ['DRIVER','CONSTRUCTOR'] as const){
   const training=rows.filter(r=>r.type===type).map(r=>({f:features(r,r.round),y:normalized(r)})).filter(r=>r.f.n>=2).map(r=>({x:r.f.x,y:r.y}));
-  const predictor=training.length>=20?fitRidge(training,ridge):null;
+  const predictor=training.length>=20?fitPointHistoryRidge(training,ridge):null;
   for(const asset of [...roster].filter(r=>r.type===type).sort((a,b)=>a.code.localeCompare(b.code))){const f=features(asset,round);const expected=f.n===0?f.fallback:predictor?.(f.x)??f.fallback;const value=expected*(options.sprint?sprintFactor:1);if(!Number.isFinite(value))throw Error('Nonfinite point prediction');result[asset.code]=value}
  }
  // Canonical output order keeps audit comparisons independent of roster ordering.

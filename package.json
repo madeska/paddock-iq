@@ -67,7 +67,9 @@
     "fantasy:check-total-archive": "tsx --test scripts/check-fantasy-total-archive.ts",
     "fantasy:check-point-history": "tsx --test scripts/check-point-history-model.ts",
     "fantasy:backtest-point-history": "tsx scripts/backtest-point-history-2026.ts",
-    "fantasy:backtest-point-ensemble": "tsx scripts/backtest-point-history-ensemble.ts"
+    "fantasy:backtest-point-ensemble": "tsx scripts/backtest-point-history-ensemble.ts",
+    "fantasy:check-point-reference": "tsx --test scripts/check-point-history-reference.ts",
+    "fantasy:backtest-point-independent": "tsx scripts/backtest-point-history-independent.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
