@@ -39,6 +39,11 @@ jobs:
           npx tsx --test scripts/check-production-forecast.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts scripts/check-tree-residual-inference.ts scripts/check-official-historical-price.ts scripts/check-official-price-field-data.ts
           npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-snapshot-tree-parity.ts scripts/check-tree-residual-inference.ts scripts/tree-forecast-frames.ts scripts/export-prospective-tree-frames.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts
 
+      - name: Check pre-lock weekend sessions and penalty news
+        run: |
+          npx tsx --test scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts scripts/check-practice-cutoff.ts scripts/check-production-history-replay.ts scripts/check-component-calibration.ts
+          npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts
+
       - name: Setup Python for source-independent guards
         uses: actions/setup-python@v5
         with:

@@ -13,8 +13,8 @@ test('future scores and inactive seasons cannot enter shared baseline calculatio
  const a=forecastProductionBaselines(assets,{season:2026,round:9});
  const b=forecastProductionBaselines([...assets.map(a=>({...a,scores:[...a.scores,{round:9,points:9999},{round:10,points:-9999}]})),{...assets[0],season:2025,code:'OTHER'}],{season:2026,round:9});assert.deepEqual(a,b);
 });
-test('sprint practices do not change baseline or boost and missing-history assets stay missing',()=>{
- const a=forecastProductionBaselines(assets,{season:2026,round:9}),b=forecastProductionBaselines(assets,{season:2026,round:9,practice:{isSprint:true,positions:new Map([['D0',1]])}});assert.deepEqual(a,b);assert.equal(a.baselines.has('C10'),false);assert.equal(a.baselines.has('C11'),false);assert.equal(a.baselines.get('C8')!.rawXPts,-5);
+test('sprint FP1 changes driver baseline and boost while missing-history assets stay missing',()=>{
+ const a=forecastProductionBaselines(assets,{season:2026,round:9}),b=forecastProductionBaselines(assets,{season:2026,round:9,practice:{isSprint:true,positions:new Map([['D0',1]])}});assert.notEqual(a.baselines.get('D0')!.rawXPts,b.baselines.get('D0')!.rawXPts);assert.notEqual(a.baselines.get('D0')!.boostXPts,b.baselines.get('D0')!.boostXPts);assert.equal(a.baselines.has('C10'),false);assert.equal(a.baselines.has('C11'),false);assert.equal(a.baselines.get('C8')!.rawXPts,-5);
 });
 test('shared production constants retain deployed simulation configuration',()=>{
  assert.equal(PRODUCTION_FORECAST_CONFIG.overtakeIntensity,1.2);assert.equal(PRODUCTION_FORECAST_CONFIG.componentWeight,.25);assert.equal(PRODUCTION_FORECAST_CONFIG.simulations,3000);assert.equal(PRODUCTION_FORECAST_CONFIG.firstTrainingRound,6);

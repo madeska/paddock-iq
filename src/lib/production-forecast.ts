@@ -5,7 +5,7 @@ export const PRODUCTION_FORECAST_CONFIG=Object.freeze({ewmaAlpha:.25,ridgeLambda
 const EWMA_ALPHA=PRODUCTION_FORECAST_CONFIG.ewmaAlpha,RIDGE_LAMBDA=PRODUCTION_FORECAST_CONFIG.ridgeLambda,DRIVER_RIDGE_WEIGHT=PRODUCTION_FORECAST_CONFIG.driverRidgeWeight,CONSTRUCTOR_EWMA_WEIGHT=PRODUCTION_FORECAST_CONFIG.constructorEwmaWeight;
 export type ProductionForecastAsset={season:number;code:string;type:'DRIVER'|'CONSTRUCTOR';currentPrice:number|null;prices:{round:number;price:number}[];scores:{round:number;points:number}[]};
 export type ProductionBaseline={code:string;type:'DRIVER'|'CONSTRUCTOR';current:number;chronological:number[];rawXPts:number;boostXPts:number|null;practicePosition:number|null};
-export type ProductionPractice={isSprint:boolean;positions:ReadonlyMap<string,number>};
+export type ProductionPractice={isSprint:boolean;positions:ReadonlyMap<string,number>;sprintQualifyingPositions?:ReadonlyMap<string,number>};
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 export const productionSampleStdDev=(xs:number[])=>{
  if(xs.length<2)return 0;
@@ -94,7 +94,7 @@ export function forecastProductionBaselines(assets:readonly ProductionForecastAs
    const e=ewmaChronological(chronological),ridge=driverModel?.predict(features(chronological,current))??null;
    rawXPts=ridge!=null&&e!=null?DRIVER_RIDGE_WEIGHT*ridge+(1-DRIVER_RIDGE_WEIGHT)*e:null;boostXPts=ridge;
    if(rawXPts==null)rawXPts=e==null?null:.7*e+.3*mean(chronological);
-   practicePosition=options.practice?.isSprint?null:(options.practice?.positions.get(asset.code)??null);
+   practicePosition=options.practice?.positions.get(asset.code)??null;
    if(rawXPts!=null&&practicePosition!=null)rawXPts=applyPracticePositionModifier(rawXPts,practicePosition);
    if(boostXPts!=null&&practicePosition!=null)boostXPts=applyPracticePositionModifier(boostXPts,practicePosition);
   }else rawXPts=constructorXPts(chronological);
@@ -102,11 +102,18 @@ export function forecastProductionBaselines(assets:readonly ProductionForecastAs
  }
  return {baselines,trainingRows:driverTraining.length};
 }
-export function simulateProductionForecast(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>,options:{season?:number;round:number;sprint:boolean;seed?:number;simulations?:number;componentOverrides?:ProductionComponentOverrides}){
+export function simulateProductionForecast(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>,options:{season?:number;round:number;sprint:boolean;seed?:number;simulations?:number;componentOverrides?:ProductionComponentOverrides;practice?:ProductionPractice|null;gridDrops?:ComponentSimulationOptions['gridDrops']}){
  const calibration=options.componentOverrides?.calibration;
  if(calibration&&(calibration.season!==(options.season??2026)||calibration.beforeRound!==options.round||calibration.sourceRounds.some(r=>!Number.isInteger(r)||r<1||r>=options.round)))throw Error('Calibration identity or cutoff mismatch');
  const rows=[...baselines.values()];
- const result=simulateComponentWeekend(rows.filter(r=>r.type==='DRIVER'&&Object.hasOwn(teams,r.code)&&teams[r.code]).map(r=>({code:r.code,team:teams[r.code],baselineXPts:r.rawXPts,recentScores:r.chronological.slice(-5)})),rows.filter(r=>r.type==='CONSTRUCTOR').map(r=>({code:r.code,baselineXPts:r.rawXPts})),{scoringSeason:options.season??2026,sprint:options.sprint,simulations:options.simulations??PRODUCTION_FORECAST_CONFIG.simulations,seed:options.seed??202600+options.round,overtakeIntensity:PRODUCTION_FORECAST_CONFIG.overtakeIntensity,...options.componentOverrides});
+ const projected=rows.filter(r=>r.type==='DRIVER'&&Object.hasOwn(teams,r.code)&&teams[r.code]);
+ const sq=options.sprint?options.practice?.sprintQualifyingPositions:undefined;
+ const sqPositions=sq?projected.map(d=>sq.get(d.code)):[];
+ const completeSQ=sqPositions.length>0&&sqPositions.every(p=>p!=null&&Number.isInteger(p)&&p>=1&&p<=projected.length)&&new Set(sqPositions).size===projected.length;
+ const sprintStartingGrid=completeSQ?Object.fromEntries(projected.map(d=>[d.code,sq!.get(d.code)!])):undefined;
+ // SQ is an observed sprint grid only when complete; partial standings do not invent missing starters.
+
+ const result=simulateComponentWeekend(rows.filter(r=>r.type==='DRIVER'&&Object.hasOwn(teams,r.code)&&teams[r.code]).map(r=>({code:r.code,team:teams[r.code],baselineXPts:r.rawXPts,recentScores:r.chronological.slice(-5)})),rows.filter(r=>r.type==='CONSTRUCTOR').map(r=>({code:r.code,baselineXPts:r.rawXPts})),{scoringSeason:options.season??2026,sprint:options.sprint,simulations:options.simulations??PRODUCTION_FORECAST_CONFIG.simulations,seed:options.seed??202600+options.round,overtakeIntensity:PRODUCTION_FORECAST_CONFIG.overtakeIntensity,...options.componentOverrides,sprintStartingGrid,gridDrops:options.gridDrops});
  const supported=supportedProductionConstructors(baselines,teams);return {...result,constructors:result.constructors.filter(c=>supported.has(c.code))};
 }
 export function supportedProductionConstructors(baselines:ReadonlyMap<string,ProductionBaseline>,teams:Readonly<Record<string,string>>){

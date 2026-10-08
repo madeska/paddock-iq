@@ -17,7 +17,7 @@ test('cold-start coverage is explicit rather than a fabricated zero projection',
  const rows=replayProductionHistory(history,prices,{season:2025,round:7,sprint:false});assert.equal(rows.length,30);assert.equal(rows.find(r=>r.code==='COL')?.prediction,null);assert.equal(rows.filter(r=>r.prediction!==null).length,29);
 });
 
-test('explicit sprint practice input retains the deployed no-modifier policy',()=>{const options={season:2025,round:6,sprint:true};assert.deepEqual(replayProductionHistory(history,prices,{...options,practice:{isSprint:true,positions:new Map([['NOR',1]])}}),replayProductionHistory(history,prices,options))});
+test('explicit completed sprint FP1 affects replay driver baseline, not constructor baseline',()=>{const options={season:2025,round:6,sprint:true};const before=replayProductionHistory(history,prices,options),after=replayProductionHistory(history,prices,{...options,practice:{isSprint:true,positions:new Map([['NOR',1]])}});assert.ok(after.find(r=>r.code==='NOR')!.baseline!>before.find(r=>r.code==='NOR')!.baseline!);for(const row of after.filter(r=>r.type==='CONSTRUCTOR'))assert.equal(row.baseline,before.find(r=>r.code===row.code)!.baseline)});
 
 import components from '../src/data/component-history-2025.json';
 import {calibrateComponents,type ComponentObservation} from '../src/lib/component-calibration';

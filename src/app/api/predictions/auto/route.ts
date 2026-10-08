@@ -1,8 +1,9 @@
+import {getGridPenaltyNews} from '../../../../lib/grid-penalty-news';
 import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
-import { getPracticeSnapshot } from '../../../../lib/openf1-weekend';
+import { getPracticeSnapshot, getWeekendLock } from '../../../../lib/openf1-weekend';
 import { syncOfficialFantasyMarket } from '../../../../lib/fantasy-official-sync';
 import {forecastProductionBaselines,simulateProductionForecast,productionSampleStdDev as sampleStdDev,PRODUCTION_FORECAST_CONFIG} from '../../../../lib/production-forecast';
 
@@ -19,7 +20,11 @@ export async function POST(request:NextRequest){
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
-  const practiceSnapshot=await getPracticeSnapshot(season,gp.deadline);
+  const weekendLock=await getWeekendLock(season,round,gp.name,gp.deadline);
+  const deadline=weekendLock?.deadline??null;
+  const isSprint=weekendLock?.isSprint??(season===2026&&SPRINT_ROUNDS_2026.has(round));
+  const forecastAt=new Date();
+  const practiceSnapshot=await getPracticeSnapshot(season,deadline,forecastAt);
 
   const assets=await prisma.asset.findMany({
    where:{season,active:true},
@@ -29,6 +34,9 @@ export async function POST(request:NextRequest){
    }
   });
 
+  const news=deadline?await getGridPenaltyNews({season,round,eventName:gp.name,deadline,asOf:forecastAt,drivers:assets.filter(a=>a.type==='DRIVER').map(a=>({code:a.code,name:a.name}))}):{mentions:[],errors:['Fantasy lock unavailable; news not applied'],scanned:0};
+  const gridDrops:{race:Record<string,number>;sprint:Record<string,number>}={race:{},sprint:{}};
+  for(const mention of news.mentions)if(mention.status==='CONFIRMED'&&mention.code&&mention.places!=null&&mention.session)gridDrops[mention.session==='SPRINT'?'sprint':'race'][mention.code]=mention.places;
   const production=forecastProductionBaselines(assets.map(asset=>{
    const currentPriceRow=asset.prices.filter(p=>p.grandPrix.round===round).sort((a,b)=>+new Date(b.recordedAt)-+new Date(a.recordedAt))[0];
    return {season:asset.season,code:asset.code,type:asset.type,currentPrice:currentPriceRow?Number(currentPriceRow.price):null,prices:asset.prices.map(p=>({round:p.grandPrix.round,price:Number(p.price)})),scores:asset.fantasyScores.map(s=>({round:s.grandPrix.round,points:s.points}))};
@@ -42,7 +50,9 @@ export async function POST(request:NextRequest){
    baselineByCode.set(asset.code,{...baseline,asset,scoreRows});
   }
 
-  const component=simulateProductionForecast(production.baselines,officialSync.driverTeams,{sprint:SPRINT_ROUNDS_2026.has(round),round});
+  for(const session of ['race','sprint'] as const)for(const code of Object.keys(gridDrops[session]))if(!production.baselines.has(code)||!officialSync.driverTeams[code]||(session==='sprint'&&!isSprint)){delete gridDrops[session][code];const mention=news.mentions.find(m=>m.code===code&&m.session===(session==='race'?'RACE':'SPRINT'));if(mention){mention.status='PENDING';mention.places=null;mention.reason='No supported driver projection or session; penalty not applied'}}
+  const component=simulateProductionForecast(production.baselines,officialSync.driverTeams,{season,sprint:isSprint,round,practice:practiceSnapshot,gridDrops});
+  const sourceContext=(practiceSnapshot?.sprintQualifyingSessionKey?' · Sprint Qualifying session '+practiceSnapshot.sprintQualifyingSessionKey:'')+news.mentions.filter(m=>m.status==='CONFIRMED').map(m=>' · '+m.code+' '+m.session+' +'+m.places+' grid places: '+m.sourceUrl).join('');
   const componentDriverByCode=new Map(component.drivers.map(x=>[x.code,x]));
   const componentConstructorByCode=new Map(component.constructors.map(x=>[x.code,x]));
 
@@ -85,9 +95,9 @@ export async function POST(request:NextRequest){
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
    const modelVersion=asset.type==='DRIVER'
     ?(practicePosition!=null
-      ?'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded'
-      :'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded')
-    :'xpts-constructor-baseline75-component25-v4 + price-probability-v0.4-bounded';
+      ?'xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded'
+      :'xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded')
+    :'xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded';
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
@@ -101,13 +111,13 @@ export async function POST(request:NextRequest){
     requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,
     requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
-    source:asset.type==='DRIVER'
+    source:(asset.type==='DRIVER'
      ?(practicePosition!=null
-       ?'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + validated normal-GP Practice modifier from '+practiceSnapshot?.sessionName+' + bounded rolling-3 PPM price model'
+       ?'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + pre-lock practice modifier from '+practiceSnapshot?.sessionName+' + bounded rolling-3 PPM price model'
        :'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + bounded rolling-3 PPM price model')
      :componentXPts==null
       ?'Constructor baseline; official driver lineup incomplete + bounded rolling-3 PPM price model'
-      :'75% constructor baseline + 25% component simulation (official driver lineup/quali teamwork/pit stops) + bounded rolling-3 PPM price model',
+      :'75% constructor baseline + 25% component simulation (official driver lineup/quali teamwork/pit stops) + bounded rolling-3 PPM price model')+sourceContext,
     modelVersion
    }});
 
@@ -121,7 +131,7 @@ export async function POST(request:NextRequest){
      expectedPoints:boostPts,
      confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
      source:practicePosition!=null
-      ?'Pure ridge(lambda=50) x2 selector + validated normal-GP Practice position modifier from '+practiceSnapshot?.sessionName
+      ?'Pure ridge(lambda=50) x2 selector + pre-lock practice position modifier from '+practiceSnapshot?.sessionName
       :'Pure walk-forward ridge(lambda=50) x2 selector',
      modelVersion:practicePosition!=null
       ?'xpts-driver-ridge50-boost-practice-v1'
@@ -133,15 +143,18 @@ export async function POST(request:NextRequest){
   const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
   return NextResponse.json({
    ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,
-   driverModel:'50% ridge(lambda=50: ewma025, seasonMean, currentPrice) + 50% EWMA(0.25); normal-GP Practice modifier 0.5*(11.5-position) when available',
+   driverModel:'50% ridge(lambda=50: ewma025, seasonMean, currentPrice) + 50% EWMA(0.25); latest normal-GP practice or sprint FP1 modifier 0.5*(11.5-position); complete SQ grid and confirmed official news penalties when available',
    practiceSnapshot:practiceSnapshot?{
     sessionName:practiceSnapshot.sessionName,
     isSprint:practiceSnapshot.isSprint,
-    drivers:practiceSnapshot.positions.size
+    drivers:practiceSnapshot.positions.size,
+    sprintQualifyingDrivers:practiceSnapshot.sprintQualifyingPositions?.size??0
    }:null,
    constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
    driverTrainingRows:production.trainingRows,
    componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
+   weekendLock:weekendLock?{deadline:weekendLock.deadline.toISOString(),source:weekendLock.source}:null,
+   weekendNews:{...news,coverage:'Latest official F1 headlines only; not an exhaustive FIA decision feed'},gridDrops,
    officialSync,historyReconciliation,
    predictions:created
   });

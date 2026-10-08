@@ -262,6 +262,7 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
+ const [weekendContext,setWeekendContext]=useState<{practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
  const season=2026,round=17;
 
  async function load(){
@@ -281,6 +282,7 @@ export default function Home(){
    const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
+   setWeekendContext(j);
    await load();
   }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
  }
@@ -369,6 +371,15 @@ export default function Home(){
   </header>
 
   <div className={styles.status}>{status||<>Market complete · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+
+  {weekendContext&&<section className={styles.teamBuilder} aria-label="Weekend information">
+   <h2>Before team lock</h2>
+   <p>{weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':'No completed practice data available'}</p>
+   <p>{weekendContext.weekendNews.coverage}</p>
+   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' +'+m.places+' grid places':'Needs confirmation; not applied'}</p>)}
+   {weekendContext.weekendNews.mentions.length===0&&<p>No applicable penalty found in the checked headlines.</p>}
+   {weekendContext.weekendNews.errors.map(e=><p key={e}>{e}</p>)}
+  </section>}
 
   <section className={styles.searchRow}>
    <label>Find a driver…<input value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="e.g. VER or Norris"/></label>

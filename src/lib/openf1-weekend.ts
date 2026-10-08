@@ -8,8 +8,8 @@ export type OpenF1Session={
   date_start:string;
   date_end:string;
 };
-type OpenF1Driver={driver_number:number;name_acronym:string};
-type OpenF1Result={driver_number:number;position:number};
+type OpenF1Driver={driver_number:number;name_acronym:string;session_key?:number};
+type OpenF1Result={driver_number:number;position:number;session_key?:number};
 
 export type PracticeSnapshot={
   meetingKey:number;
@@ -17,6 +17,8 @@ export type PracticeSnapshot={
   sessionName:string;
   isSprint:boolean;
   positions:Map<string,number>;
+  sprintQualifyingPositions?:Map<string,number>;
+  sprintQualifyingSessionKey?:number;
 };
 
 const OPEN='https://api.openf1.org/v1';
@@ -24,7 +26,7 @@ const OPEN='https://api.openf1.org/v1';
 async function tryJson<T>(url:string):Promise<T|null>{
   for(let attempt=0;attempt<3;attempt++){
     try{
-      const response=await fetch(url,{headers:{'user-agent':'Paddock-IQ'}});
+      const response=await fetch(url,{headers:{'user-agent':'Paddock-IQ'},signal:AbortSignal.timeout(10000)});
       if(response.ok)return response.json() as Promise<T>;
       if(response.status===404)return null;
       if(response.status===429||response.status>=500){
@@ -68,44 +70,49 @@ export async function getPracticeSnapshot(season:number,deadline:Date|null,asOf=
   if(!context)return null;
   const {meeting,isSprint,practices}=context;
 
-  // Sprint-weekend data is deliberately not applied in v1: backtest showed no MAE gain,
-  // even though Sprint Qualifying is available before team lock.
-  if(isSprint)return {
-    meetingKey:meeting.meetingKey,sessionKey:0,sessionName:'Sprint weekend',isSprint:true,positions:new Map()
-  };
-
-  if(!practices.length)return null;
-
-  let chosen:OpenF1Session|null=null;
-  let results:OpenF1Result[]|null=null;
-  for(const practice of practices){
-    const r=await tryJson<OpenF1Result[]>(OPEN+'/session_result?session_key='+practice.session_key);
-    if(r?.length){chosen=practice;results=r;break;}
+  const cutoff=Math.min(+deadline,+asOf);
+  const sprintQualifying=isSprint?meeting.list.filter(s=>!s.is_cancelled&&s.session_name.toLowerCase()==='sprint qualifying'&&Number.isFinite(Date.parse(s.date_end))&&Date.parse(s.date_end)>Date.parse(s.date_start)&&Date.parse(s.date_end)<cutoff).sort((a,b)=>Date.parse(b.date_start)-Date.parse(a.date_start)):[];
+  async function load(list:OpenF1Session[]){
+    for(const session of list){
+      const results=await tryJson<OpenF1Result[]>(OPEN+'/session_result?session_key='+session.session_key);
+      if(!results?.length)continue;
+      const drivers=await tryJson<OpenF1Driver[]>(OPEN+'/drivers?session_key='+session.session_key);
+      if(!drivers?.length)continue;
+      const byNumber=new Map<number,string>(),codes=new Set<string>();
+      let invalid=false;
+      for(const driver of drivers){if(driver.session_key!=null&&driver.session_key!==session.session_key){invalid=true;break}const code=String(driver.name_acronym||'').trim().toUpperCase();if(!code||!Number.isInteger(driver.driver_number)||driver.driver_number<1)continue;if(byNumber.has(driver.driver_number)||codes.has(code)){invalid=true;break}byNumber.set(driver.driver_number,code);codes.add(code)}
+      if(invalid)continue;
+      const positions=new Map<string,number>(),seen=new Set<number>();
+      for(const result of results){if(result.session_key!=null&&result.session_key!==session.session_key){invalid=true;break}const code=byNumber.get(result.driver_number);if(!code||!Number.isInteger(result.position)||result.position<1||result.position>byNumber.size)continue;if(positions.has(code)||seen.has(result.position)){invalid=true;break}positions.set(code,result.position);seen.add(result.position)}
+      if(!invalid&&positions.size)return {session,positions};
+    }
+    return null;
   }
-  if(!chosen||!results)return null;
-
-  let drivers=await tryJson<OpenF1Driver[]>(OPEN+'/drivers?meeting_key='+meeting.meetingKey);
-  if(!drivers?.length)drivers=await tryJson<OpenF1Driver[]>(OPEN+'/drivers?session_key='+chosen.session_key);
-  if(!drivers?.length)return null;
-
-  const codeByNumber=new Map(drivers.map(d=>[d.driver_number,String(d.name_acronym||'').toUpperCase()]));
-  const positions=new Map<string,number>();
-  for(const result of results){
-    const code=codeByNumber.get(result.driver_number);
-    if(code&&Number.isInteger(result.position)&&result.position>0)positions.set(code,result.position);
-  }
-  if(!positions.size)return null;
-
-  return {
-    meetingKey:meeting.meetingKey,
-    sessionKey:chosen.session_key,
-    sessionName:chosen.session_name,
-    isSprint:false,
-    positions
-  };
+  const practice=await load(isSprint?practices.filter(s=>s.session_name.toLowerCase()==='practice 1'):practices);
+  const sq=await load(sprintQualifying);
+  if(!practice&&!sq)return null;
+  const chosen=practice??sq!;
+  return {meetingKey:meeting.meetingKey,sessionKey:chosen.session.session_key,sessionName:practice?.session.session_name??'No completed practice',isSprint,positions:practice?.positions??new Map(),sprintQualifyingPositions:sq?.positions,sprintQualifyingSessionKey:sq?.session.session_key};
 }
 
 export function applyPracticePositionModifier(baseXPts:number,position:number|null|undefined){
   if(position==null||!Number.isFinite(position))return baseXPts;
   return baseXPts + .5*(11.5-position);
+}
+
+/** Calendar identifies Fantasy round; OpenF1 verifies meeting and scored-session lock. Never guesses by ordinal race index. */
+export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null){
+ const normalize=(name:string)=>name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+(?:grand prix|gp)\b.*$/,'').trim();
+ const calendar=await tryJson<{races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]}>('https://f1fantasytools.com/api/statistics/'+season);
+ const candidates=calendar?.races?.filter(r=>r.roundNumber===round&&normalize(r.name)===normalize(eventName));
+ if(candidates?.length!==1)return storedDeadline&&Number.isFinite(+storedDeadline)?{deadline:storedDeadline,isSprint:null,source:'Stored Fantasy deadline'}:null;
+ const entry=candidates[0],raceAt=Date.parse(entry.start_times?.race),calendarLock=Date.parse(entry.sprint?entry.start_times?.sprint??'':entry.start_times?.qualifying??'');
+ if(!Number.isFinite(raceAt)||!Number.isFinite(calendarLock)||calendarLock>=raceAt)return null;
+ const sessions=await tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season);
+ const races=sessions?.filter(s=>s.year===season&&!s.is_cancelled&&s.session_name==='Race'&&Math.abs(Date.parse(s.date_start)-raceAt)<12*3600000);
+ if(races?.length!==1)return null;
+ const locks=sessions!.filter(s=>s.year===season&&s.meeting_key===races[0].meeting_key&&!s.is_cancelled&&s.session_name===(entry.sprint?'Sprint':'Qualifying'));
+ if(locks.length!==1||!Number.isFinite(Date.parse(locks[0].date_start))||Math.abs(Date.parse(locks[0].date_start)-calendarLock)>12*3600000)return null;
+ const deadline=new Date(Math.min(calendarLock,Date.parse(locks[0].date_start),storedDeadline&&Number.isFinite(+storedDeadline)?+storedDeadline:Infinity));
+ return {deadline,isSprint:entry.sprint,source:'Fantasy Tools calendar + OpenF1 session start; earliest cutoff'};
 }

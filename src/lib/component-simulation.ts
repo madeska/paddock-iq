@@ -1,3 +1,4 @@
+import {applyGridDrops} from './grid-penalty-news';
 import {pitPodiumAwards2024} from './pit-podium-2024';
 import {expectedRaceOvertakes,type OvertakeModel} from './overtake-model';
 import type {ComponentCalibration} from './component-calibration';
@@ -38,6 +39,8 @@ export type ComponentSimulationOptions={
   raceNoise?:number;
   raceProgress?:Record<string,number>;
   raceStartingGrid?:Record<string,number>;
+  sprintStartingGrid?:Record<string,number>;
+  gridDrops?:{race?:Record<string,number>;sprint?:Record<string,number>};
   includeRankDiagnostics?:boolean;
   /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
   rankingCorrelation?:number;
@@ -129,6 +132,13 @@ export function simulateComponentWeekend(
   if(options.raceStartingGrid){
     const seen=new Set<number>();for(const driver of driverInputs){const start=options.raceStartingGrid[driver.code];if(!Number.isInteger(start)||start<1||start>driverInputs.length+1||start<=driverInputs.length&&seen.has(start))throw Error('Invalid known race grid');seen.add(start)}
   }
+  if(options.sprintStartingGrid){
+    if(!options.sprint)throw Error('Sprint grid on normal weekend');
+    const values=driverInputs.map(d=>options.sprintStartingGrid![d.code]);
+    if(values.some(p=>!Number.isInteger(p)||p<1||p>driverInputs.length)||new Set(values).size!==values.length)throw Error('Incomplete or invalid sprint grid');
+  }
+  for(const drops of [options.gridDrops?.race,options.gridDrops?.sprint])if(drops)applyGridDrops(driverInputs.map(d=>d.code),drops);
+  if(options.raceStartingGrid&&options.gridDrops?.race&&Object.values(options.gridDrops.race).some(n=>n>0))throw Error('Do not apply penalties twice to a known race grid');
   const rankStats=options.includeRankDiagnostics?new Map(driverInputs.map(d=>[d.code,{starts:0,classifiedStarts:0,finishes:0,classified:0}])):undefined;
   const simulations=Math.max(200,options.simulations??3000);
   const r=rng32(options.seed??170026);
@@ -172,7 +182,7 @@ export function simulateComponentWeekend(
     const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
     const quali=[...rankedQuali.filter(d=>!noTimes.has(d.code)),...rankedQuali.filter(d=>noTimes.has(d.code))];
     const qPos=new Map(quali.map((d,i)=>[d.code,i+1]));
-    const raceStart=options.raceStartingGrid?new Map(driverState.map(d=>[d.code,options.raceStartingGrid![d.code]])):qPos;
+    const raceStart=options.raceStartingGrid?new Map(driverState.map(d=>[d.code,options.raceStartingGrid![d.code]])):options.gridDrops?.race?applyGridDrops(quali.map(d=>d.code),options.gridDrops.race):qPos;
     const qPts=new Map(driverState.map(d=>{
       const noTime=noTimes.has(d.code);
       return [d.code,qualifyingDriverPoints({position:noTime?null:qPos.get(d.code)??null,noTime})] as const;
@@ -180,11 +190,15 @@ export function simulateComponentWeekend(
 
     let sprintPts=new Map<string,number>();
     if(options.sprint){
-      const sprintState=options.sprintPace?driverState.map(d=>({...d,strength:options.sprintPace![d.code]??0})):driverState;
-      const sprintGrid=rank(sprintState,1.15);
-      const sgPos=new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
+      const baseSprintState=options.sprintPace?driverState.map(d=>({...d,strength:options.sprintPace![d.code]??0})):driverState;
+      const gridMean=(driverState.length+1)/2,gridSd=Math.sqrt((driverState.length**2-1)/12)||1;
+      const sprintState=options.sprintStartingGrid?baseSprintState.map(d=>({...d,strength:.5*d.strength+.5*(gridMean-options.sprintStartingGrid![d.code])/gridSd})):baseSprintState;
+      // Consume the same ranking draw even with observed grid: fixed-seed comparisons remain paired.
+      const sampledSprintGrid=rank(sprintState,1.15);
+      const sprintGrid=options.sprintStartingGrid?[...sprintState].sort((a,b)=>options.sprintStartingGrid![a.code]-options.sprintStartingGrid![b.code]):sampledSprintGrid;
+      const sgPos=options.gridDrops?.sprint?applyGridDrops(sprintGrid.map(d=>d.code),options.gridDrops.sprint):new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
       const sprintClassified=sprintState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
-      const sprintFinish=rank(sprintClassified,1.2);
+      const sprintFinish=rank(options.gridDrops?.sprint?sprintClassified.map(d=>({...d,strength:d.strength+.1*((sprintGrid.findIndex(x=>x.code===d.code)+1)-(sgPos.get(d.code)??1))})):sprintClassified,1.2);
       const sfPos=new Map(sprintFinish.map((d,i)=>[d.code,i+1]));
       const sprintFastest=chooseWeighted(sprintClassified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.sprintFastestLapWeight)??Math.exp(d.strength*.8),r);
       sprintPts=new Map(driverState.map(d=>{
@@ -203,7 +217,7 @@ export function simulateComponentWeekend(
       }));
     }
 
-    const classified=driverState.filter(d=>r()>=d.dnfProb);
+    const classified=driverState.filter(d=>r()>=d.dnfProb).map(d=>options.gridDrops?.race?{...d,strength:d.strength+.1*((qPos.get(d.code)??1)-(raceStart.get(d.code)??1))}:d);
     const raceFinish=rank(options.raceProgress?classified.map(d=>({...d,strength:(11.5-(raceStart.get(d.code)??11.5)+(options.raceProgress![d.code]??0))/6})):options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0,options.raceProgress!==undefined);
     const finishPos=new Map(raceFinish.map((d,i)=>[d.code,i+1]));
     const fastest=chooseWeighted(classified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.fastestLapWeight)??Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
