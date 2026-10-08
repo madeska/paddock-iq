@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "status": "frozen-before-next-tree-comparison",
+  "selectedFrom": "consumed2025 R6–24",
+  "library": "scikit-learn1.7.2",
+  "parameters": {
+    "loss": "squared_error",
+    "learning_rate": 0.05,
+    "max_iter": 60,
+    "max_leaf_nodes": 4,
+    "min_samples_leaf": 20,
+    "l2_regularization": 10,
+    "early_stopping": false,
+    "random_state": 42,
+    "correctionScale": 0.5
+  },
+  "training": "Only genuinely past forecast features/labels, separate driver/constructor models; no target/future rows.",
+  "nextValidation": "2024/2023 supplementary comparisons with all source/adapter limits; both seasons already consumed by other models, no wholly blind claim. Prospectively frozen new races needed for stronger confirmation.",
+  "activation": "No tuning on next outcomes. Require robust full forecast improvement and audit source validity/coverage, report bias and uncertainty; no global optimum claim."
+}
