@@ -2,24 +2,7 @@ import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliatio
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
 
-const MAIN_MODELS=[
- 'xpts-driver-baseline75-component25-practice-v2 + price-probability-v0.4-bounded',
- 'xpts-driver-baseline75-component25-v2 + price-probability-v0.4-bounded',
- 'xpts-constructor-baseline75-component25-v4 + price-probability-v0.4-bounded',
- 'xpts-constructor-baseline75-component25-v3 + price-probability-v0.4-bounded',
- 'xpts-constructor-baseline75-component25-v2 + price-probability-v0.4-bounded',
- 'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded',
- 'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded',
- 'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded',
- 'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
- 'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware',
- 'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware',
-];
-const BOOST_MODELS=['xpts-driver-ridge50-boost-practice-v1','xpts-driver-ridge50-boost-v1'];
-const CURRENT_MODELS=[...MAIN_MODELS,...BOOST_MODELS];
+import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
 
 export async function GET(request:NextRequest){
  const email=request.nextUrl.searchParams.get('email')?.trim().toLowerCase();

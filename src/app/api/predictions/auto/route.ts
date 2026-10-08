@@ -1,3 +1,4 @@
+import {CURRENT_DRIVER_MODEL,CURRENT_CONSTRUCTOR_MODEL} from '../../../../lib/current-prediction-models';
 import {getGridPenaltyNews} from '../../../../lib/grid-penalty-news';
 import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
@@ -93,11 +94,7 @@ export async function POST(request:NextRequest){
     (price.effectiveDeltas.maxFall<0?price.probabilities.maxFall:0):null;
 
    await prisma.assetPrediction.deleteMany({where:{assetId:asset.id,grandPrixId:gp.id}});
-   const modelVersion=asset.type==='DRIVER'
-    ?(practicePosition!=null
-      ?'xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded'
-      :'xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded')
-    :'xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded';
+   const modelVersion=asset.type==='DRIVER'?CURRENT_DRIVER_MODEL:CURRENT_CONSTRUCTOR_MODEL;
 
    const row=await prisma.assetPrediction.create({data:{
     assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
