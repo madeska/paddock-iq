@@ -1,5 +1,6 @@
 """Research capture only. Input provenance still requires source/feature audit."""
 import argparse, hashlib, json, math
+from export_tree_residual_model import export_tree_residual_model
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -61,6 +62,6 @@ def main():
  predictions=[dict(code=r['code'],type=r['type'],incumbent=r['incumbent'],candidate=(math.floor((r['incumbent']+.5*correction[r['code']])*10+.5)/10 if r['type']=='DRIVER' else r['incumbent'])) for r in data['targets']]
  # Recheck real time after model fitting; a long fit crossing lock is ineligible.
  finished=datetime.now(timezone.utc).isoformat();validate_input(data,finished,protocol['frozenAt'])
- write_snapshot(args.output,dict(policy=protocol['policy'],capturedAt=finished,inputSHA256=hashlib.sha256(raw).hexdigest(),protocolSHA256=hashlib.sha256(protocol_raw).hexdigest(),scikitLearn=sklearn.__version__,input=data,predictions=predictions,status='Research capture; source audit and pre-lock Git commit evidence required'))
+ write_snapshot(args.output,dict(policy=protocol['policy'],capturedAt=finished,inputSHA256=hashlib.sha256(raw).hexdigest(),protocolSHA256=hashlib.sha256(protocol_raw).hexdigest(),scikitLearn=sklearn.__version__,model=export_tree_residual_model(model,data['season'],data['round']),input=data,predictions=predictions,status='Research capture; source audit and pre-lock Git commit evidence required'))
  print(json.dumps({'output':args.output,'predictions':len(predictions),'capturedAt':finished}))
 if __name__=='__main__': main()
