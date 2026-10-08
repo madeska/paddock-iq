@@ -3,7 +3,7 @@ import type {ReplayScore} from '../src/lib/production-history-replay';
 import type {ArchivedFantasyPrice} from '../src/lib/fantasy-price-archive';
 export const TREE_FEATURE_NAMES=['baseline','price','component','recentMean','seasonMean','scoreStdDev','historyCount','sprint','practicePosition','componentSupported'] as const;
 export type TreeForecastFrame={season:number;round:number;code:string;type:'DRIVER'|'CONSTRUCTOR';incumbent:number;x:number[]};
-/** Same shared production math as historical tree exports. No outcome label is returned. */
+/** Frozen pre-weekend-v3 reference shared math. Sprint signals remain excluded for reproducible historical/prospective tree protocols. No outcome label is returned. */
 export function buildTreeForecastFrames(history:readonly ReplayScore[],quotes:readonly ArchivedFantasyPrice[],options:{season:number;round:number;sprint:boolean;practice?:ProductionPractice|null}):TreeForecastFrame[]{
  if(!Number.isInteger(options.season)||!Number.isInteger(options.round)||options.round<2)throw Error('Invalid frame scope');
  const scores=history.filter(r=>r.season===options.season&&r.round<options.round);
@@ -23,7 +23,10 @@ export function buildTreeForecastFrames(history:readonly ReplayScore[],quotes:re
  if(new Set(roster.map(r=>r.code)).size!==roster.length)throw Error('Ambiguous cross-type roster identity');
  const teams=Object.fromEntries(roster.filter(r=>r.type==='DRIVER').map(r=>[r.code,r.team]));
  const assets=roster.map(r=>({season:options.season,code:r.code,type:r.type,currentPrice:r.priceBefore,prices:prices.filter(p=>p.code===r.code&&p.type===r.type).map(p=>({round:p.round,price:p.priceBefore})),scores:scores.filter(s=>s.code===r.code&&s.type===r.type).map(s=>({round:s.round,points:s.actualPoints}))}));
- const result=forecastProductionBaselines(assets,options),simulation=simulateProductionForecast(result.baselines,teams,options),frames:TreeForecastFrame[]=[];
+ // The frozen tree protocol predates live sprint FP1/SQ/news integration. Preserve its reference;
+ // future weekend-v3 experiments need a distinct versioned frame artifact, not rewritten fixtures.
+ const referenceOptions={...options,practice:options.practice?.isSprint?null:options.practice};
+ const result=forecastProductionBaselines(assets,referenceOptions),simulation=simulateProductionForecast(result.baselines,teams,referenceOptions),frames:TreeForecastFrame[]=[];
  const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
  for(const baseline of result.baselines.values()){
   const component=(baseline.type==='DRIVER'?simulation.drivers:simulation.constructors).find(r=>r.code===baseline.code);

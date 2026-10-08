@@ -26,3 +26,5 @@ These are newly enabled, fixed heuristics, not a demonstrated accuracy improveme
 ## Checks
 
 Focused tests cover normal/sprint cutoff, incomplete/ongoing SQ, missing database lock, confirmed/uncertain/other-event/late news, source retrieval, grid-drop ordering, component totals and unchanged no-context forecasts. Run the weekend signal, grid news, grid simulation, practice cutoff, production forecast and replay check scripts with tsx --test. Run application tsc and standalone strict tsc for the new scripts.
+
+Frozen tree exports and the existing prospective tree protocol deliberately retain the pre-weekend-v3 normal-practice-only reference. They compare that historical policy, not the newly updated live incumbent. This is explicit in scripts/tree-forecast-frames.ts; new weekend-v3 accuracy experiments require a separately versioned artifact. Historical model fixtures are not regenerated to hide a changed reference.
