@@ -1,0 +1,685 @@
+{
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "numpy": "2.5.3",
+    "scikitLearn": "1.7.2"
+  },
+  "frameFileSHA256": "d76c725fa911e9334a4cb6c810c55c64d60b2a6d94975a6f7f0ecb7e69411412",
+  "frameFileLFNormalizedSHA256": "d76c725fa911e9334a4cb6c810c55c64d60b2a6d94975a6f7f0ecb7e69411412",
+  "options": {
+    "loss": "squared_error",
+    "learning_rate": 0.05,
+    "max_iter": 60,
+    "max_leaf_nodes": 4,
+    "min_samples_leaf": 20,
+    "l2_regularization": 10,
+    "early_stopping": false,
+    "random_state": 42
+  },
+  "summary": [
+    {
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 338,
+      "MAE": 10.807396449704143,
+      "RMSE": 14.296408908964086,
+      "Bias": 0.1961538461538461
+    },
+    {
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 167,
+      "MAE": 16.108383233532933,
+      "RMSE": 21.067389733415972,
+      "Bias": -0.7610778443113769
+    },
+    {
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 338,
+      "MAE": 10.766863905325444,
+      "RMSE": 14.31303456922681,
+      "Bias": 0.4443786982248521
+    },
+    {
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 167,
+      "MAE": 16.174850299401196,
+      "RMSE": 21.100969129487698,
+      "Bias": -0.13532934131736518
+    }
+  ],
+  "pairedRaceBootstrap": [
+    {
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "deltaMAE": -0.04053254437869798,
+      "low": -0.26065088757396415,
+      "high": 0.1949704142011837
+    },
+    {
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "deltaMAE": 0.06646706586826293,
+      "low": -0.2220238095238096,
+      "high": 0.32916666666666666
+    }
+  ],
+  "season": 2023,
+  "note": "Supplementary/exploratory already-consumed2023 errors. Fixed2025-selected shallow model; only half correction validated on other seasons. Source/year-adapter/quote limits remain. Separate type models; only strictly earlier production forecast frames train residuals. Fixed shallow configuration, no parameter search/activation. Python bootstrap generator differs from earlier JS reports. Full driver/constructor comparison with same rows.",
+  "byRound": [
+    {
+      "round": 7,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.925,
+      "RMSE": 13.160452119893145,
+      "Bias": 2.2849999999999997
+    },
+    {
+      "round": 7,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 12.57,
+      "RMSE": 16.4008231500739,
+      "Bias": 4.390000000000001
+    },
+    {
+      "round": 7,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.295,
+      "RMSE": 12.516608965690349,
+      "Bias": 2.6550000000000002
+    },
+    {
+      "round": 7,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 11.92,
+      "RMSE": 15.67973214056924,
+      "Bias": 4.84
+    },
+    {
+      "round": 8,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.880000000000001,
+      "RMSE": 7.445266952903704,
+      "Bias": -2.9400000000000004
+    },
+    {
+      "round": 8,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 6.81,
+      "RMSE": 8.434986662704334,
+      "Bias": -5.05
+    },
+    {
+      "round": 8,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 6.11,
+      "RMSE": 7.7192616227201425,
+      "Bias": -3.07
+    },
+    {
+      "round": 8,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 7.17,
+      "RMSE": 8.560198595827085,
+      "Bias": -5.17
+    },
+    {
+      "round": 9,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 6.845000000000001,
+      "RMSE": 9.952462006960891,
+      "Bias": 2.385
+    },
+    {
+      "round": 9,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 9.02,
+      "RMSE": 11.96227403130358,
+      "Bias": 4.560000000000001
+    },
+    {
+      "round": 9,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 7.375,
+      "RMSE": 10.619957627034111,
+      "Bias": 2.565
+    },
+    {
+      "round": 9,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 9.05,
+      "RMSE": 12.602182350688313,
+      "Bias": 4.75
+    },
+    {
+      "round": 10,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.540000000000001,
+      "RMSE": 12.85188702097867,
+      "Bias": -8.35
+    },
+    {
+      "round": 10,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.080000000000002,
+      "RMSE": 22.714532792905956,
+      "Bias": -16.54
+    },
+    {
+      "round": 10,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.915000000000001,
+      "RMSE": 12.739525108888479,
+      "Bias": -9.195
+    },
+    {
+      "round": 10,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.169999999999998,
+      "RMSE": 22.15502200405136,
+      "Bias": -16.869999999999997
+    },
+    {
+      "round": 11,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.055,
+      "RMSE": 13.481969440701162,
+      "Bias": 5.045
+    },
+    {
+      "round": 11,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 9,
+      "MAE": 21.444444444444443,
+      "RMSE": 25.726423942881937,
+      "Bias": 9.311111111111112
+    },
+    {
+      "round": 11,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.22,
+      "RMSE": 14.154822499770177,
+      "Bias": 6.9
+    },
+    {
+      "round": 11,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 9,
+      "MAE": 21.177777777777777,
+      "RMSE": 25.700281018783517,
+      "Bias": 10.600000000000001
+    },
+    {
+      "round": 12,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 8.078947368421053,
+      "RMSE": 10.347361728326796,
+      "Bias": 3.194736842105263
+    },
+    {
+      "round": 12,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.819999999999999,
+      "RMSE": 19.143510649825963,
+      "Bias": 5.4
+    },
+    {
+      "round": 12,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 7.894736842105263,
+      "RMSE": 10.26542485084865,
+      "Bias": 2.8
+    },
+    {
+      "round": 12,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.279999999999998,
+      "RMSE": 20.46963604952467,
+      "Bias": 5.56
+    },
+    {
+      "round": 13,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.485,
+      "RMSE": 13.40815050631518,
+      "Bias": -1.5950000000000002
+    },
+    {
+      "round": 13,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.580000000000002,
+      "RMSE": 18.645964710896564,
+      "Bias": -2.819999999999999
+    },
+    {
+      "round": 13,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.39,
+      "RMSE": 13.330378839327862,
+      "Bias": -0.76
+    },
+    {
+      "round": 13,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.809999999999999,
+      "RMSE": 18.60776719544825,
+      "Bias": -0.6899999999999997
+    },
+    {
+      "round": 14,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 13.68421052631579,
+      "RMSE": 17.76602316072363,
+      "Bias": -5.347368421052632
+    },
+    {
+      "round": 14,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.39,
+      "RMSE": 26.744737800172953,
+      "Bias": -14.37
+    },
+    {
+      "round": 14,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 14.236842105263158,
+      "RMSE": 18.34615978746965,
+      "Bias": -6.026315789473684
+    },
+    {
+      "round": 14,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.279999999999998,
+      "RMSE": 26.36103184626884,
+      "Bias": -14.780000000000001
+    },
+    {
+      "round": 15,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.84,
+      "RMSE": 11.640231956451727,
+      "Bias": 4.68
+    },
+    {
+      "round": 15,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.69,
+      "RMSE": 21.147222039785746,
+      "Bias": 7.93
+    },
+    {
+      "round": 15,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.184999999999999,
+      "RMSE": 11.188498558787948,
+      "Bias": 4.955
+    },
+    {
+      "round": 15,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.060000000000002,
+      "RMSE": 21.760928289022967,
+      "Bias": 9.06
+    },
+    {
+      "round": 16,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.260000000000002,
+      "RMSE": 14.14280735921974,
+      "Bias": 2.8099999999999996
+    },
+    {
+      "round": 16,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.03,
+      "RMSE": 20.2319796362096,
+      "Bias": 4.97
+    },
+    {
+      "round": 16,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.22,
+      "RMSE": 14.113291607559166,
+      "Bias": 2.43
+    },
+    {
+      "round": 16,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.58,
+      "RMSE": 20.117405399305348,
+      "Bias": 4.959999999999999
+    },
+    {
+      "round": 17,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.114999999999998,
+      "RMSE": 14.19251563324839,
+      "Bias": 4.665
+    },
+    {
+      "round": 17,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.28,
+      "RMSE": 22.097239646616497,
+      "Bias": 7.840000000000001
+    },
+    {
+      "round": 17,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.995000000000001,
+      "RMSE": 14.222183376683063,
+      "Bias": 4.385
+    },
+    {
+      "round": 17,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.44,
+      "RMSE": 22.31461404550838,
+      "Bias": 8.02
+    },
+    {
+      "round": 18,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 17.919999999999998,
+      "RMSE": 20.836650402595904,
+      "Bias": -0.8900000000000002
+    },
+    {
+      "round": 18,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.5,
+      "RMSE": 27.193087356900097,
+      "Bias": -4.500000000000001
+    },
+    {
+      "round": 18,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 17.44,
+      "RMSE": 20.556604778026937,
+      "Bias": 0.30999999999999994
+    },
+    {
+      "round": 18,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.35,
+      "RMSE": 26.939135101186896,
+      "Bias": -3.410000000000001
+    },
+    {
+      "round": 19,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.2,
+      "RMSE": 18.718199699757452,
+      "Bias": 0.2700000000000004
+    },
+    {
+      "round": 19,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 8,
+      "MAE": 20.75,
+      "RMSE": 23.55811961935842,
+      "Bias": -5.624999999999999
+    },
+    {
+      "round": 19,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 14.780000000000001,
+      "RMSE": 18.899656081526988,
+      "Bias": 1.25
+    },
+    {
+      "round": 19,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 8,
+      "MAE": 20.65,
+      "RMSE": 24.360418715613243,
+      "Bias": -4.15
+    },
+    {
+      "round": 20,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.04,
+      "RMSE": 13.635835141273892,
+      "Bias": 0.35000000000000003
+    },
+    {
+      "round": 20,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.419999999999998,
+      "RMSE": 19.426888582580588,
+      "Bias": -0.5000000000000002
+    },
+    {
+      "round": 20,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.765,
+      "RMSE": 13.210582878889182,
+      "Bias": 0.16499999999999979
+    },
+    {
+      "round": 20,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 15.940000000000001,
+      "RMSE": 18.773119080216798,
+      "Bias": -1.5199999999999996
+    },
+    {
+      "round": 21,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.525,
+      "RMSE": 17.75183089148835,
+      "Bias": 0.805
+    },
+    {
+      "round": 21,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 27.28,
+      "RMSE": 32.341923257592455,
+      "Bias": 1.8800000000000001
+    },
+    {
+      "round": 21,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.434999999999999,
+      "RMSE": 17.706001807296868,
+      "Bias": 1.2950000000000004
+    },
+    {
+      "round": 21,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 27.97,
+      "RMSE": 32.73360658405975,
+      "Bias": 3.5100000000000007
+    },
+    {
+      "round": 22,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.365,
+      "RMSE": 18.083763435745336,
+      "Bias": -3.8850000000000002
+    },
+    {
+      "round": 22,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.15,
+      "RMSE": 18.902671768826757,
+      "Bias": -8.55
+    },
+    {
+      "round": 22,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.475,
+      "RMSE": 17.963699507618134,
+      "Bias": -3.5450000000000004
+    },
+    {
+      "round": 22,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 12.8,
+      "RMSE": 17.53921320926341,
+      "Bias": -7.359999999999999
+    },
+    {
+      "round": 23,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.975,
+      "RMSE": 6.972983579501676,
+      "Bias": -0.27499999999999997
+    },
+    {
+      "round": 23,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 6.489999999999999,
+      "RMSE": 8.875640821935056,
+      "Bias": -1.2299999999999998
+    },
+    {
+      "round": 23,
+      "model": "tree-residual-half",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 6.335,
+      "RMSE": 7.47037482326021,
+      "Bias": 0.23500000000000032
+    },
+    {
+      "round": 23,
+      "model": "tree-residual-half",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 7.720000000000001,
+      "RMSE": 10.202548701182465,
+      "Bias": 0.6200000000000001
+    }
+  ]
+}

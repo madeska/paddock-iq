@@ -96,7 +96,8 @@
       "high": 0.49842105263157843
     }
   ],
-  "note": "Exploratory consumed2025 R6\u201324. Separate type models; only strictly earlier production forecast frames train residuals. Fixed shallow configuration, no parameter search/activation. Python bootstrap generator differs from earlier JS reports. Full driver/constructor comparison with same rows.",
+  "season": 2025,
+  "note": "Supplementary/exploratory already-consumed2025 errors. Fixed2025-selected shallow model; only half correction validated on other seasons. Source/year-adapter/quote limits remain. Separate type models; only strictly earlier production forecast frames train residuals. Fixed shallow configuration, no parameter search/activation. Python bootstrap generator differs from earlier JS reports. Full driver/constructor comparison with same rows.",
   "byRound": [
     {
       "round": 6,
