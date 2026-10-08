@@ -1,6 +1,6 @@
-export type PenaltyArticle={url:string;headline:string;description:string;publishedAt:string;modifiedAt:string};
+export type PenaltyArticle={body?:string;url:string;headline:string;description:string;publishedAt:string;modifiedAt:string};
 export type PenaltyNewsContext={season:number;round:number;eventName:string;deadline:Date;asOf:Date;drivers:readonly {code:string;name:string}[]};
-export type PenaltyMention={code:string|null;places:number|null;session:'RACE'|'SPRINT'|null;status:'CONFIRMED'|'PENDING';sourceUrl:string;publishedAt:string;headline:string;reason:string};
+export type PenaltyMention={kind?:'EXACT'|'MINIMUM'|'BACK_OF_GRID';minimumPlaces?:number;code:string|null;places:number|null;session:'RACE'|'SPRINT'|null;status:'CONFIRMED'|'PENDING';sourceUrl:string;publishedAt:string;headline:string;reason:string};
 const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function official(url:string){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='www.formula1.com'&&u.pathname.startsWith('/en/latest/article/')&&!u.username&&!u.password}catch{return false}}
 /** Conservative headline extraction: unsupported or uncertain cases remain visible, never applied. */
@@ -12,6 +12,29 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
  if(!event||!title.includes(event)||!/penalt|back of (?:the )?grid|pit.lane start/.test(title))return null;
  const names=c.drivers.filter(d=>{const surname=normalize(d.name).split(/\s+/).at(-1)!;return surname.length>2&&new RegExp('\\b'+surname.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(title)});
  const code=names.length===1?names[0].code:null;
+
+ // Body evidence must name this driver and event in the same sentence. Rules and hypotheticals are excluded.
+ if(article.body&&code&&!/\bcould\b|\bmay\b|\bmight\b|\bappeal\b|\boverturned\b|\breversed\b|\bno penalty\b/.test(title+' '+normalize(article.description))){
+  const surname=normalize(c.drivers.find(d=>d.code===code)!.name).split(/\s+/).at(-1)!;
+  const body=normalize(article.body);
+  const lowerBounds=[...body.matchAll(/(?:penalty will be a minimum of|penalty of at least) (\d+) (?:grid )?(?:positions|places)/g)];
+  const raceOnly=body.split(/[.!?\n]+/).some(t=>t.includes(surname)&&t.includes(event)&&/penalty will be applied/.test(t)&&/grand prix/.test(t)&&/rather than.*sprint/.test(t));
+  if(lowerBounds.length===1&&raceOnly&&+lowerBounds[0][1]>0&&+lowerBounds[0][1]<=100)return {code,places:null,minimumPlaces:+lowerBounds[0][1],kind:'MINIMUM',session:'RACE',status:'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'At least '+lowerBounds[0][1]+' grid places for RACE only; final penalty unknown, not applied'};
+  const sentences=normalize(article.body).split(/[.!?\n]+/).filter(t=>t.includes(surname)&&t.includes(event)&&!/\bif\b|\bcould\b|\bmay\b|\bmight\b|\bappeal\b|\boverturned\b|\breversed\b|\bno penalty\b/.test(t));
+  const evidence:PenaltyMention[]=[];
+  for(const sentence of sentences){
+   const race=/\bgrand prix\b|\brace\b/.test(sentence),sprint=/\bsprint\b/.test(sentence)&&!/\b(?:not|rather than) (?:the )?(?:saturday.s )?sprint\b/.test(sentence);
+   const target=race&&!sprint?'RACE':sprint&&!race?'SPRINT':null;if(!target)continue;
+   const base={code,places:null,session:target,status:'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline} as PenaltyMention;
+   const minimum=sentence.match(/(?:minimum of|at least) (\d+) (?:grid )?(?:positions|places)/);
+   if(minimum&&+minimum[1]>0&&+minimum[1]<=100){evidence.push({...base,kind:'MINIMUM',minimumPlaces:+minimum[1],reason:'At least '+minimum[1]+' grid places for '+target+'; final penalty unknown, not applied'});continue}
+   if(/will start (?:at|from) the (?:back of the grid|rear of the field)/.test(sentence)&&sentence.includes('for the '+event+' grand prix')){evidence.push({...base,kind:'BACK_OF_GRID',status:'CONFIRMED',reason:'Confirmed back-of-grid start for '+target});continue}
+   const exact=parseOfficialPenaltyArticle({...article,body:undefined,headline:sentence,description:''},c);
+   if(exact?.status==='CONFIRMED'&&!/minimum|at least|depending/.test(sentence))evidence.push({...exact,headline:article.headline,kind:'EXACT'});
+  }
+  if(evidence.length===1)return evidence[0];
+  if(evidence.length>1)return {code,places:null,session:null,status:'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'Multiple penalty statements require reconciliation; not applied'};
+ }
  const number=title.match(/\b(\d+|three|five|ten|fifteen|twenty)[ -]place(?:s)?\b/);
  const words:Record<string,number>={three:3,five:5,ten:10,fifteen:15,twenty:20};
  const places=number?(words[number[1]]??Number(number[1])):null;
@@ -52,7 +75,7 @@ export async function getGridPenaltyNews(context:PenaltyNewsContext){
     let parsed:any;try{parsed=JSON.parse(match[1])}catch{continue}
     const nodes=Array.isArray(parsed)?parsed:[parsed,...(parsed['@graph']??[])];
     for(const n of nodes){if(n['@type']!=='NewsArticle'||typeof n.headline!=='string'||typeof n.datePublished!=='string'||typeof n.dateModified!=='string')continue;
-     const mention=parseOfficialPenaltyArticle({url,headline:n.headline,description:String(n.description??''),publishedAt:n.datePublished,modifiedAt:n.dateModified},context);if(mention&&!mentions.some(m=>m.sourceUrl===url))mentions.push(mention);
+     const mention=parseOfficialPenaltyArticle({url,headline:n.headline,description:String(n.description??''),body:typeof n.articleBody==='string'?n.articleBody:extractOfficialArticleBody(html),publishedAt:n.datePublished,modifiedAt:n.dateModified},context);if(mention&&!mentions.some(m=>m.sourceUrl===url))mentions.push(mention);
     }
    }
   }catch{errors.push('Could not read official article: '+url)}
@@ -61,4 +84,9 @@ export async function getGridPenaltyNews(context:PenaltyNewsContext){
  for(const m of mentions)if(m.status==='CONFIRMED'&&mentions.some(other=>other!==m&&other.code===m.code&&(other.session===m.session||other.session===null))){m.status='PENDING';m.places=null;m.reason='Multiple reports for the same driver/session need reconciliation'}
  if(Date.now()>=+context.deadline){for(const m of mentions){m.status='PENDING';m.places=null;m.reason='News retrieval completed after lock; not applied'}errors.push('News retrieval crossed team lock')}
  return {mentions,errors,scanned};
+}
+
+/** Read only publisher rich-text blocks, excluding navigation, scripts and related headlines. */
+export function extractOfficialArticleBody(html:string):string{
+ return [...html.matchAll(/<div[^>]*class=["'][^"']*\bcontent-rich-text\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)].map(m=>m[1].replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&#39;|&apos;/g,"'").replace(/&quot;/g,'"')).join('\n');
 }

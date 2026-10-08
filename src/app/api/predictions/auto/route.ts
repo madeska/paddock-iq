@@ -37,7 +37,7 @@ export async function POST(request:NextRequest){
 
   const news=deadline?await getGridPenaltyNews({season,round,eventName:gp.name,deadline,asOf:forecastAt,drivers:assets.filter(a=>a.type==='DRIVER').map(a=>({code:a.code,name:a.name}))}):{mentions:[],errors:['Fantasy lock unavailable; news not applied'],scanned:0};
   const gridDrops:{race:Record<string,number>;sprint:Record<string,number>}={race:{},sprint:{}};
-  for(const mention of news.mentions)if(mention.status==='CONFIRMED'&&mention.code&&mention.places!=null&&mention.session)gridDrops[mention.session==='SPRINT'?'sprint':'race'][mention.code]=mention.places;
+  for(const mention of news.mentions)if(mention.status==='CONFIRMED'&&mention.code&&(mention.places!=null||mention.kind==='BACK_OF_GRID')&&mention.session)gridDrops[mention.session==='SPRINT'?'sprint':'race'][mention.code]=mention.kind==='BACK_OF_GRID'?100:mention.places!;
   const production=forecastProductionBaselines(assets.map(asset=>{
    const currentPriceRow=asset.prices.filter(p=>p.grandPrix.round===round).sort((a,b)=>+new Date(b.recordedAt)-+new Date(a.recordedAt))[0];
    return {season:asset.season,code:asset.code,type:asset.type,currentPrice:currentPriceRow?Number(currentPriceRow.price):null,prices:asset.prices.map(p=>({round:p.grandPrix.round,price:Number(p.price)})),scores:asset.fantasyScores.map(s=>({round:s.grandPrix.round,points:s.points}))};
@@ -53,7 +53,7 @@ export async function POST(request:NextRequest){
 
   for(const session of ['race','sprint'] as const)for(const code of Object.keys(gridDrops[session]))if(!production.baselines.has(code)||!officialSync.driverTeams[code]||(session==='sprint'&&!isSprint)){delete gridDrops[session][code];const mention=news.mentions.find(m=>m.code===code&&m.session===(session==='race'?'RACE':'SPRINT'));if(mention){mention.status='PENDING';mention.places=null;mention.reason='No supported driver projection or session; penalty not applied'}}
   const component=simulateProductionForecast(production.baselines,officialSync.driverTeams,{season,sprint:isSprint,round,practice:practiceSnapshot,gridDrops});
-  const sourceContext=(practiceSnapshot?.sprintQualifyingSessionKey?' · Sprint Qualifying session '+practiceSnapshot.sprintQualifyingSessionKey:'')+news.mentions.filter(m=>m.status==='CONFIRMED').map(m=>' · '+m.code+' '+m.session+' +'+m.places+' grid places: '+m.sourceUrl).join('');
+  const sourceContext=(practiceSnapshot?.sprintQualifyingSessionKey?' · Sprint Qualifying session '+practiceSnapshot.sprintQualifyingSessionKey:'')+news.mentions.filter(m=>m.status==='CONFIRMED').map(m=>' · '+m.code+' '+m.session+' '+(m.kind==='BACK_OF_GRID'?'back of grid':'+'+m.places+' grid places')+': '+m.sourceUrl).join('');
   const componentDriverByCode=new Map(component.drivers.map(x=>[x.code,x]));
   const componentConstructorByCode=new Map(component.constructors.map(x=>[x.code,x]));
 
@@ -151,7 +151,7 @@ export async function POST(request:NextRequest){
    driverTrainingRows:production.trainingRows,
    componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
    weekendLock:weekendLock?{deadline:weekendLock.deadline.toISOString(),source:weekendLock.source}:null,
-   weekendNews:{...news,coverage:'Latest official F1 headlines only; not an exhaustive FIA decision feed'},gridDrops,
+   weekendNews:{...news,coverage:'Official F1 headlines and available article text; not an exhaustive FIA decision feed'},gridDrops,
    officialSync,historyReconciliation,
    predictions:created
   });

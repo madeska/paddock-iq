@@ -264,7 +264,7 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
- const [weekendContext,setWeekendContext]=useState<{practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
+ const [weekendContext,setWeekendContext]=useState<{practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
  const [scoresStatus,setScoresStatus]=useState('');
  const [scoresLoading,setScoresLoading]=useState(false);
  const scoresBusy=useRef(false);
@@ -390,7 +390,7 @@ export default function Home(){
    <h2>Before team lock</h2>
    <p>{weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':'No completed practice data available'}</p>
    <p>{weekendContext.weekendNews.coverage}</p>
-   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' +'+m.places+' grid places':'Needs confirmation; not applied'}</p>)}
+   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' · '+(m.reason??('+'+m.places+' grid places')):(m.reason??'Needs confirmation; not applied')}</p>)}
    {weekendContext.weekendNews.mentions.length===0&&<p>No applicable penalty found in the checked headlines.</p>}
    {weekendContext.weekendNews.errors.map(e=><p key={e}>{e}</p>)}
   </section>}
