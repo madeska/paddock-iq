@@ -1,5 +1,7 @@
 # Shared weekend form and historical race pace
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 The simulator has optional driver-specific shared weekend form, race-specific pace and race noise inputs. These remain disabled in production. All existing seeded forecasts are identical when correlation is omitted or zero and no pace overrides are provided.
 
 ## Shared form

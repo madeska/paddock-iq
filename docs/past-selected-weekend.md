@@ -1,5 +1,7 @@
 # Past-selected weekend model and blend
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Research-only expanding-window comparison. For each target round R9–16, select a model family and simulation weight separately for drivers and constructors using out-of-sample forecasts for earlier rounds R6 onward. Each earlier forecast itself uses only history before that forecast's round. Three validation rounds are required before selection starts. Target scores enter evaluation after the choice is made.
 
 Preset families: current simulation; classified-relative progress with legacy overtakes; classified-relative progress with conditional overtakes; the same with driver prior 5. The three progress families fix qualifying noise 0.3 and race noise 0. All forecasts use three seeds × 1,200 simulations. Blend weights: 0, 0.1, 0.25, 0.5, 1. Selection minimizes asset-type MAE; ties favor smaller simulation weight, then preset family order. This is a past-performance policy, not a forecast guaranteed to be optimal.

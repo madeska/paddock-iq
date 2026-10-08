@@ -122,5 +122,12 @@
       "swapIntoCurrentMAEDelta": -0.0007398989898916852,
       "restoreCurrentInCandidateMAEDelta": 0.0007398989899023434
     }
-  ]
+  ],
+  "quoteFieldValidity": {
+    "status": "Historical2026 price-dependent comparisons require recomputation",
+    "usedField": "OldPlayerValue",
+    "correctedField": "Value",
+    "audit": "docs/official-price-field-2026-audit.json",
+    "note": "Original numbers retained as a record; not current accuracy evidence. Price-free candidate-only calculations may be unchanged, but price-dependent references and blends are affected. Frozen protocols are not rewritten."
+  }
 }

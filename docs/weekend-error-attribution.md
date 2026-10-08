@@ -1,5 +1,7 @@
 # Weekend error attribution
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Fixed comparison: current forecast versus historical qualifying pace with noise 0.3. R12–16 has been inspected before; this is post-hoc diagnosis, not independent validation. Three seeds and 1,200 simulations per seed, with the existing 75% baseline / 25% component blend. Production remains unchanged.
 
 We swap one component expectation into the current forecast, then reverse that swap in the candidate. No observed component is substituted into a forecast. These arithmetic swaps identify sensitivity; they are not coherent alternative weekend simulations, additive causal effects, or a proposed production ensemble.

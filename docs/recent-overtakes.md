@@ -1,5 +1,7 @@
 # Recent overtake counts and independent-data probe
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 The optional Poisson count model can weight completed past race observations by a half-life in rounds and shrink driver-specific count corrections toward the pooled model. No overtakes are added merely because a driver finishes ahead of their starting position. Actual Fantasy overtake awards are the training labels. The starting-grid feature is reconstructed from archived finish plus position-change points for training only; future race finishes are not inputs to forecasts.
 
 ## Methods

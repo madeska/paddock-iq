@@ -1,5 +1,7 @@
 # Qualifying changes through the full weekend forecast
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Research only; production forecasts are unchanged. This experiment tests whether the archive qualifying-noise result translates into better Fantasy xPts. It uses the existing 2026 forecast harness: 75% historical Fantasy baseline plus 25% component simulation, three seeds and 1,200 simulations per seed. Historical qualifying pace comes from earlier sessions only.
 
 Five noise settings (0.15, 0.3, 0.5, 0.75, 1.05) were selected on R6–11 using driver MAE + 0.5 constructor MAE. The winner was 1.05. R12–16 was already inspected in previous experiments; these are exploratory comparisons, not a fresh holdout. The fixed archive setting 0.3 is a secondary probe. The current comparator retains its baseline-derived qualifying strengths; both experimental options replace them with historical qualifying pace. This is not a pure noise-only intervention against production.

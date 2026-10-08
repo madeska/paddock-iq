@@ -1,5 +1,7 @@
 # Grid-relative race progress
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 This optional research model anchors finishing order to the sampled starting grid. Production does not pass `raceProgress` and remains unchanged.
 
 ## Model

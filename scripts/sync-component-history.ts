@@ -1,3 +1,4 @@
+import {officialHistoricalFantasyPrice} from '../src/lib/official-historical-price';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {parseComponentHistory} from '../src/lib/component-calibration';
@@ -23,14 +24,14 @@ async function main(){
    const code=type==='DRIVER'?r.DriverTLA:aliases[r.DriverTLA]??r.DriverTLA;const key=type+':'+code+':'+round;if(seen.has(key))throw Error('Duplicate active asset '+key);seen.add(key);
    const raw=await cached('player-'+r.PlayerId+'.json','https://fantasy.formula1.com/feeds/popup/playerstats_'+r.PlayerId+'.json');
    const parsed=parseComponentHistory(raw,{code,type,team:type==='DRIVER'?String(teamCodes.get(String(r.TeamId))??''):code,season}).find(o=>o.round===round);
-   const actual=Number(r.GamedayPoints),priceBefore=r.OldPlayerValue===null||r.OldPlayerValue===undefined||r.OldPlayerValue===''?NaN:Number(r.OldPlayerValue);
+   const actual=Number(r.GamedayPoints),priceBefore=officialHistoricalFantasyPrice(r);
    if(!parsed?.race||!parsed.qualifying||!Number.isFinite(actual)||!Number.isFinite(priceBefore)){excluded.push({round,code,type,reason:'Incomplete breakdown'});continue}
    const reconstructed=parsed.qualifying.total+parsed.race.total+(parsed.sprint?.total??0);
    if(Math.abs(reconstructed-actual)>1e-6){excluded.push({round,code,type,reason:'Total mismatch',reconstructed,actual});continue}
    observations.push({...parsed,actualPoints:actual,priceBefore});
   }
  }
- const data={schemaVersion:1,season,capturedAt:new Date().toISOString(),lastCompletedRound:before-1,source:'https://fantasy.formula1.com/feeds/popup/playerstats_{PlayerId}.json',observations,excluded};
+ const data={schemaVersion:1,season,quoteField:'Value',quoteNote:'OldPlayerValue is preceding snapshot quote; pre-lock source timing still requires audit',capturedAt:new Date().toISOString(),lastCompletedRound:before-1,source:'https://fantasy.formula1.com/feeds/popup/playerstats_{PlayerId}.json',observations,excluded};
  await mkdir('src/data',{recursive:true});await writeFile('src/data/component-history-2026.json',JSON.stringify(data));
  console.log(JSON.stringify({observations:observations.length,drivers:observations.filter(o=>o.type==='DRIVER').length,constructors:observations.filter(o=>o.type==='CONSTRUCTOR').length,excluded},null,2));
 }

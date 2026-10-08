@@ -1,5 +1,7 @@
 # Price-free team-history point forecast
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Research-only pooled ridge using own EWMA, last-three mean, overall mean, current-team driver EWMA, own recent trend, score standard deviation, and history size n/(n+5). Separate regressions for drivers and constructors. Each historical training feature is rebuilt from strictly earlier same-season rows. Historic sprint totals may be normalized by a fixed sprint factor and the known target sprint schedule then reapplied. No price field or target score enters a feature. Cold drivers borrow prior team information; empty histories stay finite. Duplicate historical identities and invalid settings are rejected.
 
 Development-only selection uses 2026 R6–11. Later R12–16 was already inspected and remains exploratory. Alpha 0.15/0.25/0.4, ridge 10/50/200 and sprint factor 1/1.3 are compared.

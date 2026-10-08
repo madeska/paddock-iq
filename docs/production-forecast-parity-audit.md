@@ -10,7 +10,7 @@ Source checked at `b11b0ee`: `src/app/api/predictions/auto/route.ts`, `src/lib/f
 - Production applies a normal-GP practice modifier when a valid snapshot is available. The research harness has no practice input.
 - Production constructor baseline has a -5 floor; the research baseline does not.
 - Production fallback without a fitted ridge is 0.7 EWMA + 0.3 season mean. The research fallback effectively returns EWMA.
-- Production prices come from `Value`-based official market histories. The research snapshot's `priceBefore` is copied from feed `OldPlayerValue`. Those selectors differ. Field names alone do not establish quote timing; do not assume a price leak or change the source field without checking availability/semantics.
+- Production prices come from `Value`-based official market histories. The original research snapshot's priceBefore used OldPlayerValue, now verified as the preceding snapshot quote. The2026-10-08 audit corrected it to Value:491 adjacent links,528 archive matches and10 primary cumulative-change anchors. See official-price-field-2026.md. This resolves field selection, while exact historical pre-lock publication and persisted database timing still require audit.
 
 Earlier reports therefore compare historical research configurations. Their “current” label does not mean an exact replay of the entire production pipeline. Frozen point-model results and settings remain reproducible; these limits must accompany any conclusion about replacing production.
 

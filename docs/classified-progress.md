@@ -1,5 +1,7 @@
 # Classified-relative race progress
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Research-only alternative to raw historical position change. The simulator ranks surviving drivers in a unique finishing permutation, so historical promotions due to other drivers retiring should not also be treated as intrinsic driver progress.
 
 For each past race, reconstruct a classified driver's start as finish + reported position change. Rank those starting positions among the classified drivers and subtract observed finish. The sum of these relative changes is zero for a complete classified field. Shrink each driver's mean toward zero with prior 5. Earlier same-season sessions only; duplicate driver/round rows are deduplicated. Invalid starts, duplicate starts, and non-contiguous finishing ranks exclude a session. Missing tail finishers cannot be detected from contiguous ranks alone. This measures net reordering, not legal on-track overtakes or pure driver ability.

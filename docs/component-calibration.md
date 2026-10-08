@@ -1,12 +1,14 @@
 # Component calibration research
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 Corrected production forecasts receive component25-v2 model IDs, with v1 kept as a fallback until refresh. This branch corrects earned overtake points after retirement and qualifying no-time handling. It adds an optional historical calibrator and reproducible evaluation. Historical calibration is deliberately not enabled in the production forecast: neither the complete candidate nor the component-specific hybrid improves the combined xPts MAE.
 
 ## Data and methods
 
 The snapshot contains 352 driver and 176 constructor weekends from completed 2026 rounds 1–16. Sources are the official public `https://fantasy.formula1.com/feeds/drivers/{round}_en.json` and `https://fantasy.formula1.com/feeds/popup/playerstats_{PlayerId}.json` feeds. Only active assets and finalized, complete sessions are included. Reconstructed session totals match the archived official points. An explicitly reported retirement is distinct from negative points caused by lost positions. Pit history records awarded points, not measured stop duration.
 
-Calibration uses recency-weighted, pooled priors and only rounds strictly before the forecast round. Parameters were selected on rounds 6–11. The initial holdout was rounds 12–16; the hybrid is an exploratory ablation after inspecting that initial holdout, not a fresh independent validation. It retains the legacy overtakes and fastest-lap estimates. Each final forecast averages three seeded 1,200-simulation runs. Rows missing an explicit OldPlayerValue are rejected. Evaluation uses pre-race prices and the complete active roster.
+Calibration uses recency-weighted, pooled priors and only rounds strictly before the forecast round. Parameters were selected on rounds 6–11. The initial holdout was rounds 12–16; the hybrid is an exploratory ablation after inspecting that initial holdout, not a fresh independent validation. It retains the legacy overtakes and fastest-lap estimates. Each final forecast averages three seeded 1,200-simulation runs. The original run incorrectly required OldPlayerValue, which is the preceding snapshot quote. The corrected collector requires finite positive Value. Field semantics are audited; exact pre-lock publication timing remains unverified. The original metrics below used the stale field.
 
 ## Results
 

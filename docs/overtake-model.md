@@ -1,5 +1,7 @@
 # Grid-dependent overtakes and qualifying research
 
+> Historical2026 price-dependent results below require recomputation after the 2026-10-08 quote-field correction. Original numbers are retained for audit history, not current accuracy evidence. See [quote field audit](official-price-field-2026.md). Frozen protocols are not silently rewritten.
+
 These candidates are optional simulator inputs. Production does not pass `overtakeModel`, `qualifyingPace` or `qualifyingNoise`, so its forecasts remain unchanged.
 
 ## Conditional overtakes

@@ -36,7 +36,7 @@ jobs:
 
       - name: Check shared and portable forecast inference
         run: |
-          npx tsx --test scripts/check-production-forecast.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts scripts/check-tree-residual-inference.ts
+          npx tsx --test scripts/check-production-forecast.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts scripts/check-tree-residual-inference.ts scripts/check-official-historical-price.ts scripts/check-official-price-field-data.ts
           npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-snapshot-tree-parity.ts scripts/check-tree-residual-inference.ts scripts/tree-forecast-frames.ts scripts/export-prospective-tree-frames.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts
 
       - name: Setup Python for source-independent guards
