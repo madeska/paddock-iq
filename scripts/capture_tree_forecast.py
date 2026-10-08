@@ -12,6 +12,18 @@ def instant(value):
 def finite(value):
  return isinstance(value,(int,float)) and not isinstance(value,bool) and math.isfinite(value)
 
+def validate_captured_lineups(lineups):
+ if not isinstance(lineups,list):raise ValueError('Captured lineups must be a list')
+ seen=set()
+ for lineup in lineups:
+  if not isinstance(lineup,dict):raise ValueError('Invalid captured lineup')
+  team=lineup.get('teamNo');drivers=lineup.get('drivers');constructors=lineup.get('constructors');x2=lineup.get('x2')
+  if not isinstance(team,int) or isinstance(team,bool) or team<1 or team>3 or team in seen:raise ValueError('Invalid captured team identity')
+  for codes,count in [(drivers,5),(constructors,2)]:
+   if not isinstance(codes,list) or len(codes)!=count or any(not isinstance(code,str) or not code or code.strip()!=code for code in codes) or len(set(codes))!=count:raise ValueError('Invalid captured lineup codes')
+  if not isinstance(x2,str) or x2 not in drivers:raise ValueError('Invalid captured x2')
+  seen.add(team)
+
 def validate_input(data, now, frozen):
  lock=instant(data['lockAt']);captured=instant(data['sourceCapturedAt']);now=instant(now)
  if not instant(frozen)<=captured<=now<lock: raise ValueError('Capture must follow freeze and precede lock')
@@ -32,6 +44,7 @@ def validate_input(data, now, frozen):
    elif row['round']!=data['round'] or 'actual' in row: raise ValueError('Target labels forbidden')
    if len(row['x'])!=10 or not all(finite(x) for x in row['x']) or not finite(row['incumbent']): raise ValueError('Invalid features')
  if not any(r['type']=='DRIVER' for r in data['training']): raise ValueError('No driver training')
+ validate_captured_lineups(data.get('lineups',[]))
 
 def write_snapshot(path, data):
  # Exclusive creation: never replace previously captured predictions.

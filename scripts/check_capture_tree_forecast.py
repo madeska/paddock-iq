@@ -20,6 +20,11 @@ class CaptureTests(unittest.TestCase):
  def test_duplicate_rejected(self):
   p=self.payload();p['targets'].append(p['targets'][0])
   with self.assertRaises(ValueError):validate_input(p,'2026-10-19T10:00:00Z','2026-10-08T07:08:34Z')
+ def test_malformed_optional_lineup_rejected_before_capture(self):
+  p=self.payload();p['lineups']=[dict(teamNo=1,drivers='ABCDE',constructors='FG',x2='A')]
+  with self.assertRaises(ValueError):validate_input(p,'2026-10-19T10:00:00Z','2026-10-08T07:08:34Z')
+  p['lineups']=[dict(teamNo=1,drivers=['A','B','C','D','E'],constructors=['F',''],x2='A')]
+  with self.assertRaises(ValueError):validate_input(p,'2026-10-19T10:00:00Z','2026-10-08T07:08:34Z')
  def test_no_overwrite(self):
   with tempfile.TemporaryDirectory() as d:
    path=Path(d)/'snapshot.json';write_snapshot(path,{'prediction':1})

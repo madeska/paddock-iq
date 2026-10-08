@@ -34,5 +34,21 @@ jobs:
       - name: Check F1 team import
         run: npm run fantasy:check-team-import
 
+      - name: Check shared and portable forecast inference
+        run: |
+          npx tsx --test scripts/check-production-forecast.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts scripts/check-tree-residual-inference.ts
+          npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-snapshot-tree-parity.ts scripts/check-tree-residual-inference.ts scripts/tree-forecast-frames.ts scripts/export-prospective-tree-frames.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts
+
+      - name: Setup Python for source-independent guards
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check prospective capture and evaluation guards
+        run: |
+          python scripts/check_capture_tree_forecast.py
+          python scripts/check_tree_publication_receipt.py
+          python scripts/check_prospective_tree_evaluation.py
+
       - name: Run selected fantasy backtest
         run: npm run fantasy:backtest-ci

@@ -4,7 +4,7 @@ import {buildTreeForecastFrames,TREE_FEATURE_NAMES} from './tree-forecast-frames
 import type {ReplayScore} from '../src/lib/production-history-replay';
 import type {ArchivedFantasyPrice} from '../src/lib/fantasy-price-archive';
 type Context={round:number;sprint:boolean;lockAt:string;practice:null|{endedAt:string;positions:{code:string;position:number}[]}};
-type Input={season:number;round:number;sourceCapturedAt:string;sourceEvidence:unknown[];scores:ReplayScore[];quotes:ArchivedFantasyPrice[];contexts:Context[]};
+type Input={season:number;round:number;sourceCapturedAt:string;sourceEvidence:unknown[];lineups?:{teamNo:number;drivers:string[];constructors:string[];x2:string}[];scores:ReplayScore[];quotes:ArchivedFantasyPrice[];contexts:Context[]};
 /** Input is normalized source data, not hand-entered tree features. Provenance remains auditable. */
 async function main(){
  const [inputPath,outputPath]=process.argv.slice(2);if(!inputPath||!outputPath)throw Error('Usage: tsx scripts/export-prospective-tree-frames.ts SOURCE.json OUTPUT.json');
@@ -36,7 +36,7 @@ async function main(){
  const targets=buildTreeForecastFrames(source.scores,source.quotes,{season:2026,round:source.round,sprint:target.sprint,practice:target.practice?{isSprint:target.sprint,positions:new Map(target.practice.positions.map(p=>[p.code,p.position]))}:null});
  const targetRoster=source.quotes.filter(r=>r.round===source.round);
  const missingTargets=targetRoster.filter(r=>!targets.some(t=>t.code===r.code&&t.type===r.type)).map(r=>({code:r.code,type:r.type,reason:'No own historical scores; incumbent does not forecast'}));
- const output={season:2026,round:source.round,lockAt:target.lockAt,sourceCapturedAt:source.sourceCapturedAt,sourceSHA256:createHash('sha256').update(raw).digest('hex'),sourceEvidence:source.sourceEvidence,featureNames:TREE_FEATURE_NAMES,training,targets,missingOutcomes,missingTargets,status:'Source/quote timing audit required before validation; shared production frame export, no activation'};
+ const output={season:2026,round:source.round,lockAt:target.lockAt,sourceCapturedAt:source.sourceCapturedAt,sourceSHA256:createHash('sha256').update(raw).digest('hex'),sourceEvidence:source.sourceEvidence,...(source.lineups?{lineups:source.lineups.map(({teamNo,drivers,constructors,x2})=>({teamNo,drivers,constructors,x2}))}:{}),featureNames:TREE_FEATURE_NAMES,training,targets,missingOutcomes,missingTargets,status:'Source/quote timing audit required before validation; shared production frame export, no activation'};
  await writeFile(outputPath,JSON.stringify(output,null,2)+'\n',{flag:'wx'});
  console.log(JSON.stringify({training:training.length,targets:targets.length,missingTargets,missingOutcomes,output:outputPath}));
 }

@@ -1,0 +1,36 @@
+{
+  "policy": "driver-only-tree-half-v1",
+  "note": "No eligible race forecast has been captured. Pending records are not accuracy evidence.",
+  "events": [
+    {
+      "round": 18,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    },
+    {
+      "round": 19,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    },
+    {
+      "round": 20,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    },
+    {
+      "round": 21,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    },
+    {
+      "round": 22,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    },
+    {
+      "round": 23,
+      "status": "pending",
+      "reason": "No eligible pre-lock snapshot and audited outcome source yet"
+    }
+  ]
+}
