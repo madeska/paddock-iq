@@ -1,6 +1,6 @@
-import unittest, tempfile
+import unittest, tempfile, json, copy
 from pathlib import Path
-from capture_tree_forecast import validate_input, write_snapshot
+from capture_tree_forecast import validate_input, write_snapshot, validate_protocol
 
 class CaptureTests(unittest.TestCase):
  def payload(self):
@@ -25,4 +25,19 @@ class CaptureTests(unittest.TestCase):
    path=Path(d)/'snapshot.json';write_snapshot(path,{'prediction':1})
    with self.assertRaises(FileExistsError):write_snapshot(path,{'prediction':2})
    self.assertIn('1',path.read_text())
+ def test_protocol_mutations_rejected(self):
+  protocol=json.loads(Path('docs/driver-only-tree-prospective-protocol.json').read_text(encoding='utf8'))
+  validate_protocol(protocol)
+  for field in ['max_iter','learning_rate']:
+   changed=copy.deepcopy(protocol);changed['candidate']['parameters'][field]=999
+   with self.assertRaises(ValueError):validate_protocol(changed)
+  changed=copy.deepcopy(protocol);changed['frozenAt']='2026-10-09T00:00:00Z'
+  with self.assertRaises(ValueError):validate_protocol(changed)
+  changed=copy.deepcopy(protocol);changed['candidate']['constructorResidualScale']=.5
+  with self.assertRaises(ValueError):validate_protocol(changed)
+ def test_invalid_serialization_creates_no_file(self):
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/'snapshot.json'
+   with self.assertRaises(ValueError):write_snapshot(path,{'extra':float('nan')})
+   self.assertFalse(path.exists())
 if __name__=='__main__': unittest.main()

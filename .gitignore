@@ -24,3 +24,7 @@ Thumbs.db
 *.db-journal
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Python research bytecode
+__pycache__/
+*.pyc
