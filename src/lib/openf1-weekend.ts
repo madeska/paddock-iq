@@ -27,7 +27,7 @@ async function tryJson<T>(url:string):Promise<T|null>{
   for(let attempt=0;attempt<3;attempt++){
     try{
       const response=await fetch(url,{headers:{'user-agent':'Paddock-IQ'},signal:AbortSignal.timeout(10000)});
-      if(response.ok)return response.json() as Promise<T>;
+      if(response.ok)return await response.json() as T;
       if(response.status===404)return null;
       if(response.status===429||response.status>=500){
         await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));
@@ -104,14 +104,14 @@ export function applyPracticePositionModifier(baseXPts:number,position:number|nu
 export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null){
  const normalize=(name:string)=>name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+(?:grand prix|gp)\b.*$/,'').trim();
  const calendar=await tryJson<{races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]}>('https://f1fantasytools.com/api/statistics/'+season);
- const candidates=calendar?.races?.filter(r=>r.roundNumber===round&&normalize(r.name)===normalize(eventName));
+ const candidates=Array.isArray(calendar?.races)?calendar.races.filter(r=>r&&r.roundNumber===round&&typeof r.name==='string'&&normalize(r.name)===normalize(eventName)):[];
  if(candidates?.length!==1)return storedDeadline&&Number.isFinite(+storedDeadline)?{deadline:storedDeadline,isSprint:null,source:'Stored Fantasy deadline'}:null;
- const entry=candidates[0],raceAt=Date.parse(entry.start_times?.race),calendarLock=Date.parse(entry.sprint?entry.start_times?.sprint??'':entry.start_times?.qualifying??'');
+ const entry=candidates[0];if(typeof entry.sprint!=='boolean')return null;const raceAt=Date.parse(entry.start_times?.race),calendarLock=Date.parse(entry.sprint?entry.start_times?.sprint??'':entry.start_times?.qualifying??'');
  if(!Number.isFinite(raceAt)||!Number.isFinite(calendarLock)||calendarLock>=raceAt)return null;
  const sessions=await tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season);
- const races=sessions?.filter(s=>s.year===season&&!s.is_cancelled&&s.session_name==='Race'&&Math.abs(Date.parse(s.date_start)-raceAt)<12*3600000);
+ const races=Array.isArray(sessions)?sessions.filter(s=>s&&s.year===season&&!s.is_cancelled&&s.session_name==='Race'&&Math.abs(Date.parse(s.date_start)-raceAt)<12*3600000):[];
  if(races?.length!==1)return null;
- const locks=sessions!.filter(s=>s.year===season&&s.meeting_key===races[0].meeting_key&&!s.is_cancelled&&s.session_name===(entry.sprint?'Sprint':'Qualifying'));
+ const locks=sessions!.filter(s=>s&&s.year===season&&s.meeting_key===races[0].meeting_key&&!s.is_cancelled&&s.session_name===(entry.sprint?'Sprint':'Qualifying'));
  if(locks.length!==1||!Number.isFinite(Date.parse(locks[0].date_start))||Math.abs(Date.parse(locks[0].date_start)-calendarLock)>12*3600000)return null;
  const deadline=new Date(Math.min(calendarLock,Date.parse(locks[0].date_start),storedDeadline&&Number.isFinite(+storedDeadline)?+storedDeadline:Infinity));
  return {deadline,isSprint:entry.sprint,source:'Fantasy Tools calendar + OpenF1 session start; earliest cutoff'};
