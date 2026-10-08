@@ -13,3 +13,9 @@ Internet Archive recovered official HTML/client snapshots. The English rule defa
 ALF R11 similarly reconstructs-16 from driver-15 and teamwork-1. However its earlier rules chunk40383c50 could not be recovered, so October defaults alone do not establish the exact July rule. Runtime English translation overrides also remain a limitation. Hash manifest and exact cases: official-rules-2023-evidence.json. Raw source is unmodified; no forecast errors computed.
 
 Official F1's2023-04-27 Baku mini-league article sets joining before Friday qualifying: https://www.formula1.com/en/latest/article/f1-fantasy-more-chances-to-win-amazing-prizes-as-latest-mini-leagues-launch.5M4zAwtUOQUNAk8AwnZPxJ. Therefore do not import Saturday SQ results into that Friday prediction context.
+
+## Frozen conservative label cohort
+
+Before computing any2023 forecast errors, normalizeFantasy2023 conservatively excludes all three disputed constructor asset-weekends from both evaluation labels and every later training history. This avoids using even the two timing-supported totals without complete runtime-translation evidence.657 scores remain; all660 roster quotes remain separately with uncertified timing. Calendar ID6 is preserved as missing source slot, never a zero observation.
+
+The raw source stays pinned and unchanged. A factual repository fixture removes narratives while preserving original scoring discrepancies, making three unit tests reproducible without an external cache. Tests verify exclusions, rejection of new mismatches, and prefix invariance to malformed future labels. Type checks and read-only review passed. Source timing and historical scoring/simulation adaptation remain required; no forecast errors computed.

@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';import {test} from 'node:test';import {normalizeFantasy2023} from '../src/lib/fantasy-archive-2023';import raw from './fixtures/fantasy-source-2023.json';
+
+test('disputed labels are excluded from all training history while quotes and roster remain explicit',()=>{const r=normalizeFantasy2023(raw);assert.equal(r.scores.length,657);assert.equal(r.quotes.length,660);assert.equal(r.excluded.length,3);assert.ok(!r.scores.some(s=>s.round===11&&s.code==='SAU'||s.round===19&&['FER','MER'].includes(s.code)));assert.ok(!r.scores.some(s=>s.round===6))});
+test('unknown mismatch is rejected rather than added to the exclusion set',()=>{const changed=structuredClone(raw);changed.seasonResult.raceResults['1'].drivers[0].totalPoints+=1;assert.throws(()=>normalizeFantasy2023(changed))});
+test('future malformed results cannot influence prefix extraction',()=>{const changed=structuredClone(raw);changed.seasonResult.raceResults['23'].drivers[0].totalPoints=NaN;assert.deepEqual(normalizeFantasy2023(changed,10),normalizeFantasy2023(raw,10))});
