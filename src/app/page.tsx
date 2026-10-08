@@ -1,12 +1,12 @@
 'use client';
 
-import {useEffect,useMemo,useState} from 'react';
+import {useEffect,useMemo,useState,useRef} from 'react';
 import styles from './market-dashboard.module.css';
 
 type Score={round:number;points:number;name:string};
 type MarketAsset={
  code:string;name:string;type:'DRIVER'|'CONSTRUCTOR';price:number|null;
- expectedPoints:number|null;boostExpectedPoints?:number|null;expectedDelta:number|null;horizonPoints?:number[];
+ actualPoints?:number|null;actualPointsUpdatedAt?:string|null;expectedPoints:number|null;boostExpectedPoints?:number|null;expectedDelta:number|null;horizonPoints?:number[];
  probabilityRise:number|null;probabilityFlat:number|null;probabilityFall:number|null;
  probabilityMaxRise:number|null;probabilitySmallRise:number|null;
  probabilitySmallFall:number|null;probabilityMaxFall:number|null;
@@ -97,6 +97,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
       <th>R{round-2}<small>Pts</small></th>
       <th>R{round-1}<small>Pts</small></th>
       <th>R{round}<small>xPts</small></th>
+      <th>R{round}<small>Official pts</small></th>
       {buckets.map(b=><th key={b} className={b<0?styles.negHead:b>0?styles.posHead:styles.flatHead}>{b>0?'+':''}{b.toFixed(1)}<small>Odds (pts)</small></th>)}
       <th>R{round}<small>xΔ$</small></th>
      </tr>
@@ -110,6 +111,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td>{scoreFor(asset,round-2)??'—'}</td>
        <td>{scoreFor(asset,round-1)??'—'}</td>
        <td className={styles.xpts}>{asset.expectedPoints==null?'—':asset.expectedPoints.toFixed(1)}</td>
+       <td title={asset.actualPointsUpdatedAt?'Official points saved '+new Date(asset.actualPointsUpdatedAt).toLocaleString():undefined}>{asset.actualPoints??'—'}</td>
        {buckets.map(b=>{
         const p=probs.get(b)??0;
         const t=thresholdText(asset,b);
@@ -118,7 +120,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td className={(asset.expectedDelta??0)>=0?styles.deltaPos:styles.deltaNeg}>{delta(asset.expectedDelta)}</td>
       </tr>
      })}
-     {!filtered.length&&<tr><td colSpan={buckets.length+6} className={styles.empty}>No matching assets</td></tr>}
+     {!filtered.length&&<tr><td colSpan={buckets.length+7} className={styles.empty}>No matching assets</td></tr>}
     </tbody>
    </table>
   </div>
@@ -263,6 +265,9 @@ export default function Home(){
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
  const [weekendContext,setWeekendContext]=useState<{practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
+ const [scoresStatus,setScoresStatus]=useState('');
+ const [scoresLoading,setScoresLoading]=useState(false);
+ const scoresBusy=useRef(false);
  const season=2026,round=17;
 
  async function load(){
@@ -287,7 +292,14 @@ export default function Home(){
   }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
  }
 
- useEffect(()=>{load()},[]);
+ async function updateOfficialScores(){
+  if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
+  try{const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
+   setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
+   if(result.saved>0)await load();
+  }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
+ }
+ useEffect(()=>{let mounted=true;void load().then(()=>{if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
@@ -354,7 +366,7 @@ export default function Home(){
  return <main className={styles.page}>
   <nav className={styles.topbar}>
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button></div>
+   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button><button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></div>
   </nav>
 
   <header className={styles.hero}>
@@ -371,6 +383,8 @@ export default function Home(){
   </header>
 
   <div className={styles.status}>{status||<>Market complete · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+
+  {scoresStatus&&<div className={styles.status} role="status">{scoresStatus}</div>}
 
   {weekendContext&&<section className={styles.teamBuilder} aria-label="Weekend information">
    <h2>Before team lock</h2>

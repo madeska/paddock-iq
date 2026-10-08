@@ -179,8 +179,7 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
  if(completedRows)await processRows(completedRounds[1],completedRows,completedHasScores,false);
  await processRows(targetRound,currentRows,false,true);
 
- const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}},select:{id:true}});
- if(targetGp)await prisma.fantasyRoundScore.deleteMany({where:{grandPrixId:targetGp.id}});
+ // Completed current-round scores are retained; post-race sync verifies them independently.
 
  const activeAssets=await prisma.asset.count({where:{season,active:true}});
  return {

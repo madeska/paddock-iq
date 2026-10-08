@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
 
+import {COMPLETED_SCORE_SOURCE} from '../../../lib/completed-fantasy-scores';
 import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
 
 export async function GET(request:NextRequest) {
@@ -25,9 +26,9 @@ export async function GET(request:NextRequest) {
         orderBy:{createdAt:'desc'}
       },
       fantasyScores:{
-        where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:round}}},
+        where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lte:round}}},
         orderBy:{grandPrix:{round:'desc'}},
-        take:2,
+        take:3,
         include:{grandPrix:true}
       },
     },
@@ -44,6 +45,8 @@ export async function GET(request:NextRequest) {
       name:a.name,
       type:a.type,
       price:a.prices[0] ? Number(a.prices[0].price) : null,
+      actualPointsUpdatedAt:a.fantasyScores.find(s=>s.grandPrix.round===round&&s.source===COMPLETED_SCORE_SOURCE)?.recordedAt??null,
+      actualPoints:a.fantasyScores.find(s=>s.grandPrix.round===round&&s.source===COMPLETED_SCORE_SOURCE)?.points??null,
       expectedPoints:main?.expectedPoints ?? null,
       boostExpectedPoints:boost?.expectedPoints ?? main?.expectedPoints ?? null,
       expectedDelta:main?.expectedPriceDelta ?? null,
