@@ -1,0 +1,37 @@
+{
+  "policy": "Half tree residual for drivers; incumbent constructors unchanged",
+  "status": "Supplementary comparison; policy chosen after consuming all three seasons; no independent confirmation or production activation",
+  "metric": "Unweighted per-asset MAE across drivers and constructors; not team lineup scoring",
+  "results": [
+    {
+      "season": 2023,
+      "n": 505,
+      "incumbentMAE": 12.56039603960396,
+      "candidateMAE": 12.533267326732673,
+      "deltaMAE": -0.027128712871286938,
+      "low": -0.1751479289940823,
+      "high": 0.130495049504951,
+      "constructorsUnchanged": true
+    },
+    {
+      "season": 2024,
+      "n": 567,
+      "incumbentMAE": 10.609523809523811,
+      "candidateMAE": 10.450970017636683,
+      "deltaMAE": -0.15855379188712568,
+      "low": -0.2641975308641982,
+      "high": -0.05368421052631598,
+      "constructorsUnchanged": true
+    },
+    {
+      "season": 2025,
+      "n": 569,
+      "incumbentMAE": 13.183128295254832,
+      "candidateMAE": 13.066080843585238,
+      "deltaMAE": -0.11704745166959572,
+      "low": -0.18611599297012288,
+      "high": -0.05202821869488546,
+      "constructorsUnchanged": true
+    }
+  ]
+}
