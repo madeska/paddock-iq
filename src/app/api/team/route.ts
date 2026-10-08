@@ -1,3 +1,4 @@
+import {forecastSeasonState} from '../../../lib/forecast-season-state';
 import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
@@ -17,8 +18,7 @@ export async function GET(request:NextRequest){
  const team=user.teams.find(t=>t.id===teamId);
  if(!team)return NextResponse.json({error:'Team not found for user'},{status:404});
 
- const latestCompletedGp=await prisma.grandPrix.findFirst({where:{season,fantasyScores:{some:{points:{not:0}}}},orderBy:{round:'desc'}});
- const targetRound=(latestCompletedGp?.round??0)+1;
+ const targetRound=(await forecastSeasonState(prisma,season)).round;
  const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}}});
 
  const snapshot=await prisma.teamSnapshot.findFirst({

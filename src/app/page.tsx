@@ -15,7 +15,7 @@ type MarketAsset={
  confidence:number|null;modelVersion:string|null;recentFantasyScores:Score[];
 };
 type MarketResponse={
- season:number;round:number;grandPrix:string;complete:boolean;incomplete:string[];
+ season:number;round:number;seasonCompleted?:boolean;grandPrix:string;complete:boolean;incomplete:string[];
  currentModels:string[];assets:MarketAsset[];
 };
 type BuilderMode='points'|'balanced'|'budget'|'custom'|'horizon';
@@ -268,23 +268,29 @@ export default function Home(){
  const [scoresStatus,setScoresStatus]=useState('');
  const [scoresLoading,setScoresLoading]=useState(false);
  const scoresBusy=useRef(false);
- const season=2026,round=17;
+ const roundRef=useRef(17);
+ const season=2026,round=data?.round??roundRef.current;
+ const completedRef=useRef(false);
 
  async function load(){
   setStatus('Loading market…');
   try{
-   const r=await fetch('/api/market?season='+season+'&round='+round,{cache:'no-store'});
+   const r=await fetch('/api/market?season='+season,{cache:'no-store'});
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Market unavailable');
+   if(roundRef.current!==j.round){setWeekendContext(null);setBuilderTeams([])}
+   roundRef.current=j.round;completedRef.current=Boolean(j.seasonCompleted);
    setData(j);
-   setStatus(j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
+   setStatus(j.seasonCompleted?'Season completed. Final official results are available.':j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
+   return j as MarketResponse;
   }catch(e){setStatus(e instanceof Error?e.message:'Market unavailable')}
  }
 
- async function refresh(){
+ async function refresh(targetRound=roundRef.current){
+  if(completedRef.current)return;
   setStatus('Refreshing xPts + price probabilities…');
   try{
-   const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});
+   const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:targetRound})});
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
    setWeekendContext(j);
@@ -294,12 +300,18 @@ export default function Home(){
 
  async function updateOfficialScores(){
   if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
-  try{const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
+  try{const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
    setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
-   if(result.saved>0)await load();
+   if(result.forecast?.completed){completedRef.current=true;await load()}
+   else if(result.forecast?.round!==undefined&&result.forecast.round!==roundRef.current){
+    roundRef.current=result.forecast.round;setWeekendContext(null);setBuilderTeams([]);setData(null);
+    setScoresStatus('Results saved. Preparing forecast for R'+result.forecast.round+'…');
+    const next=await load();if(next&&!next.complete)await refresh(next.round);
+    setScoresStatus('Official results saved. Forecast round: R'+result.forecast.round);
+   }else if(result.saved>0)await load();
   }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
  }
- useEffect(()=>{let mounted=true;void load().then(()=>{if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
+ useEffect(()=>{let mounted=true;void load().then(async market=>{if(!mounted||!market)return;if(!market.complete&&market.round>17&&!market.seasonCompleted)await refresh(market.round);if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
@@ -366,7 +378,7 @@ export default function Home(){
  return <main className={styles.page}>
   <nav className={styles.topbar}>
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button><button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></div>
+   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={()=>refresh()} disabled={Boolean(data?.seasonCompleted)}>Refresh projections</button><button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></div>
   </nav>
 
   <header className={styles.hero}>

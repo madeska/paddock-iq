@@ -200,3 +200,9 @@ model FantasyRoundScore {
   @@unique([assetId, grandPrixId])
   @@index([grandPrixId])
 }
+
+model ForecastSeasonState {
+  season Int @id
+  round Int
+  completed Boolean @default(false)
+}

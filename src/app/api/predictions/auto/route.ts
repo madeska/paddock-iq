@@ -1,3 +1,4 @@
+import {forecastSeasonState} from '../../../../lib/forecast-season-state';
 import {CURRENT_DRIVER_MODEL,CURRENT_CONSTRUCTOR_MODEL} from '../../../../lib/current-prediction-models';
 import {getGridPenaltyNews} from '../../../../lib/grid-penalty-news';
 import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from '../../../../lib/official-history-reconciliation';
@@ -15,7 +16,10 @@ const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
 export async function POST(request:NextRequest){
  try{
   const body=await request.json().catch(()=>({}));
-  const season=Number(body.season??2026),round=Number(body.round??17);
+  const season=Number(body.season??2026);
+  const state=await forecastSeasonState(prisma,season);
+  const round=Number(body.round??state.round);
+  if(state.completed&&round===state.round)return NextResponse.json({error:'Season completed; no next race to forecast'},{status:409});
   const officialSync=await syncOfficialFantasyMarket(prisma,season,round);
   const historyReconciliation=await reconcileOfficialHistory(prisma,season,round);
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});

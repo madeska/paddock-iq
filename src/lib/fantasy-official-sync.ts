@@ -162,6 +162,8 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
    if(saveScores){
     const fantasyPoints=officialFantasyPoints(row.GamedayPoints);
     if(fantasyPoints!==null){
+     const verified=await prisma.fantasyRoundScore.findUnique({where:{assetId_grandPrixId:{assetId:asset.id,grandPrixId:gp.id}}});
+     if(verified?.source==='Official F1 Fantasy completed race: feed + popup verified')continue;
      await prisma.fantasyRoundScore.upsert({
       where:{assetId_grandPrixId:{assetId:asset.id,grandPrixId:gp.id}},
       update:{points:fantasyPoints,source:'Official F1 Fantasy round feed'},

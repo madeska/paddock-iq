@@ -1,3 +1,4 @@
+import {forecastSeasonState} from '../../../lib/forecast-season-state';
 import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
@@ -8,14 +9,16 @@ import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-pred
 
 export async function GET(request:NextRequest) {
   const season = Number(request.nextUrl.searchParams.get('season') ?? 2026);
-  const round = Number(request.nextUrl.searchParams.get('round') ?? 17);
+  const requestedRound=request.nextUrl.searchParams.get('round');
+  const state=requestedRound===null?await forecastSeasonState(prisma,season):null;
+  const round = Number(requestedRound ?? state!.round);
 
   let gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if (!gp) {
     await syncOfficialFantasyMarket(prisma,season,round);
     gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   }
-  if (!gp) return NextResponse.json({error:'Grand Prix not found'}, {status:404});
+  if (!gp) return NextResponse.json({seasonCompleted:state?.completed??false,error:'Grand Prix not found'}, {status:404});
 
   const assets = await prisma.asset.findMany({
     where:{season,active:true},
@@ -70,6 +73,7 @@ export async function GET(request:NextRequest) {
   const incomplete=rows.filter(a=>a.price==null||a.expectedPoints==null||a.expectedDelta==null).map(a=>a.code);
 
   return NextResponse.json({
+    seasonCompleted:state?.completed??false,
     season,
     round,
     grandPrix:gp.name,
