@@ -6,3 +6,5 @@ test('historical pit profile is deterministic',()=>{const options={scoringSeason
 
 test('driver-only historical simulation does not require a pit field',()=>assert.equal(simulateComponentWeekend(drivers,[],{scoringSeason:2024,sprint:true,simulations:200,seed:567}).drivers.length,20));
 test('partial historical constructor field is explicitly rejected',()=>assert.throws(()=>simulateComponentWeekend(drivers,constructors.slice(0,1),{scoringSeason:2024,sprint:true}),/complete ten-constructor/));
+
+test('explicit2023 research profile preserves historical Sprint penalty and pit podium',()=>{assert.equal(sprintNotClassifiedPenalty(2023),20);const r=simulateComponentWeekend(drivers,constructors,{scoringSeason:2023,sprint:true,simulations:200,seed:567});assert.ok(Math.abs(r.constructors.reduce((n,c)=>n+c.pitStops,0)-18)<1e-9)});

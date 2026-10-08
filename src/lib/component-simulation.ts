@@ -123,7 +123,7 @@ export function simulateComponentWeekend(
   constructorInputs:ComponentConstructorInput[],
   options:ComponentSimulationOptions
 ){
-  if(options.scoringSeason===2024&&constructorInputs.length!==0&&(constructorInputs.length!==10||new Set(constructorInputs.map(c=>c.code)).size!==10))throw Error('2024 pit adapter requires a complete ten-constructor field');
+  if([2023,2024].includes(options.scoringSeason??2026)&&constructorInputs.length!==0&&(constructorInputs.length!==10||new Set(constructorInputs.map(c=>c.code)).size!==10))throw Error('2024 pit adapter requires a complete ten-constructor field');
   const correlation=options.rankingCorrelation??0;
   if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
   if(options.raceStartingGrid){
@@ -151,7 +151,7 @@ export function simulateComponentWeekend(
   for(const d of driverState)dAcc.set(d.code,{code:d.code,qualifying:0,sprint:0,raceFinish:0,positions:0,overtakes:0,fastestLap:0,driverOfTheDay:0,dnfPenalty:0,total:0});
   for(const c of constructorState)cAcc.set(c.code,{code:c.code,qualifying:0,sprint:0,raceDrivers:0,pitStops:0,total:0});
 
-  const q2Cutoff=Math.min(driverState.length,options.scoringSeason===2024?15:Math.floor((driverState.length+10)/2));
+  const q2Cutoff=Math.min(driverState.length,[2023,2024].includes(options.scoringSeason??2026)?15:Math.floor((driverState.length+10)/2));
   const teamDrivers=new Map<string,typeof driverState>();
   for(const d of driverState){
     const list=teamDrivers.get(d.team)??[];
@@ -249,7 +249,7 @@ export function simulateComponentWeekend(
     const fastestPit=[...teamPit.entries()].sort((a,b)=>a[1].seconds-b[1].seconds)[0]?.[0]??null;
 
     // Historical research adapter: two synthetic stops per constructor, not inferred physical stop counts.
-    const historicalPit=options.scoringSeason===2024&&constructorState.length>0?pitPodiumAwards2024(constructorState.flatMap(c=>[0,1].map(i=>({id:c.code+':'+i,team:c.code,seconds:Math.exp(Math.log(2.48)-.10*c.strength+.08*(gumbel(r)-.577))})))):undefined;
+    const historicalPit=[2023,2024].includes(options.scoringSeason??2026)&&constructorState.length>0?pitPodiumAwards2024(constructorState.flatMap(c=>[0,1].map(i=>({id:c.code+':'+i,team:c.code,seconds:Math.exp(Math.log(2.48)-.10*c.strength+.08*(gumbel(r)-.577))})))):undefined;
     for(const c of constructorState){
       const ds=teamDrivers.get(c.code)??[];
       if(ds.length<2)continue;
