@@ -2,6 +2,7 @@
 
 import {useEffect,useMemo,useState,useRef} from 'react';
 import {prepareForecast} from '../lib/forecast-preparation';
+import type {WeekendImpact} from '../lib/weekend-impact';
 import styles from './market-dashboard.module.css';
 
 type Score={round:number;points:number;name:string};
@@ -265,7 +266,7 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
- const [weekendContext,setWeekendContext]=useState<{practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
+ const [weekendContext,setWeekendContext]=useState<{weekendImpact?:WeekendImpact[];forecastAt?:string;practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
  const [scoresStatus,setScoresStatus]=useState('');
  const [scoresLoading,setScoresLoading]=useState(false);
  const scoresBusy=useRef(false);
@@ -403,6 +404,14 @@ export default function Home(){
   {weekendContext&&<section className={styles.teamBuilder} aria-label="Weekend information">
    <h2>Before team lock</h2>
    <p>{weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':'No completed practice data available'}</p>
+   {Boolean(weekendContext.weekendImpact?.length)&&<details>
+    <summary>Practice / Sprint Qualifying impact on xPts</summary>
+    <p>Compared with the same forecast without practice or Sprint Qualifying. History, prices and applied penalties are identical.</p>
+    {weekendContext.forecastAt&&<p>Calculated: {new Date(weekendContext.forecastAt).toLocaleString()}</p>}
+    <div className={styles.weekendImpact}><table><thead><tr><th>Asset</th><th>Without sessions</th><th>With sessions</th><th>Change</th></tr></thead><tbody>
+     {weekendContext.weekendImpact!.map(row=><tr key={row.code}><th>{row.code}</th><td>{row.before.toFixed(1)}</td><td>{row.after.toFixed(1)}</td><td>{row.change>0?'+':''}{row.change.toFixed(1)}</td></tr>)}
+    </tbody></table></div>
+   </details>}
    <p>{weekendContext.weekendNews.coverage}</p>
    {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' · '+(m.reason??('+'+m.places+' grid places')):(m.reason??'Needs confirmation; not applied')}</p>)}
    {weekendContext.weekendNews.mentions.length===0&&<p>No applicable penalty found in the checked headlines.</p>}

@@ -66,3 +66,7 @@
   line-height:1;
  }
 }
+.weekendImpact{overflow-x:auto;margin:12px 0}
+.weekendImpact table{border-collapse:collapse;min-width:400px;max-width:650px;width:100%;font-size:13px}
+.weekendImpact th,.weekendImpact td{padding:7px 12px;text-align:right;border-bottom:1px solid #263343;font-variant-numeric:tabular-nums}
+.weekendImpact th:first-child{text-align:left}
