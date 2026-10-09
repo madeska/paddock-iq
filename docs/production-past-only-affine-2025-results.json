@@ -1,0 +1,1907 @@
+{
+  "scoringSeason": 2025,
+  "sprintNCPenalty": -20,
+  "trainingEligibility": "Supported component rows only; baseline-only fallback rows do not influence affine bias.",
+  "weights": [
+    {
+      "round": 2,
+      "DRIVER": {
+        "weight": 0.25,
+        "trainingRows": 0,
+        "sourceRounds": [],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.25,
+        "trainingRows": 0,
+        "sourceRounds": [],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0
+      }
+    },
+    {
+      "round": 3,
+      "DRIVER": {
+        "weight": 0.5650378534692918,
+        "trainingRows": 20,
+        "sourceRounds": [
+          2
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.3452373501902002
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.37199716023390783,
+        "trainingRows": 10,
+        "sourceRounds": [
+          2
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.9228406923880048
+      }
+    },
+    {
+      "round": 4,
+      "DRIVER": {
+        "weight": 0.6844972200749344,
+        "trainingRows": 40,
+        "sourceRounds": [
+          2,
+          3
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.42087210456726465
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.43699087689474264,
+        "trainingRows": 20,
+        "sourceRounds": [
+          2,
+          3
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.3764523687911516
+      }
+    },
+    {
+      "round": 5,
+      "DRIVER": {
+        "weight": 0.7070219208568084,
+        "trainingRows": 60,
+        "sourceRounds": [
+          2,
+          3,
+          4
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.0785732074680439
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.4097242376906768,
+        "trainingRows": 30,
+        "sourceRounds": [
+          2,
+          3,
+          4
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 2.8551259686107353
+      }
+    },
+    {
+      "round": 6,
+      "DRIVER": {
+        "weight": 0.7145150532881819,
+        "trainingRows": 80,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.7052578069643383
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.42069390302002896,
+        "trainingRows": 40,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 2.002654782311858
+      }
+    },
+    {
+      "round": 7,
+      "DRIVER": {
+        "weight": 0.67758004587071,
+        "trainingRows": 100,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.3562561461642275
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.4002803607467593,
+        "trainingRows": 50,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.6160039652940525
+      }
+    },
+    {
+      "round": 8,
+      "DRIVER": {
+        "weight": 0.6774029913568855,
+        "trainingRows": 119,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.15478984795303385
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.4157238092187147,
+        "trainingRows": 59,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 1.4071825095414991
+      }
+    },
+    {
+      "round": 9,
+      "DRIVER": {
+        "weight": 0.6840656177932466,
+        "trainingRows": 139,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.3479347326849536
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.4190728521994709,
+        "trainingRows": 69,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.5656097895876548
+      }
+    },
+    {
+      "round": 10,
+      "DRIVER": {
+        "weight": 0.6933945937291524,
+        "trainingRows": 159,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.37080450755748884
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.4488157789624629,
+        "trainingRows": 79,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.536747014085915
+      }
+    },
+    {
+      "round": 11,
+      "DRIVER": {
+        "weight": 0.7063750614832887,
+        "trainingRows": 179,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.35948079067541416
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5254436696625174,
+        "trainingRows": 89,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.3544909798148679
+      }
+    },
+    {
+      "round": 12,
+      "DRIVER": {
+        "weight": 0.7218030811676768,
+        "trainingRows": 199,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.4459982016923561
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.480045223274643,
+        "trainingRows": 99,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.5094848969673752
+      }
+    },
+    {
+      "round": 13,
+      "DRIVER": {
+        "weight": 0.7144651778767254,
+        "trainingRows": 219,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.7024921568502495
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.523713887271592,
+        "trainingRows": 109,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.2874357246543476
+      }
+    },
+    {
+      "round": 14,
+      "DRIVER": {
+        "weight": 0.7051577839167581,
+        "trainingRows": 239,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6891043339075817
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5175200061392183,
+        "trainingRows": 119,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.18435513126720782
+      }
+    },
+    {
+      "round": 15,
+      "DRIVER": {
+        "weight": 0.7031970803905574,
+        "trainingRows": 259,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6018182150022446
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5088374840050682,
+        "trainingRows": 129,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": 0.19053297212116987
+      }
+    },
+    {
+      "round": 16,
+      "DRIVER": {
+        "weight": 0.7404230450881533,
+        "trainingRows": 279,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6233027677823615
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5791699057921442,
+        "trainingRows": 139,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.13945156744838785
+      }
+    },
+    {
+      "round": 17,
+      "DRIVER": {
+        "weight": 0.7276713600048802,
+        "trainingRows": 299,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6423194586496793
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5719950569535049,
+        "trainingRows": 149,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.19081032587775004
+      }
+    },
+    {
+      "round": 18,
+      "DRIVER": {
+        "weight": 0.7486829080548252,
+        "trainingRows": 319,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6628336122924724
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.601219661516657,
+        "trainingRows": 159,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.3318296606617829
+      }
+    },
+    {
+      "round": 19,
+      "DRIVER": {
+        "weight": 0.7487012037338513,
+        "trainingRows": 339,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6338931270744679
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.6022710464566172,
+        "trainingRows": 169,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.36528964863541646
+      }
+    },
+    {
+      "round": 20,
+      "DRIVER": {
+        "weight": 0.7468689667162529,
+        "trainingRows": 359,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6699322221483786
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.568069847598241,
+        "trainingRows": 179,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.2540416179328746
+      }
+    },
+    {
+      "round": 21,
+      "DRIVER": {
+        "weight": 0.7352623929362606,
+        "trainingRows": 379,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6220144949628275
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5946912288288076,
+        "trainingRows": 189,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.33182606018037253
+      }
+    },
+    {
+      "round": 22,
+      "DRIVER": {
+        "weight": 0.7406413585204632,
+        "trainingRows": 399,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.6469836725885239
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.5962658344746999,
+        "trainingRows": 199,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.2345760498755131
+      }
+    },
+    {
+      "round": 23,
+      "DRIVER": {
+        "weight": 0.7469897472210616,
+        "trainingRows": 419,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.8153519109947542
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.6243813243441466,
+        "trainingRows": 209,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.7652038598213234
+      }
+    },
+    {
+      "round": 24,
+      "DRIVER": {
+        "weight": 0.7413781598266612,
+        "trainingRows": 439,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.8603400145532806
+      },
+      "CONSTRUCTOR": {
+        "weight": 0.6288025931728245,
+        "trainingRows": 219,
+        "sourceRounds": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "priorWeight": 0.25,
+        "priorObservations": 20,
+        "bias": -0.8884157016106073
+      }
+    }
+  ],
+  "quoteMode": "audited-2025-pre-event",
+  "note": "Exploratory already-consumed2025 R6–24; past forecast frames2 onward. Fixed20-observation .25weight/zero-bias prior; jointly fit weight and intercept, no hyperparameter search; type-specific convex least-squares weights fit strictly before target. Uses complete pinned2025 totals, reported pre-event prices previously audited with official anchors, incumbent completed-practice policy and2025 simulation defaults. No2024 adapter here. Both models share field/seed/scoring/rounding; no new cold prior or activation.",
+  "rounds": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "quoteOmissions": [],
+  "cohortAudit": [
+    {
+      "round": 2,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 3,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 4,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 5,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 6,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 7,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 19,
+      "unsupportedConstructors": [
+        "ALP"
+      ]
+    },
+    {
+      "round": 8,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 9,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 10,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 11,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 12,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 13,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 14,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 15,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 16,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 17,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 18,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 19,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 20,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 21,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 22,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 23,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 24,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    }
+  ],
+  "missing": [
+    {
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER"
+    }
+  ],
+  "summary": [
+    {
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 379,
+      "MAE": 10.589445910290236,
+      "RMSE": 14.16852209899314,
+      "Bias": 0.3572559366754622
+    },
+    {
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 190,
+      "MAE": 18.356842105263155,
+      "RMSE": 23.642871408123266,
+      "Bias": -0.12210526315789492
+    },
+    {
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 379,
+      "MAE": 10.543535620052767,
+      "RMSE": 14.061202446733397,
+      "Bias": 0.5535620052770447
+    },
+    {
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 190,
+      "MAE": 18.21157894736842,
+      "RMSE": 23.209292603564954,
+      "Bias": 0.8178947368421056
+    }
+  ],
+  "pairedRaceBootstrap": [
+    {
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "deltaMAE": -0.04591029023746668,
+      "low": -0.25804749340369254,
+      "high": 0.17830687830687758
+    },
+    {
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "deltaMAE": -0.14526315789473665,
+      "low": -0.5747368421052631,
+      "high": 0.2284210526315793
+    }
+  ],
+  "byRound": [
+    {
+      "round": 6,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.405000000000001,
+      "RMSE": 15.597451714943695,
+      "Bias": -0.5149999999999997
+    },
+    {
+      "round": 6,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.819999999999999,
+      "RMSE": 17.463504802873906,
+      "Bias": -0.3400000000000006
+    },
+    {
+      "round": 6,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 14.535,
+      "RMSE": 16.399954268228925,
+      "Bias": 2.8050000000000006
+    },
+    {
+      "round": 6,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.540000000000001,
+      "RMSE": 17.831881560844888,
+      "Bias": 3.560000000000001
+    },
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 9.073684210526316,
+      "RMSE": 13.980926857310774,
+      "Bias": 1.8631578947368428
+    },
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.229999999999997,
+      "RMSE": 22.928214060410372,
+      "Bias": -0.8300000000000007
+    },
+    {
+      "round": 7,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 9.06315789473684,
+      "RMSE": 14.090758449572917,
+      "Bias": 1.4736842105263162
+    },
+    {
+      "round": 7,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.650000000000002,
+      "RMSE": 22.78694801854781,
+      "Bias": 0.5299999999999994
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.015,
+      "RMSE": 11.769898045437778,
+      "Bias": 3.935
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.62,
+      "RMSE": 18.462990007038403,
+      "Bias": 5.74
+    },
+    {
+      "round": 8,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.230000000000002,
+      "RMSE": 11.75146799340406,
+      "Bias": 3.87
+    },
+    {
+      "round": 8,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.07,
+      "RMSE": 19.155025450257174,
+      "Bias": 7.369999999999999
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.549999999999999,
+      "RMSE": 13.664955177387155,
+      "Bias": 0.08000000000000003
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.740000000000002,
+      "RMSE": 20.888130600893895,
+      "Bias": -2.0200000000000005
+    },
+    {
+      "round": 9,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.754999999999999,
+      "RMSE": 13.274543306645242,
+      "Bias": 0.04500000000000006
+    },
+    {
+      "round": 9,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.06,
+      "RMSE": 20.310637606929035,
+      "Bias": -1.0399999999999998
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.38,
+      "RMSE": 15.463990429381417,
+      "Bias": -0.20999999999999988
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.89,
+      "RMSE": 27.193436708147058,
+      "Bias": -2.5700000000000007
+    },
+    {
+      "round": 10,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.78,
+      "RMSE": 15.069737887567918,
+      "Bias": -0.35000000000000003
+    },
+    {
+      "round": 10,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.249999999999996,
+      "RMSE": 25.963069926339603,
+      "Bias": -1.6099999999999999
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.754999999999999,
+      "RMSE": 16.158697348486974,
+      "Bias": 0.8650000000000002
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.159999999999997,
+      "RMSE": 25.363398825867165,
+      "Bias": -0.420000000000001
+    },
+    {
+      "round": 11,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.674999999999997,
+      "RMSE": 15.696703475570914,
+      "Bias": 0.6649999999999997
+    },
+    {
+      "round": 11,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.340000000000003,
+      "RMSE": 26.307147317791795,
+      "Bias": 0.35999999999999943
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.790000000000001,
+      "RMSE": 16.912924052333466,
+      "Bias": 3.4699999999999998
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.089999999999996,
+      "RMSE": 23.8390226309721,
+      "Bias": 7.5500000000000025
+    },
+    {
+      "round": 12,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 14.239999999999998,
+      "RMSE": 17.098684159899555,
+      "Bias": 3.2099999999999995
+    },
+    {
+      "round": 12,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.919999999999998,
+      "RMSE": 23.37246242910661,
+      "Bias": 8.14
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.465,
+      "RMSE": 10.32567189097155,
+      "Bias": -2.0949999999999998
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.170000000000002,
+      "RMSE": 15.689646267523052,
+      "Bias": -4.01
+    },
+    {
+      "round": 13,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.570000000000002,
+      "RMSE": 10.494284158531253,
+      "Bias": 0.07000000000000028
+    },
+    {
+      "round": 13,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.61,
+      "RMSE": 15.443607091609136,
+      "Bias": -1.0500000000000003
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 7.450000000000001,
+      "RMSE": 10.561439295853573,
+      "Bias": -0.6099999999999997
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.18,
+      "RMSE": 18.15604582501377,
+      "Bias": -5.220000000000001
+    },
+    {
+      "round": 14,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 7.384999999999998,
+      "RMSE": 10.334723024832355,
+      "Bias": -1.1649999999999996
+    },
+    {
+      "round": 14,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.31,
+      "RMSE": 18.061035407750023,
+      "Bias": -5.05
+    },
+    {
+      "round": 15,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.529999999999998,
+      "RMSE": 17.810783250604114,
+      "Bias": -0.06000000000000063
+    },
+    {
+      "round": 15,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 20.970000000000002,
+      "RMSE": 25.40871897597358,
+      "Bias": 0.7300000000000008
+    },
+    {
+      "round": 15,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.05,
+      "RMSE": 16.76007159889241,
+      "Bias": -0.63
+    },
+    {
+      "round": 15,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.5,
+      "RMSE": 23.673825208444875,
+      "Bias": 0.9
+    },
+    {
+      "round": 16,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.2,
+      "RMSE": 11.63301336713751,
+      "Bias": 1.2800000000000002
+    },
+    {
+      "round": 16,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 15.11,
+      "RMSE": 20.181996927955367,
+      "Bias": 1.8700000000000003
+    },
+    {
+      "round": 16,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.545,
+      "RMSE": 12.050788355954143,
+      "Bias": 0.6150000000000001
+    },
+    {
+      "round": 16,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 15.960000000000003,
+      "RMSE": 20.48755719943205,
+      "Bias": 1.2999999999999994
+    },
+    {
+      "round": 17,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.13,
+      "RMSE": 15.17399090549352,
+      "Bias": 0.3900000000000009
+    },
+    {
+      "round": 17,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.230000000000004,
+      "RMSE": 30.629054833605295,
+      "Bias": 1.0500000000000007
+    },
+    {
+      "round": 17,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.624999999999998,
+      "RMSE": 14.374369551392506,
+      "Bias": -0.19500000000000065
+    },
+    {
+      "round": 17,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.6,
+      "RMSE": 29.88932919956552,
+      "Bias": 0.7599999999999987
+    },
+    {
+      "round": 18,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.409999999999999,
+      "RMSE": 8.30258995735668,
+      "Bias": 0.06999999999999984
+    },
+    {
+      "round": 18,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.420000000000002,
+      "RMSE": 15.758489775356013,
+      "Bias": 0.6799999999999994
+    },
+    {
+      "round": 18,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.46,
+      "RMSE": 8.188162186962346,
+      "Bias": -0.5200000000000002
+    },
+    {
+      "round": 18,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.14,
+      "RMSE": 15.694967346254657,
+      "Bias": 0.5799999999999997
+    },
+    {
+      "round": 19,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.934999999999999,
+      "RMSE": 15.729383331841081,
+      "Bias": -1.3050000000000002
+    },
+    {
+      "round": 19,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.05,
+      "RMSE": 23.347183984369504,
+      "Bias": -3.0500000000000003
+    },
+    {
+      "round": 19,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.95,
+      "RMSE": 15.655414398858944,
+      "Bias": 0.7500000000000008
+    },
+    {
+      "round": 19,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.169999999999998,
+      "RMSE": 24.24992783494417,
+      "Bias": 0.21000000000000013
+    },
+    {
+      "round": 20,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.314999999999998,
+      "RMSE": 11.997353874917586,
+      "Bias": 0.28500000000000025
+    },
+    {
+      "round": 20,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.54,
+      "RMSE": 22.875183059376816,
+      "Bias": 0.30000000000000143
+    },
+    {
+      "round": 20,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.24,
+      "RMSE": 12.301829132287605,
+      "Bias": -0.5999999999999996
+    },
+    {
+      "round": 20,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.27,
+      "RMSE": 21.769221391680503,
+      "Bias": -0.25000000000000033
+    },
+    {
+      "round": 21,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.104999999999999,
+      "RMSE": 18.27395687857449,
+      "Bias": -1.3150000000000002
+    },
+    {
+      "round": 21,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.999999999999996,
+      "RMSE": 28.754269248235126,
+      "Bias": -4.7200000000000015
+    },
+    {
+      "round": 21,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 14.535000000000005,
+      "RMSE": 18.0458443969796,
+      "Bias": 0.3249999999999993
+    },
+    {
+      "round": 21,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 23.23,
+      "RMSE": 28.455456418760885,
+      "Bias": -2.2700000000000005
+    },
+    {
+      "round": 22,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.025,
+      "RMSE": 16.03706643996962,
+      "Bias": 4.585
+    },
+    {
+      "round": 22,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 20.85,
+      "RMSE": 31.20043268930737,
+      "Bias": 11.509999999999996
+    },
+    {
+      "round": 22,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.385000000000002,
+      "RMSE": 15.730400503483692,
+      "Bias": 3.4850000000000008
+    },
+    {
+      "round": 22,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.110000000000003,
+      "RMSE": 30.374051425517806,
+      "Bias": 10.029999999999998
+    },
+    {
+      "round": 23,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.015,
+      "RMSE": 13.974172605202785,
+      "Bias": -0.3849999999999997
+    },
+    {
+      "round": 23,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 15.98,
+      "RMSE": 23.6621216293045,
+      "Bias": -0.11999999999999922
+    },
+    {
+      "round": 23,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.040000000000001,
+      "RMSE": 14.068901876123808,
+      "Bias": 1.2500000000000009
+    },
+    {
+      "round": 23,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.27,
+      "RMSE": 23.156878027920776,
+      "Bias": 2.5700000000000003
+    },
+    {
+      "round": 24,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.575,
+      "RMSE": 10.769656447631002,
+      "Bias": -3.4650000000000007
+    },
+    {
+      "round": 24,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 24.730000000000004,
+      "RMSE": 28.601346122167048,
+      "Bias": -8.45
+    },
+    {
+      "round": 24,
+      "model": "past-only-affine-blend",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 9.190000000000001,
+      "RMSE": 11.172287142747452,
+      "Bias": -4.540000000000001
+    },
+    {
+      "round": 24,
+      "model": "past-only-affine-blend",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.020000000000003,
+      "RMSE": 26.27892691873091,
+      "Bias": -9.500000000000004
+    }
+  ]
+}

@@ -1,0 +1,2653 @@
+{
+  "note": "Exploratory on previously inspected rounds. Selection uses only rounds 6–11. Eligibility requires no worse driver/constructor weekend MAE, position-change MAE and overtake MAE on development. No production activation.",
+  "developmentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "evaluationRounds": [
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "baselineDevelopment": {
+    "DRIVER": {
+      "n": 132,
+      "MAE": 10.652353348833918,
+      "RMSE": 14.569283556731317,
+      "Bias": 0.8822666670999572
+    },
+    "CONSTRUCTOR": {
+      "n": 66,
+      "MAE": 16.302824272386957,
+      "RMSE": 19.694915233864563,
+      "Bias": 0.9202158610668241
+    },
+    "objective": 18.803765485027398,
+    "positionsMAE": 2.320793350168349,
+    "overtakesMAE": 2.3444107744107745,
+    "qualifyingMAE": 1.6136595117845112
+  },
+  "eligibleCount": 0,
+  "selected": {
+    "name": "current",
+    "gridRelative": false,
+    "conditional": false,
+    "reliability": false
+  },
+  "bestAggregate": {
+    "name": "grid-relative-progress",
+    "gridRelative": true,
+    "raceNoise": 0,
+    "qualifyingNoise": 0.15,
+    "conditional": true,
+    "reliability": false,
+    "DRIVER": {
+      "n": 132,
+      "MAE": 10.509836283492488,
+      "RMSE": 14.485216415022679,
+      "Bias": 0.9881547142380053
+    },
+    "CONSTRUCTOR": {
+      "n": 66,
+      "MAE": 15.657346186846597,
+      "RMSE": 19.4731518908218,
+      "Bias": 1.1384755412015044
+    },
+    "objective": 18.338509376915788,
+    "positionsMAE": 2.3771632996633003,
+    "overtakesMAE": 2.537228535353535,
+    "qualifyingMAE": 0.9499537037037034,
+    "eligible": false
+  },
+  "candidates": [
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.509836283492488,
+        "RMSE": 14.485216415022679,
+        "Bias": 0.9881547142380053
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.657346186846597,
+        "RMSE": 19.4731518908218,
+        "Bias": 1.1384755412015044
+      },
+      "objective": 18.338509376915788,
+      "positionsMAE": 2.3771632996633003,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.49990333363175,
+        "RMSE": 14.445891452154767,
+        "Bias": 1.013020034103325
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.688146858600659,
+        "RMSE": 19.368865154521938,
+        "Bias": 1.1875127886762507
+      },
+      "objective": 18.34397676293208,
+      "positionsMAE": 2.3760143097643085,
+      "overtakesMAE": 2.568377525252525,
+      "qualifyingMAE": 1.0679166666666668,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.518232748138953,
+        "RMSE": 14.477055205038752,
+        "Bias": 0.9881547142380039
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.665086085836492,
+        "RMSE": 19.463969623370556,
+        "Bias": 1.1384755412015046
+      },
+      "objective": 18.3507757910572,
+      "positionsMAE": 2.3918265993265986,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.517617217835923,
+        "RMSE": 14.483099360376658,
+        "Bias": 0.9881547142380044
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.669008644759053,
+        "RMSE": 19.48265347861106,
+        "Bias": 1.138475541201506
+      },
+      "objective": 18.35212154021545,
+      "positionsMAE": 2.3774074074074076,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.505342096258012,
+        "RMSE": 14.447245124818938,
+        "Bias": 1.0130200341033244
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.698350983179777,
+        "RMSE": 19.377018486521795,
+        "Bias": 1.1875127886762524
+      },
+      "objective": 18.3545175878479,
+      "positionsMAE": 2.3760143097643085,
+      "overtakesMAE": 2.568377525252525,
+      "qualifyingMAE": 1.0679166666666668,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.516546437841894,
+        "RMSE": 14.467802782028944,
+        "Bias": 0.9881547142380037
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.680648461544155,
+        "RMSE": 19.43200361645983,
+        "Bias": 1.1384755412015046
+      },
+      "objective": 18.356870668613972,
+      "positionsMAE": 2.419436026936027,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.512579049119967,
+        "RMSE": 14.448445235387451,
+        "Bias": 1.013020034103323
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.717469249173046,
+        "RMSE": 19.377571825032867,
+        "Bias": 1.1875127886762515
+      },
+      "objective": 18.37131367370649,
+      "positionsMAE": 2.3909343434343433,
+      "overtakesMAE": 2.568377525252525,
+      "qualifyingMAE": 1.0679166666666668,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.521337466628388,
+        "RMSE": 14.467825008300219,
+        "Bias": 0.9881547142380042
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.745062893954193,
+        "RMSE": 19.409311457098564,
+        "Bias": 1.1384755412015042
+      },
+      "objective": 18.393868913605484,
+      "positionsMAE": 2.5223863636363637,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.523285204636514,
+        "RMSE": 14.455491828884046,
+        "Bias": 1.0130200341033258
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.762411206177989,
+        "RMSE": 19.384470030556425,
+        "Bias": 1.1875127886762533
+      },
+      "objective": 18.40449080772551,
+      "positionsMAE": 2.421144781144781,
+      "overtakesMAE": 2.568377525252525,
+      "qualifyingMAE": 1.0679166666666668,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.539918532652864,
+        "RMSE": 14.469271761182235,
+        "Bias": 1.0130200341033238
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.854879196629375,
+        "RMSE": 19.408006932833455,
+        "Bias": 1.1875127886762518
+      },
+      "objective": 18.46735813096755,
+      "positionsMAE": 2.5198484848484854,
+      "overtakesMAE": 2.568377525252525,
+      "qualifyingMAE": 1.0679166666666668,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.59653311595432,
+        "RMSE": 14.428857772852025,
+        "Bias": 0.4517079549787463
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.804422296080922,
+        "RMSE": 19.36049454251477,
+        "Bias": -0.2165917988658345
+      },
+      "objective": 18.49874426399478,
+      "positionsMAE": 2.546978114478114,
+      "overtakesMAE": 2.4602230639730642,
+      "qualifyingMAE": 0.9732028619528613,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.604643571950017,
+        "RMSE": 14.427408051813977,
+        "Bias": 0.45170795497874516
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.812402094060724,
+        "RMSE": 19.36830404345911,
+        "Bias": -0.21659179886583627
+      },
+      "objective": 18.51084461898038,
+      "positionsMAE": 2.54506734006734,
+      "overtakesMAE": 2.4602230639730642,
+      "qualifyingMAE": 0.9732028619528613,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.610522149391095,
+        "RMSE": 14.426705639051441,
+        "Bias": 0.45170795497874483
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.822368424027053,
+        "RMSE": 19.36054399747524,
+        "Bias": -0.21659179886583463
+      },
+      "objective": 18.521706361404622,
+      "positionsMAE": 2.553341750841751,
+      "overtakesMAE": 2.4602230639730642,
+      "qualifyingMAE": 0.9732028619528613,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.63804193494488,
+        "RMSE": 14.48535221171479,
+        "Bias": 0.3561376687834583
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.794784248942875,
+        "RMSE": 19.42917351888128,
+        "Bias": -0.12468312883216419
+      },
+      "objective": 18.535434059416318,
+      "positionsMAE": 2.3757575757575764,
+      "overtakesMAE": 2.568819444444443,
+      "qualifyingMAE": 0.9454292929292931,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.624333938491112,
+        "RMSE": 14.470171406546447,
+        "Bias": 0.46777960901914895
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.825757523353655,
+        "RMSE": 19.389024531375412,
+        "Bias": 0.09860075163921594
+      },
+      "objective": 18.53721270016794,
+      "positionsMAE": 2.418539562289563,
+      "overtakesMAE": 2.4639225589225586,
+      "qualifyingMAE": 0.9454292929292931,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.614676189795142,
+        "RMSE": 14.425756191862126,
+        "Bias": 0.45170795497874483
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.84779561257924,
+        "RMSE": 19.347356798792262,
+        "Bias": -0.21659179886583432
+      },
+      "objective": 18.538573996084764,
+      "positionsMAE": 2.5894486531986534,
+      "overtakesMAE": 2.4602230639730642,
+      "qualifyingMAE": 0.9732028619528613,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.601177551073201,
+        "RMSE": 14.410837018824624,
+        "Bias": 0.46870974369928414
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.88179727881846,
+        "RMSE": 19.328841818158562,
+        "Bias": -0.1831753426368795
+      },
+      "objective": 18.542076190482433,
+      "positionsMAE": 2.5470686026936025,
+      "overtakesMAE": 2.4795643939393948,
+      "qualifyingMAE": 1.0666645622895616,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.628424217283559,
+        "RMSE": 14.441623431896202,
+        "Bias": 0.3626959600292494
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.82773984658598,
+        "RMSE": 19.30683910037384,
+        "Bias": -0.1140591810207168
+      },
+      "objective": 18.542294140576548,
+      "positionsMAE": 2.3783838383838387,
+      "overtakesMAE": 2.5579545454545465,
+      "qualifyingMAE": 1.0722748316498318,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.639173479736904,
+        "RMSE": 14.478896561774306,
+        "Bias": 0.3977264734972639
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.808365898774523,
+        "RMSE": 19.42122988707906,
+        "Bias": -0.04150551940455593
+      },
+      "objective": 18.543356429124167,
+      "positionsMAE": 2.3913846801346783,
+      "overtakesMAE": 2.5244255050505044,
+      "qualifyingMAE": 0.9454292929292931,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.643039746571919,
+        "RMSE": 14.485321498351036,
+        "Bias": 0.3615569659215055
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.806660301131439,
+        "RMSE": 19.44236087576257,
+        "Bias": -0.11384453455607123
+      },
+      "objective": 18.546369897137637,
+      "positionsMAE": 2.3752609427609417,
+      "overtakesMAE": 2.563779461279461,
+      "qualifyingMAE": 0.9454292929292931,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.604703434911587,
+        "RMSE": 14.41184852849864,
+        "Bias": 0.468709743699284
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.890696689592863,
+        "RMSE": 19.3379186506269,
+        "Bias": -0.1831753426368787
+      },
+      "objective": 18.550051779708017,
+      "positionsMAE": 2.545410353535353,
+      "overtakesMAE": 2.4795643939393948,
+      "qualifyingMAE": 1.0666645622895616,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.631825534447861,
+        "RMSE": 14.445125468908257,
+        "Bias": 0.368158396897936
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.839735848269477,
+        "RMSE": 19.319803766499273,
+        "Bias": -0.10313430728334406
+      },
+      "objective": 18.551693458582598,
+      "positionsMAE": 2.378594276094276,
+      "overtakesMAE": 2.5518413299663307,
+      "qualifyingMAE": 1.0722748316498318,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.632118637925714,
+        "RMSE": 14.446108425540572,
+        "Bias": 0.40187735733564606
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.851191218212396,
+        "RMSE": 19.31536629416971,
+        "Bias": -0.03569638640792265
+      },
+      "objective": 18.55771424703191,
+      "positionsMAE": 2.3902272727272718,
+      "overtakesMAE": 2.520488215488216,
+      "qualifyingMAE": 1.0722748316498318,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.611654192487348,
+        "RMSE": 14.415619369523064,
+        "Bias": 0.46870974369928375
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.91050940003058,
+        "RMSE": 19.344704962136266,
+        "Bias": -0.18317534263688015
+      },
+      "objective": 18.56690889250264,
+      "positionsMAE": 2.5545307239057244,
+      "overtakesMAE": 2.4795643939393948,
+      "qualifyingMAE": 1.0666645622895616,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.63031265966503,
+        "RMSE": 14.45317587109422,
+        "Bias": 0.4694194448777352
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.890843445235236,
+        "RMSE": 19.32103185326569,
+        "Bias": 0.09938778867625261
+      },
+      "objective": 18.575734382282647,
+      "positionsMAE": 2.4145328282828284,
+      "overtakesMAE": 2.4638930976430977,
+      "qualifyingMAE": 1.0722748316498318,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.619856009833375,
+        "RMSE": 14.478074446658866,
+        "Bias": 0.5582262630595536
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.920080608534894,
+        "RMSE": 19.38530652868524,
+        "Bias": 0.27949405972002395
+      },
+      "objective": 18.57989631410082,
+      "positionsMAE": 2.527348484848484,
+      "overtakesMAE": 2.425473484848484,
+      "qualifyingMAE": 0.9454292929292931,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.6243377993897,
+        "RMSE": 14.433237102974338,
+        "Bias": 0.45170795497874544
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.915361041444719,
+        "RMSE": 19.35324673182679,
+        "Bias": -0.2165917988658354
+      },
+      "objective": 18.58201832011206,
+      "positionsMAE": 2.6657659932659934,
+      "overtakesMAE": 2.4602230639730642,
+      "qualifyingMAE": 0.9732028619528613,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.620500475321592,
+        "RMSE": 14.422428795971054,
+        "Bias": 0.4687097436992833
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.948956369727545,
+        "RMSE": 19.354059407298088,
+        "Bias": -0.18317534263687874
+      },
+      "objective": 18.594978660185365,
+      "positionsMAE": 2.58562920875421,
+      "overtakesMAE": 2.4795643939393948,
+      "qualifyingMAE": 1.0666645622895616,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.641018584037225,
+        "RMSE": 14.47492450751194,
+        "Bias": 0.5584566923524831
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 15.992842603484387,
+        "RMSE": 19.357634565062604,
+        "Bias": 0.2774622836257477
+      },
+      "objective": 18.63743988577942,
+      "positionsMAE": 2.5069444444444455,
+      "overtakesMAE": 2.4208796296296287,
+      "qualifyingMAE": 1.0722748316498318,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.63815939864468,
+        "RMSE": 14.435141745300394,
+        "Bias": 0.4687097436992843
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.017910494306673,
+        "RMSE": 19.382045509620962,
+        "Bias": -0.18317534263687965
+      },
+      "objective": 18.647114645798016,
+      "positionsMAE": 2.6493160774410778,
+      "overtakesMAE": 2.4795643939393948,
+      "qualifyingMAE": 1.0666645622895616,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.720567173331716,
+        "RMSE": 14.477149568339762,
+        "Bias": 0.06432895666224646
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.02144249810113,
+        "RMSE": 19.435746058754304,
+        "Bias": -0.995042977317014
+      },
+      "objective": 18.73128842238228,
+      "positionsMAE": 2.5494044612794613,
+      "overtakesMAE": 2.4628682659932655,
+      "qualifyingMAE": 0.9814204545454545,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.727695862558695,
+        "RMSE": 14.477052773038121,
+        "Bias": 0.06567417972622028
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.033465856686984,
+        "RMSE": 19.448130745309765,
+        "Bias": -0.9923525311890674
+      },
+      "objective": 18.744428790902187,
+      "positionsMAE": 2.5486721380471384,
+      "overtakesMAE": 2.468821548821549,
+      "qualifyingMAE": 0.9814204545454545,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.728659141178229,
+        "RMSE": 14.477927832745145,
+        "Bias": 0.0792700341033244
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.04399089877453,
+        "RMSE": 19.44346030567451,
+        "Bias": -0.965160822434859
+      },
+      "objective": 18.750654590565496,
+      "positionsMAE": 2.558461700336701,
+      "overtakesMAE": 2.47049031986532,
+      "qualifyingMAE": 0.9814204545454545,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.72745006474586,
+        "RMSE": 14.443402740799776,
+        "Bias": 0.06972194908648996
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.06202330618194,
+        "RMSE": 19.40357149971225,
+        "Bias": -0.9812698291688646
+      },
+      "objective": 18.75846171783683,
+      "positionsMAE": 2.545970117845117,
+      "overtakesMAE": 2.4304840067340066,
+      "qualifyingMAE": 1.068804713804714,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.729967369464697,
+        "RMSE": 14.480266560198336,
+        "Bias": 0.11118764773968778
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.069316025037153,
+        "RMSE": 19.43490224261334,
+        "Bias": -0.9013255951621322
+      },
+      "objective": 18.764625381983272,
+      "positionsMAE": 2.5967824074074066,
+      "overtakesMAE": 2.472209595959597,
+      "qualifyingMAE": 0.9814204545454545,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.730636603495935,
+        "RMSE": 14.446343092499157,
+        "Bias": 0.07114240363194385
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.0731091647678,
+        "RMSE": 19.415938167717847,
+        "Bias": -0.9784289200779562
+      },
+      "objective": 18.767191185879835,
+      "positionsMAE": 2.5459069865319868,
+      "overtakesMAE": 2.4353956228956233,
+      "qualifyingMAE": 1.068804713804714,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.739035642221522,
+        "RMSE": 14.456424086079501,
+        "Bias": 0.08377603157807179
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.092947320906,
+        "RMSE": 19.427363728989647,
+        "Bias": -0.9531616641857015
+      },
+      "objective": 18.78550930267452,
+      "positionsMAE": 2.5565298821548814,
+      "overtakesMAE": 2.440147306397305,
+      "qualifyingMAE": 1.068804713804714,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.744523857709735,
+        "RMSE": 14.465917097041444,
+        "Bias": 0.11458306019760071
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.127608516192193,
+        "RMSE": 19.441460656271534,
+        "Bias": -0.8915476069466426
+      },
+      "objective": 18.808328115805832,
+      "positionsMAE": 2.5873968855218847,
+      "overtakesMAE": 2.440382996632999,
+      "qualifyingMAE": 1.068804713804714,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.743493835789625,
+        "RMSE": 14.498846074247837,
+        "Bias": 0.16106769824473768
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.141942287663415,
+        "RMSE": 19.46532347512428,
+        "Bias": -0.8015654941520312
+      },
+      "objective": 18.814464979621334,
+      "positionsMAE": 2.6742361111111115,
+      "overtakesMAE": 2.4957323232323243,
+      "qualifyingMAE": 0.9814204545454545,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "qualifyingNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.756915282357909,
+        "RMSE": 14.487548973005756,
+        "Bias": 0.16407327484406484
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.200580948852128,
+        "RMSE": 19.483702786279146,
+        "Bias": -0.7925671776537134
+      },
+      "objective": 18.857205756783973,
+      "positionsMAE": 2.650258838383839,
+      "overtakesMAE": 2.4545180976430983,
+      "qualifyingMAE": 1.068804713804714,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.726185639464031,
+        "RMSE": 14.70305296449782,
+        "Bias": 1.1038733590191494
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.53398061900026,
+        "RMSE": 19.859856028413482,
+        "Bias": 1.3664826960836627
+      },
+      "objective": 18.99317594896416,
+      "positionsMAE": 2.3890382996633015,
+      "overtakesMAE": 2.7096170033670033,
+      "qualifyingMAE": 1.6083606902356904,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.728101674817564,
+        "RMSE": 14.704891113510309,
+        "Bias": 1.1038733590191487
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.54512329576794,
+        "RMSE": 19.871568145997855,
+        "Bias": 1.3664826960836614
+      },
+      "objective": 19.000663322701534,
+      "positionsMAE": 2.382746212121212,
+      "overtakesMAE": 2.7096170033670033,
+      "qualifyingMAE": 1.6083606902356904,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.733100622629014,
+        "RMSE": 14.710263851630204,
+        "Bias": 1.1038733590191476
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.56682152809117,
+        "RMSE": 19.88101110084047,
+        "Bias": 1.3664826960836607
+      },
+      "objective": 19.0165113866746,
+      "positionsMAE": 2.3933480639730633,
+      "overtakesMAE": 2.7096170033670033,
+      "qualifyingMAE": 1.6083606902356904,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.73009662431251,
+        "RMSE": 14.706559401647857,
+        "Bias": 1.1038733590191492
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.586225989370632,
+        "RMSE": 19.881496279512433,
+        "Bias": 1.3664826960836596
+      },
+      "objective": 19.023209618997825,
+      "positionsMAE": 2.4107638888888894,
+      "overtakesMAE": 2.7096170033670033,
+      "qualifyingMAE": 1.6083606902356904,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "conditional": true,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.719726253942138,
+        "RMSE": 14.69953307822702,
+        "Bias": 1.1038733590191492
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.62271445804172,
+        "RMSE": 19.88964802573568,
+        "Bias": 1.3664826960836605
+      },
+      "objective": 19.031083482963,
+      "positionsMAE": 2.4553303872053878,
+      "overtakesMAE": 2.7096170033670033,
+      "qualifyingMAE": 1.6083606902356904,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.795910727128907,
+        "RMSE": 14.630268228476602,
+        "Bias": 0.5407862378070282
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.535306935936514,
+        "RMSE": 19.79987238878249,
+        "Bias": -0.044755729842267056
+      },
+      "objective": 19.063564195097165,
+      "positionsMAE": 2.526517255892256,
+      "overtakesMAE": 2.581205808080809,
+      "qualifyingMAE": 1.6015025252525263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.796219018374693,
+        "RMSE": 14.631093140879443,
+        "Bias": 0.5407862378070283
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.542823770953348,
+        "RMSE": 19.808256867114544,
+        "Bias": -0.04475572984226576
+      },
+      "objective": 19.067630903851366,
+      "positionsMAE": 2.5213152356902353,
+      "overtakesMAE": 2.581205808080809,
+      "qualifyingMAE": 1.6015025252525263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.799450289418465,
+        "RMSE": 14.63442780610071,
+        "Bias": 0.540786237807027
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.559084292838868,
+        "RMSE": 19.8173735910282,
+        "Bias": -0.04475572984226517
+      },
+      "objective": 19.078992435837897,
+      "positionsMAE": 2.5229692760942766,
+      "overtakesMAE": 2.581205808080809,
+      "qualifyingMAE": 1.6015025252525263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.79674406046224,
+        "RMSE": 14.631501793017682,
+        "Bias": 0.540786237807028
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.571291784421362,
+        "RMSE": 19.8200739624604,
+        "Bias": -0.044755729842267535
+      },
+      "objective": 19.08238995267292,
+      "positionsMAE": 2.5291561447811444,
+      "overtakesMAE": 2.581205808080809,
+      "qualifyingMAE": 1.6015025252525263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "conditional": true,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.791599544922377,
+        "RMSE": 14.624265026928173,
+        "Bias": 0.5407862378070286
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.587363405195546,
+        "RMSE": 19.824766505664858,
+        "Bias": -0.04475572984226646
+      },
+      "objective": 19.08528124752015,
+      "positionsMAE": 2.5559196127946135,
+      "overtakesMAE": 2.581205808080809,
+      "qualifyingMAE": 1.6015025252525263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.844895421568316,
+        "RMSE": 14.662691264424513,
+        "Bias": 0.3746440871336266
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.54712667137685,
+        "RMSE": 19.757572570314704,
+        "Bias": -0.09502929886583501
+      },
+      "objective": 19.11845875725674,
+      "positionsMAE": 2.390401936026937,
+      "overtakesMAE": 2.5290425084175094,
+      "qualifyingMAE": 1.6136595117845112,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.810954013969166,
+        "RMSE": 14.658057747771405,
+        "Bias": 0.5565254002649399
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.623812277437462,
+        "RMSE": 19.792443725886873,
+        "Bias": 0.26873332739679306
+      },
+      "objective": 19.1228601526879,
+      "positionsMAE": 2.452350589225589,
+      "overtakesMAE": 2.367182239057238,
+      "qualifyingMAE": 1.6136595117845112,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.844595547830936,
+        "RMSE": 14.667462728096153,
+        "Bias": 0.3795451814097211
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.56044106531625,
+        "RMSE": 19.771382790962942,
+        "Bias": -0.08522711031364648
+      },
+      "objective": 19.12481608048906,
+      "positionsMAE": 2.383752104377104,
+      "overtakesMAE": 2.5214246632996624,
+      "qualifyingMAE": 1.6136595117845112,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.82696981129895,
+        "RMSE": 14.665479641133196,
+        "Bias": 0.4713333758541657
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.599720316158,
+        "RMSE": 19.78308885095251,
+        "Bias": 0.09834927857524244
+      },
+      "objective": 19.12682996937795,
+      "positionsMAE": 2.4103430134680126,
+      "overtakesMAE": 2.4168771043771033,
+      "qualifyingMAE": 1.6136595117845112,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "conditional": false,
+      "reliability": false,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.840883952713103,
+        "RMSE": 14.670312745294863,
+        "Bias": 0.4091658674366575
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.585019137706826,
+        "RMSE": 19.78224228211267,
+        "Bias": -0.025985738259773898
+      },
+      "objective": 19.133393521566518,
+      "positionsMAE": 2.3944802188552186,
+      "overtakesMAE": 2.4870370370370374,
+      "qualifyingMAE": 1.6136595117845112,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.895603552045653,
+        "RMSE": 14.627228902759743,
+        "Bias": 0.0758199078406974
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.59553780912148,
+        "RMSE": 19.80828406580195,
+        "Bias": -0.9694011423001784
+      },
+      "objective": 19.193372456606394,
+      "positionsMAE": 2.5330597643097654,
+      "overtakesMAE": 2.3695770202020205,
+      "qualifyingMAE": 1.605126262626263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.05,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.89491805120391,
+        "RMSE": 14.62844943614449,
+        "Bias": 0.07729139353093328
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.604137346158527,
+        "RMSE": 19.818496767327925,
+        "Bias": -0.9664581709197073
+      },
+      "objective": 19.19698672428317,
+      "positionsMAE": 2.527478956228956,
+      "overtakesMAE": 2.37128367003367,
+      "qualifyingMAE": 1.605126262626263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.5,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.88345348787489,
+        "RMSE": 14.622870102413675,
+        "Bias": 0.16252550548379494
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.644720316157997,
+        "RMSE": 19.84051644413882,
+        "Bias": -0.795989947013982
+      },
+      "objective": 19.20581364595389,
+      "positionsMAE": 2.5652735690235686,
+      "overtakesMAE": 2.3655829124579144,
+      "qualifyingMAE": 1.605126262626263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.15,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.896253804570916,
+        "RMSE": 14.631375107854382,
+        "Bias": 0.0882599330932233
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.620230126172203,
+        "RMSE": 19.82815919512213,
+        "Bias": -0.9445210917951273
+      },
+      "objective": 19.20636886765702,
+      "positionsMAE": 2.529166666666667,
+      "overtakesMAE": 2.3724389730639737,
+      "qualifyingMAE": 1.605126262626263,
+      "eligible": false
+    },
+    {
+      "name": "grid-relative-progress",
+      "gridRelative": true,
+      "raceNoise": 0.3,
+      "conditional": false,
+      "reliability": true,
+      "DRIVER": {
+        "n": 132,
+        "MAE": 10.89207459477724,
+        "RMSE": 14.629629589199428,
+        "Bias": 0.11629707534911547
+      },
+      "CONSTRUCTOR": {
+        "n": 66,
+        "MAE": 16.629635639640213,
+        "RMSE": 19.8333134819889,
+        "Bias": -0.8884468072833431
+      },
+      "objective": 19.20689241459735,
+      "positionsMAE": 2.538825757575758,
+      "overtakesMAE": 2.367647306397307,
+      "qualifyingMAE": 1.605126262626263,
+      "eligible": false
+    }
+  ],
+  "metrics": [
+    {
+      "segment": "development",
+      "model": "current",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.652353348833918,
+      "RMSE": 14.569283556731317,
+      "Bias": 0.8822666670999572,
+      "positionsMAE": 2.320793350168349,
+      "overtakesMAE": 2.3444107744107745,
+      "qualifyingMAE": 1.6136595117845112
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.302824272386957,
+      "RMSE": 19.694915233864563,
+      "Bias": 0.9202158610668241
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.517236911509501,
+      "RMSE": 14.352422306927595,
+      "Bias": 0.8255389734972629,
+      "positionsMAE": 3.3298674242424258,
+      "overtakesMAE": 2.465563973063973,
+      "qualifyingMAE": 1.6136595117845112
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 15.462688986588814,
+      "RMSE": 19.27562443592066,
+      "Bias": 0.806760473861438
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.652353348833918,
+      "RMSE": 14.569283556731317,
+      "Bias": 0.8822666670999572,
+      "positionsMAE": 2.320793350168349,
+      "overtakesMAE": 2.3444107744107745,
+      "qualifyingMAE": 1.6136595117845112
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 16.302824272386957,
+      "RMSE": 19.694915233864563,
+      "Bias": 0.9202158610668241
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "type": "DRIVER",
+      "n": 132,
+      "MAE": 10.509836283492488,
+      "RMSE": 14.485216415022679,
+      "Bias": 0.9881547142380053,
+      "positionsMAE": 2.3771632996633003,
+      "overtakesMAE": 2.537228535353535,
+      "qualifyingMAE": 0.9499537037037034
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "type": "CONSTRUCTOR",
+      "n": 66,
+      "MAE": 15.657346186846597,
+      "RMSE": 19.4731518908218,
+      "Bias": 1.1384755412015044
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.274944764221484,
+      "RMSE": 15.418056061738966,
+      "Bias": -0.21574891210826666,
+      "positionsMAE": 2.504199494949496,
+      "overtakesMAE": 3.8543888888888898,
+      "qualifyingMAE": 1.8194318181818177
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.900525438562262,
+      "RMSE": 25.430072392043776,
+      "Bias": 0.8515622511694981
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.220636507760311,
+      "RMSE": 15.265612153759077,
+      "Bias": -0.29262643736079214,
+      "positionsMAE": 3.5167045454545454,
+      "overtakesMAE": 4.046914141414141,
+      "qualifyingMAE": 1.8194318181818177
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.58529576591086,
+      "RMSE": 25.172232285777184,
+      "Bias": 0.6978072006644472
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.274944764221484,
+      "RMSE": 15.418056061738966,
+      "Bias": -0.21574891210826666,
+      "positionsMAE": 2.504199494949496,
+      "overtakesMAE": 3.8543888888888898,
+      "qualifyingMAE": 1.8194318181818177
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.900525438562262,
+      "RMSE": 25.430072392043776,
+      "Bias": 0.8515622511694981
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "type": "DRIVER",
+      "n": 110,
+      "MAE": 11.178326937938621,
+      "RMSE": 15.277162752583274,
+      "Bias": -0.1425910838254389,
+      "positionsMAE": 2.5789595959595943,
+      "overtakesMAE": 4.04279797979798,
+      "qualifyingMAE": 1.2432499999999997
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "type": "CONSTRUCTOR",
+      "n": 55,
+      "MAE": 19.588043852034613,
+      "RMSE": 25.185927499021986,
+      "Bias": 0.9911695744018219
+    }
+  ],
+  "byRound": [
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.324515207428716,
+        "RMSE": 19.759150523877533,
+        "Bias": 6.549490299525237
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.923663194444444,
+        "RMSE": 22.21064910208241,
+        "Bias": 13.047831044823232
+      },
+      "objective": 25.28634680465094,
+      "positionsMAE": 2.8187626262626257,
+      "overtakesMAE": 2.999330808080808,
+      "qualifyingMAE": 1.5667045454545454
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.894927261616855,
+        "RMSE": 15.395229987004772,
+        "Bias": 3.124176946113822
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.173049439709594,
+        "RMSE": 21.52068691650107,
+        "Bias": 5.73026248816288
+      },
+      "objective": 18.98145198147165,
+      "positionsMAE": 2.356616161616161,
+      "overtakesMAE": 1.8509722222222222,
+      "qualifyingMAE": 1.8641287878787878
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.19330782320401,
+        "RMSE": 10.985910377836342,
+        "Bias": 1.5021878522633485
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.320092674794823,
+        "RMSE": 16.476349229193215,
+        "Bias": -0.20153135357481214
+      },
+      "objective": 14.353354160601423,
+      "positionsMAE": 1.475656565656566,
+      "overtakesMAE": 2.0173106060606063,
+      "qualifyingMAE": 1.4878661616161617
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.89507471136294,
+        "RMSE": 14.744058642411769,
+        "Bias": -6.334154408630994
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.546364684442082,
+        "RMSE": 21.21794809634697,
+        "Bias": -14.337022883867974
+      },
+      "objective": 21.66825705358398,
+      "positionsMAE": 3.4249116161616158,
+      "overtakesMAE": 2.7534722222222223,
+      "qualifyingMAE": 1.6705934343434343
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.258915997506033,
+        "RMSE": 13.39760772585556,
+        "Bias": -0.0028809368089562307
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.72160741632635,
+        "RMSE": 18.07510004177661,
+        "Bias": 1.7414010820485124
+      },
+      "objective": 17.11971970566921,
+      "positionsMAE": 2.1330555555555555,
+      "overtakesMAE": 2.3143560606060607,
+      "qualifyingMAE": 1.6173358585858586
+    },
+    {
+      "segment": "development",
+      "model": "current",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.34737909188495,
+        "RMSE": 11.339030800910407,
+        "Bias": 0.45478025013728407
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.132168224604444,
+        "RMSE": 17.95841225328468,
+        "Bias": -0.45964521119088886
+      },
+      "objective": 15.41346320418717,
+      "positionsMAE": 1.7157575757575758,
+      "overtakesMAE": 2.131022727272727,
+      "qualifyingMAE": 1.4753282828282828
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.118369374095382,
+        "RMSE": 19.70977478311839,
+        "Bias": 6.507561637909075
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.775702335858583,
+        "RMSE": 22.62177998205989,
+        "Bias": 12.96397372159091
+      },
+      "objective": 25.00622054202467,
+      "positionsMAE": 3.84330808080808,
+      "overtakesMAE": 3.0559848484848477,
+      "qualifyingMAE": 1.5667045454545454
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.656739373819422,
+        "RMSE": 15.091471224344179,
+        "Bias": 3.0767432339926093
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.75641571969697,
+        "RMSE": 20.686176403832462,
+        "Bias": 5.635395063920455
+      },
+      "objective": 18.034947233667907,
+      "positionsMAE": 3.8555303030303034,
+      "overtakesMAE": 2.0548484848484843,
+      "qualifyingMAE": 1.8641287878787878
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 7.894773034546542,
+        "RMSE": 10.336960470039413,
+        "Bias": 1.4525161350916311
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 10.648108378708965,
+        "RMSE": 14.662757380652526,
+        "Bias": -0.30087478791824473
+      },
+      "objective": 13.218827223901025,
+      "positionsMAE": 2.5424999999999995,
+      "overtakesMAE": 2.4154671717171716,
+      "qualifyingMAE": 1.4878661616161617
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.088097995245779,
+        "RMSE": 14.589523444783175,
+        "Bias": -6.3983273884289735
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.464887411714802,
+        "RMSE": 21.04565003898398,
+        "Bias": -14.465368843463937
+      },
+      "objective": 21.82054170110318,
+      "positionsMAE": 4.418497474747475,
+      "overtakesMAE": 2.8806944444444444,
+      "qualifyingMAE": 1.6705934343434343
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.141000858116067,
+        "RMSE": 13.168784401232443,
+        "Bias": -0.06765366408168437
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.668185699154629,
+        "RMSE": 17.695914400901337,
+        "Bias": 1.611855627503059
+      },
+      "objective": 16.475093707693382,
+      "positionsMAE": 2.76270202020202,
+      "overtakesMAE": 2.111830808080808,
+      "qualifyingMAE": 1.6173358585858586
+    },
+    {
+      "segment": "development",
+      "model": "previous-race-pace",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.204440833233827,
+        "RMSE": 11.251693296154146,
+        "Bias": 0.3823938865009204
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 13.462834374398897,
+        "RMSE": 17.84864517405943,
+        "Bias": -0.6044179384636146
+      },
+      "objective": 14.935858020433276,
+      "positionsMAE": 2.5566666666666666,
+      "overtakesMAE": 2.2745580808080805,
+      "qualifyingMAE": 1.4753282828282828
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.324515207428716,
+        "RMSE": 19.759150523877533,
+        "Bias": 6.549490299525237
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.923663194444444,
+        "RMSE": 22.21064910208241,
+        "Bias": 13.047831044823232
+      },
+      "objective": 25.28634680465094,
+      "positionsMAE": 2.8187626262626257,
+      "overtakesMAE": 2.999330808080808,
+      "qualifyingMAE": 1.5667045454545454
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.894927261616855,
+        "RMSE": 15.395229987004772,
+        "Bias": 3.124176946113822
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.173049439709594,
+        "RMSE": 21.52068691650107,
+        "Bias": 5.73026248816288
+      },
+      "objective": 18.98145198147165,
+      "positionsMAE": 2.356616161616161,
+      "overtakesMAE": 1.8509722222222222,
+      "qualifyingMAE": 1.8641287878787878
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.19330782320401,
+        "RMSE": 10.985910377836342,
+        "Bias": 1.5021878522633485
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 12.320092674794823,
+        "RMSE": 16.476349229193215,
+        "Bias": -0.20153135357481214
+      },
+      "objective": 14.353354160601423,
+      "positionsMAE": 1.475656565656566,
+      "overtakesMAE": 2.0173106060606063,
+      "qualifyingMAE": 1.4878661616161617
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.89507471136294,
+        "RMSE": 14.744058642411769,
+        "Bias": -6.334154408630994
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.546364684442082,
+        "RMSE": 21.21794809634697,
+        "Bias": -14.337022883867974
+      },
+      "objective": 21.66825705358398,
+      "positionsMAE": 3.4249116161616158,
+      "overtakesMAE": 2.7534722222222223,
+      "qualifyingMAE": 1.6705934343434343
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.258915997506033,
+        "RMSE": 13.39760772585556,
+        "Bias": -0.0028809368089562307
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.72160741632635,
+        "RMSE": 18.07510004177661,
+        "Bias": 1.7414010820485124
+      },
+      "objective": 17.11971970566921,
+      "positionsMAE": 2.1330555555555555,
+      "overtakesMAE": 2.3143560606060607,
+      "qualifyingMAE": 1.6173358585858586
+    },
+    {
+      "segment": "development",
+      "model": "selected-with-component-gate",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.34737909188495,
+        "RMSE": 11.339030800910407,
+        "Bias": 0.45478025013728407
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.132168224604444,
+        "RMSE": 17.95841225328468,
+        "Bias": -0.45964521119088886
+      },
+      "objective": 15.41346320418717,
+      "positionsMAE": 1.7157575757575758,
+      "overtakesMAE": 2.131022727272727,
+      "qualifyingMAE": 1.4753282828282828
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 6,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 15.227261419549926,
+        "RMSE": 19.97901432182482,
+        "Bias": 6.887842572252509
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 20.61825284090909,
+        "RMSE": 23.49829518944034,
+        "Bias": 13.719403014520202
+      },
+      "objective": 25.536387840004473,
+      "positionsMAE": 2.897689393939394,
+      "overtakesMAE": 4.416363636363637,
+      "qualifyingMAE": 1.0896338383838384
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 7,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.663479809761718,
+        "RMSE": 15.267084669035253,
+        "Bias": 3.2416169713663465
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.020375335385104,
+        "RMSE": 20.794879031465136,
+        "Bias": 5.978343296243687
+      },
+      "objective": 18.17366747745427,
+      "positionsMAE": 2.3047979797979794,
+      "overtakesMAE": 2.118775252525252,
+      "qualifyingMAE": 1.059166666666667
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 8,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 7.884662554748562,
+        "RMSE": 10.512880542964956,
+        "Bias": 1.5678665138795103
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 10.618323025173613,
+        "RMSE": 14.773634904802112,
+        "Bias": -0.060091959635416844
+      },
+      "objective": 13.193824067335369,
+      "positionsMAE": 1.6498106060606061,
+      "overtakesMAE": 1.9245580808080809,
+      "qualifyingMAE": 0.7949621212121213
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 9,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.018792439690223,
+        "RMSE": 14.644611470465517,
+        "Bias": -6.2890281460047275
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 19.497785138987528,
+        "RMSE": 21.051138887284058,
+        "Bias": -14.240791823261919
+      },
+      "objective": 21.767685009183985,
+      "positionsMAE": 3.4055429292929302,
+      "overtakesMAE": 2.550593434343434,
+      "qualifyingMAE": 0.7577525252525252
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 10,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.115270164172701,
+        "RMSE": 13.330019180168376,
+        "Bias": 0.0362762601607401
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.678640244609177,
+        "RMSE": 17.505215246221002,
+        "Bias": 1.832171284068714
+      },
+      "objective": 16.45459028647729,
+      "positionsMAE": 2.2431565656565655,
+      "overtakesMAE": 2.017651515151515,
+      "qualifyingMAE": 1.0366035353535352
+    },
+    {
+      "segment": "development",
+      "model": "best-aggregate-diagnostic",
+      "round": 11,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.149551313031806,
+        "RMSE": 11.135949272598348,
+        "Bias": 0.48435411377364734
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 13.510700536015058,
+        "RMSE": 17.96612643465802,
+        "Bias": -0.3981805647262423
+      },
+      "objective": 14.904901581039335,
+      "positionsMAE": 1.7619823232323233,
+      "overtakesMAE": 2.1954292929292936,
+      "qualifyingMAE": 0.9616035353535355
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.22621064908286,
+        "RMSE": 14.35161693478796,
+        "Bias": 1.3529346388526187
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.03491040933012,
+        "RMSE": 21.13812132738182,
+        "Bias": 5.928777770899762
+      },
+      "objective": 17.74366585374792,
+      "positionsMAE": 1.7842424242424244,
+      "overtakesMAE": 1.8353282828282835,
+      "qualifyingMAE": 1.4961237373737375
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.85518901665575,
+        "RMSE": 18.87535488691337,
+        "Bias": -7.146137846678767
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.97166925177429,
+        "RMSE": 29.360167929892704,
+        "Bias": -11.09207197485548
+      },
+      "objective": 25.341023642542893,
+      "positionsMAE": 3.060568181818182,
+      "overtakesMAE": 7.900833333333333,
+      "qualifyingMAE": 1.9669823232323231
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.213136862282415,
+        "RMSE": 12.598965723251133,
+        "Bias": 5.564962191545773
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.03810291842981,
+        "RMSE": 19.366126905331253,
+        "Bias": 12.788794819363439
+      },
+      "objective": 16.23218832149732,
+      "positionsMAE": 1.0762373737373738,
+      "overtakesMAE": 2.590782828282828,
+      "qualifyingMAE": 1.836502525252525
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.284195264963275,
+        "RMSE": 16.160203140625534,
+        "Bias": 3.253126247819536
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.82335386951012,
+        "RMSE": 26.301295555474557,
+        "Bias": 8.012674081694298
+      },
+      "objective": 22.695872199718337,
+      "positionsMAE": 3.0144444444444445,
+      "overtakesMAE": 2.1118181818181823,
+      "qualifyingMAE": 2.121224747474748
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "current",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.79599202812314,
+        "RMSE": 14.36830644240547,
+        "Bias": -4.103629792080493
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.634590743766964,
+        "RMSE": 29.288193115835973,
+        "Bias": -11.380363441254529
+      },
+      "objective": 24.11328740000662,
+      "positionsMAE": 3.5855050505050503,
+      "overtakesMAE": 4.833181818181819,
+      "qualifyingMAE": 1.6763257575757573
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.793313735605492,
+        "RMSE": 13.923839721028624,
+        "Bias": 1.2830451186505984
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.43552688386705,
+        "RMSE": 20.171718136129495,
+        "Bias": 5.788998730495723
+      },
+      "objective": 17.01107717753902,
+      "positionsMAE": 2.9243939393939384,
+      "overtakesMAE": 1.855542929292929,
+      "qualifyingMAE": 1.4961237373737375
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.722691985236388,
+        "RMSE": 18.539220445626317,
+        "Bias": -7.21848948809291
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 25.028152837632884,
+        "RMSE": 29.005969878030292,
+        "Bias": -11.236775257683762
+      },
+      "objective": 25.23676840405283,
+      "positionsMAE": 3.5007196969696968,
+      "overtakesMAE": 8.268042929292932,
+      "qualifyingMAE": 1.9669823232323231
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.248605353921374,
+        "RMSE": 12.679484860541931,
+        "Bias": 5.489210928919508
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.644958979035868,
+        "RMSE": 19.37165874071587,
+        "Bias": 12.637292294110914
+      },
+      "objective": 16.07108484343931,
+      "positionsMAE": 2.3219191919191915,
+      "overtakesMAE": 2.5176767676767673,
+      "qualifyingMAE": 1.836502525252525
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.544009360157618,
+        "RMSE": 16.10248176116013,
+        "Bias": 3.171241778122567
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.881525900403055,
+        "RMSE": 26.517871316363657,
+        "Bias": 7.848905142300359
+      },
+      "objective": 22.984772310359148,
+      "positionsMAE": 4.323156565656564,
+      "overtakesMAE": 2.560568181818182,
+      "qualifyingMAE": 2.121224747474748
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "previous-race-pace",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.794562103880715,
+        "RMSE": 14.406918811437594,
+        "Bias": -4.1881405244037255
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 23.936314228615455,
+        "RMSE": 29.008675057626878,
+        "Bias": -11.549384905900995
+      },
+      "objective": 23.762719218188444,
+      "positionsMAE": 4.513333333333334,
+      "overtakesMAE": 5.0327398989899,
+      "qualifyingMAE": 1.6763257575757573
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 10.22621064908286,
+        "RMSE": 14.35161693478796,
+        "Bias": 1.3529346388526187
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.03491040933012,
+        "RMSE": 21.13812132738182,
+        "Bias": 5.928777770899762
+      },
+      "objective": 17.74366585374792,
+      "positionsMAE": 1.7842424242424244,
+      "overtakesMAE": 1.8353282828282835,
+      "qualifyingMAE": 1.4961237373737375
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.85518901665575,
+        "RMSE": 18.87535488691337,
+        "Bias": -7.146137846678767
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.97166925177429,
+        "RMSE": 29.360167929892704,
+        "Bias": -11.09207197485548
+      },
+      "objective": 25.341023642542893,
+      "positionsMAE": 3.060568181818182,
+      "overtakesMAE": 7.900833333333333,
+      "qualifyingMAE": 1.9669823232323231
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.213136862282415,
+        "RMSE": 12.598965723251133,
+        "Bias": 5.564962191545773
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 16.03810291842981,
+        "RMSE": 19.366126905331253,
+        "Bias": 12.788794819363439
+      },
+      "objective": 16.23218832149732,
+      "positionsMAE": 1.0762373737373738,
+      "overtakesMAE": 2.590782828282828,
+      "qualifyingMAE": 1.836502525252525
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.284195264963275,
+        "RMSE": 16.160203140625534,
+        "Bias": 3.253126247819536
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.82335386951012,
+        "RMSE": 26.301295555474557,
+        "Bias": 8.012674081694298
+      },
+      "objective": 22.695872199718337,
+      "positionsMAE": 3.0144444444444445,
+      "overtakesMAE": 2.1118181818181823,
+      "qualifyingMAE": 2.121224747474748
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "selected-with-component-gate",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.79599202812314,
+        "RMSE": 14.36830644240547,
+        "Bias": -4.103629792080493
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.634590743766964,
+        "RMSE": 29.288193115835973,
+        "Bias": -11.380363441254529
+      },
+      "objective": 24.11328740000662,
+      "positionsMAE": 3.5855050505050503,
+      "overtakesMAE": 4.833181818181819,
+      "qualifyingMAE": 1.6763257575757573
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "round": 12,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 9.737196311363068,
+        "RMSE": 14.005769096565148,
+        "Bias": 1.4051726439031236
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 14.28923269194786,
+        "RMSE": 20.269558438157606,
+        "Bias": 6.01493938706138
+      },
+      "objective": 16.881812657336997,
+      "positionsMAE": 1.8540782828282831,
+      "overtakesMAE": 1.8693939393939396,
+      "qualifyingMAE": 0.8340909090909091
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "round": 13,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 12.701290658069892,
+        "RMSE": 18.52469852414758,
+        "Bias": -7.1193038820323045
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.856625059855105,
+        "RMSE": 28.82330355288716,
+        "Bias": -11.051257580916088
+      },
+      "objective": 25.129603187997446,
+      "positionsMAE": 3.247954545454546,
+      "overtakesMAE": 7.947739898989898,
+      "qualifyingMAE": 1.3872727272727277
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "round": 14,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 8.15913118046423,
+        "RMSE": 12.622801961084845,
+        "Bias": 5.711871913767993
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 15.861148904604141,
+        "RMSE": 19.482582509552014,
+        "Bias": 13.072500627444247
+      },
+      "objective": 16.0897056327663,
+      "positionsMAE": 1.2766792929292927,
+      "overtakesMAE": 3.2824368686868683,
+      "qualifyingMAE": 1.3208080808080804
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "round": 15,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 13.430271986420246,
+        "RMSE": 16.09533300560727,
+        "Bias": 3.3327948084255965
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 18.795092819594974,
+        "RMSE": 26.491916272110352,
+        "Bias": 8.175300344320561
+      },
+      "objective": 22.827818396217733,
+      "positionsMAE": 3.017550505050505,
+      "overtakesMAE": 2.3564393939393935,
+      "qualifyingMAE": 1.4893181818181818
+    },
+    {
+      "segment": "previously-inspected",
+      "model": "best-aggregate-diagnostic",
+      "round": 16,
+      "DRIVER": {
+        "n": 22,
+        "MAE": 11.863744553375664,
+        "RMSE": 14.465047927247793,
+        "Bias": -4.043490903191604
+      },
+      "CONSTRUCTOR": {
+        "n": 11,
+        "MAE": 24.138119784171007,
+        "RMSE": 29.131155897770142,
+        "Bias": -11.255634905900992
+      },
+      "objective": 23.932804445461166,
+      "positionsMAE": 3.498535353535354,
+      "overtakesMAE": 4.7579797979797975,
+      "qualifyingMAE": 1.1847601010101012
+    }
+  ],
+  "quoteFieldValidity": {
+    "status": "Historical2026 price-dependent comparisons require recomputation",
+    "usedField": "OldPlayerValue",
+    "correctedField": "Value",
+    "audit": "docs/official-price-field-2026-audit.json",
+    "note": "Original numbers retained as a record; not current accuracy evidence. Price-free candidate-only calculations may be unchanged, but price-dependent references and blends are affected. Frozen protocols are not rewritten."
+  }
+}

@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import totals from '../src/data/fantasy-totals-2025.json';
+import priceData from '../src/data/fantasy-prices-2025.json';
+import {replayProductionHistory,type ReplayScore} from '../src/lib/production-history-replay';
+import type {ArchivedFantasyPrice} from '../src/lib/fantasy-price-archive';
+const history=totals.observations.map(r=>({...r,season:2025})) as ReplayScore[],prices=priceData.observations as ArchivedFantasyPrice[];
+test('target and future labels and later quotes cannot influence replay predictions',()=>{
+ const options={season:2025,round:9,sprint:false};const reference=replayProductionHistory(history,prices,options);
+ const changed=history.map(r=>r.round>=9?{...r,actualPoints:99999}:r),quotes=prices.map(r=>r.round>9?{...r,priceBefore:99999}:r);
+ assert.deepEqual(replayProductionHistory(changed,quotes,options),reference);
+});
+test('unrelated seasons cannot influence replay',()=>{
+ const options={season:2025,round:9,sprint:false};assert.deepEqual(replayProductionHistory([...history,...history.map(r=>({...r,season:2026,actualPoints:99999}))],prices,options),replayProductionHistory(history,prices,options));
+});
+test('cold-start coverage is explicit rather than a fabricated zero projection',()=>{
+ const rows=replayProductionHistory(history,prices,{season:2025,round:7,sprint:false});assert.equal(rows.length,30);assert.equal(rows.find(r=>r.code==='COL')?.prediction,null);assert.equal(rows.filter(r=>r.prediction!==null).length,29);
+});
+
+test('explicit completed sprint FP1 affects replay driver baseline, not constructor baseline',()=>{const options={season:2025,round:6,sprint:true};const before=replayProductionHistory(history,prices,options),after=replayProductionHistory(history,prices,{...options,practice:{isSprint:true,positions:new Map([['NOR',1]])}});assert.ok(after.find(r=>r.code==='NOR')!.baseline!>before.find(r=>r.code==='NOR')!.baseline!);for(const row of after.filter(r=>r.type==='CONSTRUCTOR'))assert.equal(row.baseline,before.find(r=>r.code===row.code)!.baseline)});
+
+import components from '../src/data/component-history-2025.json';
+import {calibrateComponents,type ComponentObservation} from '../src/lib/component-calibration';
+test('future component labels cannot influence a calibrated shared replay',()=>{const observed=components.observations as ComponentObservation[],changed=observed.map(r=>r.round>=9?{...r,pitPoints:99999,race:r.race?{...r.race,failed:true,overtakes:99999}:undefined}:r),options={season:2025,round:9,sprint:false};const first=calibrateComponents(observed,options),second=calibrateComponents(changed,options);assert.deepEqual(second,first);assert.deepEqual(replayProductionHistory(history,prices,{...options,componentOverrides:{calibration:first}}),replayProductionHistory(history,prices,{...options,componentOverrides:{calibration:second}}))});

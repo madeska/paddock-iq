@@ -17,6 +17,7 @@ export type DriverRaceInput={
 };
 
 export type DriverSprintInput={
+ season?:number;
  startPosition:number|null;
  finishPosition:number|null;
  classified:boolean;
@@ -46,18 +47,23 @@ function positionsDelta(start:number|null,finish:number|null,classified:boolean)
  return start-finish;
 }
 
+export function sprintNotClassifiedPenalty(season=2026){
+ if(season===2023||season===2024||season===2025)return 20;
+ if(season===2026)return 10;
+ throw Error('Unsupported Sprint scoring season');
+}
+
 export function sprintDriverPoints(input:DriverSprintInput){
- if(!input.classified)return -10;
- return positionalPoints(input.finishPosition,SPRINT_FINISH_POINTS)
-  +positionsDelta(input.startPosition,input.finishPosition,true)
+ const penalty=sprintNotClassifiedPenalty(input.season);
+ return (input.classified?positionalPoints(input.finishPosition,SPRINT_FINISH_POINTS):-penalty)
+  +positionsDelta(input.startPosition,input.finishPosition,input.classified)
   +Math.max(0,input.overtakes)
   +(input.fastestLap?5:0);
 }
 
 export function raceDriverPoints(input:DriverRaceInput){
- if(!input.classified)return -20;
- return positionalPoints(input.finishPosition,RACE_FINISH_POINTS)
-  +positionsDelta(input.startPosition,input.finishPosition,true)
+ return (input.classified?positionalPoints(input.finishPosition,RACE_FINISH_POINTS):-20)
+  +positionsDelta(input.startPosition,input.finishPosition,input.classified)
   +Math.max(0,input.overtakes)
   +(input.fastestLap?10:0)
   +(input.driverOfTheDay?10:0);
@@ -98,7 +104,16 @@ export function pitStopTimePoints(bestStopSeconds:number|null){
  return 2;
 }
 
+/** Extra constructor penalty beyond driver totals that already contain their NC/DSQ deduction. */
+export function constructorRaceDsqExtraPenalty(season=2026){
+ if(season===2023||season===2024)return 0;
+ if(season===2025)return 10;
+ if(season===2026)return 20;
+ throw Error('Unsupported constructor scoring season');
+}
+
 export function constructorRacePoints(input:{
+ season?:number;
  driverRacePointsExcludingDotD:[number,number];
  bestPitStopSeconds:number|null;
  fastestPitStop?:boolean;
@@ -109,5 +124,5 @@ export function constructorRacePoints(input:{
   +(input.fastestPitStop?5:0)
   +(input.worldRecordPitStop?15:0);
  return input.driverRacePointsExcludingDotD[0]+input.driverRacePointsExcludingDotD[1]
-  +pit-20*Math.max(0,input.dsqDrivers??0);
+  +pit-constructorRaceDsqExtraPenalty(input.season)*Math.max(0,input.dsqDrivers??0);
 }

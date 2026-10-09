@@ -1,7 +1,8 @@
+import {EXCLUDED_SCORE_SOURCE} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
-import { applyPracticePositionModifier, getPracticeSnapshot } from '../../../../lib/openf1-weekend';
+import { applyPracticePositionModifier, getPracticeSnapshot, getWeekendLock } from '../../../../lib/openf1-weekend';
 
 const EWMA_ALPHA=.25;
 const RIDGE_LAMBDA=50;
@@ -56,13 +57,14 @@ export async function GET(request:NextRequest){
   const length=Math.max(1,Math.min(3,Number(request.nextUrl.searchParams.get('length')??3)));
 
   const startGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:startRound}}});
-  const practiceSnapshot=await getPracticeSnapshot(season,startGp?.deadline??null);
+  const lock=startGp?await getWeekendLock(season,startRound,startGp.name,startGp.deadline):null;
+  const practiceSnapshot=await getPracticeSnapshot(season,lock?.deadline??null);
 
   const assets=await prisma.asset.findMany({
    where:{season,active:true},
    include:{
     prices:{include:{grandPrix:true}},
-    fantasyScores:{where:{grandPrix:{round:{lt:startRound}}},include:{grandPrix:true}}
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:startRound}}},include:{grandPrix:true}}
    }
   });
 
@@ -105,7 +107,7 @@ export async function GET(request:NextRequest){
       raw=constructorXPts(projectedHistory);
     }
     if(raw==null)break;
-    if(step===0&&asset.type==='DRIVER'&&practiceSnapshot&&!practiceSnapshot.isSprint){
+    if(step===0&&asset.type==='DRIVER'&&practiceSnapshot){
       const position=practiceSnapshot.positions.get(asset.code);
       if(position!=null)raw=applyPracticePositionModifier(raw,position);
     }

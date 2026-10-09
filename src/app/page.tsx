@@ -1,12 +1,14 @@
 'use client';
 
-import {useEffect,useMemo,useState} from 'react';
+import {useEffect,useMemo,useState,useRef} from 'react';
+import {prepareForecast} from '../lib/forecast-preparation';
+import type {WeekendImpact} from '../lib/weekend-impact';
 import styles from './market-dashboard.module.css';
 
 type Score={round:number;points:number;name:string};
 type MarketAsset={
  code:string;name:string;type:'DRIVER'|'CONSTRUCTOR';price:number|null;
- expectedPoints:number|null;boostExpectedPoints?:number|null;expectedDelta:number|null;horizonPoints?:number[];
+ actualPoints?:number|null;actualPointsUpdatedAt?:string|null;expectedPoints:number|null;boostExpectedPoints?:number|null;expectedDelta:number|null;horizonPoints?:number[];
  probabilityRise:number|null;probabilityFlat:number|null;probabilityFall:number|null;
  probabilityMaxRise:number|null;probabilitySmallRise:number|null;
  probabilitySmallFall:number|null;probabilityMaxFall:number|null;
@@ -15,7 +17,7 @@ type MarketAsset={
  confidence:number|null;modelVersion:string|null;recentFantasyScores:Score[];
 };
 type MarketResponse={
- season:number;round:number;grandPrix:string;complete:boolean;incomplete:string[];
+ season:number;round:number;seasonCompleted?:boolean;grandPrix:string;complete:boolean;incomplete:string[];
  currentModels:string[];assets:MarketAsset[];
 };
 type BuilderMode='points'|'balanced'|'budget'|'custom'|'horizon';
@@ -97,6 +99,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
       <th>R{round-2}<small>Pts</small></th>
       <th>R{round-1}<small>Pts</small></th>
       <th>R{round}<small>xPts</small></th>
+      <th>R{round}<small>Official pts</small></th>
       {buckets.map(b=><th key={b} className={b<0?styles.negHead:b>0?styles.posHead:styles.flatHead}>{b>0?'+':''}{b.toFixed(1)}<small>Odds (pts)</small></th>)}
       <th>R{round}<small>xΔ$</small></th>
      </tr>
@@ -110,6 +113,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td>{scoreFor(asset,round-2)??'—'}</td>
        <td>{scoreFor(asset,round-1)??'—'}</td>
        <td className={styles.xpts}>{asset.expectedPoints==null?'—':asset.expectedPoints.toFixed(1)}</td>
+       <td title={asset.actualPointsUpdatedAt?'Official points saved '+new Date(asset.actualPointsUpdatedAt).toLocaleString():undefined}>{asset.actualPoints??'—'}</td>
        {buckets.map(b=>{
         const p=probs.get(b)??0;
         const t=thresholdText(asset,b);
@@ -118,7 +122,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td className={(asset.expectedDelta??0)>=0?styles.deltaPos:styles.deltaNeg}>{delta(asset.expectedDelta)}</td>
       </tr>
      })}
-     {!filtered.length&&<tr><td colSpan={buckets.length+6} className={styles.empty}>No matching assets</td></tr>}
+     {!filtered.length&&<tr><td colSpan={buckets.length+7} className={styles.empty}>No matching assets</td></tr>}
     </tbody>
    </table>
   </div>
@@ -262,30 +266,55 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
- const season=2026,round=17;
+ const [weekendContext,setWeekendContext]=useState<{weekendImpact?:WeekendImpact[];forecastAt?:string;practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
+ const [scoresStatus,setScoresStatus]=useState('');
+ const [scoresLoading,setScoresLoading]=useState(false);
+ const scoresBusy=useRef(false);
+ const roundRef=useRef(17);
+ const season=2026,round=data?.round??roundRef.current;
+ const completedRef=useRef(false);
+ const preparationPending=useRef(false);
 
  async function load(){
   setStatus('Loading market…');
   try{
-   const r=await fetch('/api/market?season='+season+'&round='+round,{cache:'no-store'});
+   const r=await fetch('/api/market?season='+season,{cache:'no-store'});
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Market unavailable');
+   if(roundRef.current!==j.round){setWeekendContext(null);setBuilderTeams([])}
+   roundRef.current=j.round;completedRef.current=Boolean(j.seasonCompleted);
    setData(j);
-   setStatus(j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
+   setStatus(j.seasonCompleted?'Season completed. Final official results are available.':j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
+   return j as MarketResponse;
   }catch(e){setStatus(e instanceof Error?e.message:'Market unavailable')}
  }
 
- async function refresh(){
+ async function refresh(targetRound=roundRef.current){
+  if(completedRef.current)return;
   setStatus('Refreshing xPts + price probabilities…');
   try{
-   const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round})});
+   const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:targetRound})});
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
-   await load();
+   setWeekendContext(j);
+   return await load();
   }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
  }
 
- useEffect(()=>{load()},[]);
+ async function updateOfficialScores(){
+  if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
+  try{if(preparationPending.current){preparationPending.current=!(await prepareForecast(load,refresh));if(preparationPending.current)return;}const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
+   setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
+   if(result.forecast?.completed){completedRef.current=true;await load()}
+   else if(result.forecast?.round!==undefined&&result.forecast.round!==roundRef.current){
+    roundRef.current=result.forecast.round;setWeekendContext(null);setBuilderTeams([]);setData(null);
+    setScoresStatus('Results saved. Preparing forecast for R'+result.forecast.round+'…');
+    preparationPending.current=!(await prepareForecast(load,refresh));
+    setScoresStatus(preparationPending.current?'Results saved. Next forecast is not ready; retrying automatically.':'Official results saved. Forecast round: R'+result.forecast.round);
+   }else if(result.saved>0)await load();
+  }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
+ }
+ useEffect(()=>{let mounted=true;void load().then(async market=>{if(!mounted)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
@@ -352,7 +381,7 @@ export default function Home(){
  return <main className={styles.page}>
   <nav className={styles.topbar}>
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={refresh}>Refresh projections</button></div>
+   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={()=>refresh()} disabled={Boolean(data?.seasonCompleted)}>Refresh projections</button><button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></div>
   </nav>
 
   <header className={styles.hero}>
@@ -369,6 +398,25 @@ export default function Home(){
   </header>
 
   <div className={styles.status}>{status||<>Market complete · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+
+  {scoresStatus&&<div className={styles.status} role="status">{scoresStatus}</div>}
+
+  {weekendContext&&<section className={styles.teamBuilder} aria-label="Weekend information">
+   <h2>Before team lock</h2>
+   <p>{weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':'No completed practice data available'}</p>
+   {Boolean(weekendContext.weekendImpact?.length)&&<details>
+    <summary>Practice / Sprint Qualifying impact on xPts</summary>
+    <p>Compared with the same forecast without practice or Sprint Qualifying. History, prices and applied penalties are identical.</p>
+    {weekendContext.forecastAt&&<p>Calculated: {new Date(weekendContext.forecastAt).toLocaleString()}</p>}
+    <div className={styles.weekendImpact}><table><thead><tr><th>Asset</th><th>Without sessions</th><th>With sessions</th><th>Change</th></tr></thead><tbody>
+     {weekendContext.weekendImpact!.map(row=><tr key={row.code}><th>{row.code}</th><td>{row.before.toFixed(1)}</td><td>{row.after.toFixed(1)}</td><td>{row.change>0?'+':''}{row.change.toFixed(1)}</td></tr>)}
+    </tbody></table></div>
+   </details>}
+   <p>{weekendContext.weekendNews.coverage}</p>
+   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' · '+(m.reason??('+'+m.places+' grid places')):(m.reason??'Needs confirmation; not applied')}</p>)}
+   {weekendContext.weekendNews.mentions.length===0&&<p>No applicable penalty found in the checked headlines.</p>}
+   {weekendContext.weekendNews.errors.map(e=><p key={e}>{e}</p>)}
+  </section>}
 
   <section className={styles.searchRow}>
    <label>Find a driver…<input value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="e.g. VER or Norris"/></label>

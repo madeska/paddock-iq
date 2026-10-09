@@ -1,0 +1,15 @@
+import type {ReplayScore} from './production-history-replay';import type {ArchivedFantasyPrice} from './fantasy-price-archive';
+const aliases:Record<string,string>={ALF:'SAU',ALT:'RB',AST:'AMR',HAA:'HAS',RED:'RBR'},canonical=(code:string)=>aliases[code]??code;
+const disputes=[{round:11,id:'ALF'},{round:19,id:'FER'},{round:19,id:'MER'}];
+/** Independent-source preparation only. Excluded labels never become either targets or later training scores. */
+export function normalizeFantasy2023(payload:any,throughRound=23){
+ if(payload?.seasonResult?.season!==2023||!Number.isInteger(throughRound)||throughRound<1||throughRound>23)throw Error('Invalid2023 scope');
+ const scores:ReplayScore[]=[],quotes:ArchivedFantasyPrice[]=[],excluded:{round:number;code:string;reason:string}[]=[];
+ for(let round=1;round<=throughRound;round++){if(round===6)continue;const day=payload.seasonResult.raceResults[round];if(!day||!Array.isArray(day.drivers)||!Array.isArray(day.constructors))throw Error('Missing2023 round');const seen=new Set<string>(),members=new Map<string,number>();
+ for(const [type,rows] of [['DRIVER',day.drivers.filter((d:any)=>d.isActive===true)],['CONSTRUCTOR',day.constructors]] as const){if(rows.length!==(type==='DRIVER'?20:10))throw Error('Incomplete2023 roster');for(const row of rows){const code=canonical(row.abbreviation),team=type==='DRIVER'?canonical(row.constructorId):code,key=type+':'+code;if(typeof code!=='string'||!code||typeof team!=='string'||!team||seen.has(key)||typeof row.price!=='number'||!Number.isFinite(row.price)||row.price<=0)throw Error('Invalid2023 identity/quote');if(type==='DRIVER'?row.id!==row.constructorId+'_'+row.abbreviation:row.id!==row.abbreviation)throw Error('2023 ID mismatch');seen.add(key);if(type==='DRIVER')members.set(team,(members.get(team)??0)+1);quotes.push({round,code,type,team,priceBefore:row.price});
+ if(type==='CONSTRUCTOR'&&disputes.some(d=>d.round===round&&d.id===row.id)){excluded.push({round,code,reason:'Source component/total disagreement; excluded from evaluation and all later training.'});continue}
+ let total=0;for(const [phase,session] of Object.entries(row.raceResult??{}) as [string,any][]){if(!['Q','R','S'].includes(phase))throw Error('Unknown2023 scoring phase');const sum=Object.entries(session).filter(([k])=>k!=='totalPoints').reduce((n,[,v]:any)=>{if(typeof v.points!=='number'||!Number.isFinite(v.points))throw Error('Invalid2023 component');return n+v.points},0);if(sum!==session.totalPoints?.points)throw Error('2023 session mismatch');total+=sum}if(!row.raceResult?.Q||!row.raceResult?.R||!Number.isFinite(row.totalPoints)||total!==row.totalPoints)throw Error('2023 weekend mismatch');scores.push({season:2023,round,code,type,actualPoints:row.totalPoints});}}
+ for(const q of quotes.filter(q=>q.round===round&&q.type==='CONSTRUCTOR'))if(members.get(q.code)!==2)throw Error('Incomplete2023 constructor pair');
+ }
+ return {scores,quotes,excluded,calendarGap:[6],quoteTiming:'Retrospective source; not independently certified by this normalizer.'};
+}

@@ -1,0 +1,719 @@
+{
+  "note": "Exploratory reused 2026 data, not fresh evidence. Algorithm chooses model family and blend weight independently by asset type from earlier out-of-sample round forecasts only; target scores enter evaluation after selection. Starts R9 after three validation rounds. Preset four families and five weights, common seed schedule, 3×1200 simulations. This is an expanding-window past-performance policy, not a guarantee of best future accuracy. No production activation.",
+  "families": [
+    "current",
+    "classified-progress",
+    "conditional-overtakes",
+    "conditional-driver-prior"
+  ],
+  "weights": [
+    0,
+    0.1,
+    0.25,
+    0.5,
+    1
+  ],
+  "summary": [
+    {
+      "model": "current",
+      "type": "DRIVER",
+      "n": 176,
+      "MAE": 10.734511702732666,
+      "RMSE": 14.63744786987047
+    },
+    {
+      "model": "current",
+      "type": "CONSTRUCTOR",
+      "n": 88,
+      "MAE": 18.609312164520496,
+      "RMSE": 23.272439016189438
+    },
+    {
+      "model": "baseline-only",
+      "type": "DRIVER",
+      "n": 176,
+      "MAE": 10.923116428399231,
+      "RMSE": 14.715703469235903
+    },
+    {
+      "model": "baseline-only",
+      "type": "CONSTRUCTOR",
+      "n": 88,
+      "MAE": 19.129117231886603,
+      "RMSE": 24.060779040138343
+    },
+    {
+      "model": "past-selected",
+      "type": "DRIVER",
+      "n": 176,
+      "MAE": 10.610806136940186,
+      "RMSE": 14.568890058085781
+    },
+    {
+      "model": "past-selected",
+      "type": "CONSTRUCTOR",
+      "n": 88,
+      "MAE": 18.093470908472156,
+      "RMSE": 22.860426935869405
+    }
+  ],
+  "decisions": [
+    {
+      "round": 9,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 0.5,
+      "trainingRounds": [
+        6,
+        7,
+        8
+      ],
+      "MAE": 11.092391725973366
+    },
+    {
+      "round": 9,
+      "type": "CONSTRUCTOR",
+      "family": "classified-progress",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8
+      ],
+      "MAE": 14.966262626262626
+    },
+    {
+      "round": 10,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "MAE": 10.665296717171717
+    },
+    {
+      "round": 10,
+      "type": "CONSTRUCTOR",
+      "family": "classified-progress",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "MAE": 15.123756313131315
+    },
+    {
+      "round": 11,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "MAE": 10.294088383838384
+    },
+    {
+      "round": 11,
+      "type": "CONSTRUCTOR",
+      "family": "classified-progress",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "MAE": 15.105616161616163
+    },
+    {
+      "round": 12,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "MAE": 9.920993265993264
+    },
+    {
+      "round": 12,
+      "type": "CONSTRUCTOR",
+      "family": "classified-progress",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "MAE": 15.19186868686869
+    },
+    {
+      "round": 13,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "MAE": 10.17339466089466
+    },
+    {
+      "round": 13,
+      "type": "CONSTRUCTOR",
+      "family": "classified-progress",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "MAE": 15.076529581529583
+    },
+    {
+      "round": 14,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "MAE": 10.417724116161613
+    },
+    {
+      "round": 14,
+      "type": "CONSTRUCTOR",
+      "family": "conditional-driver-prior",
+      "weight": 0.5,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "MAE": 16.26593375006709
+    },
+    {
+      "round": 15,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 0.5,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "MAE": 10.227921348475752
+    },
+    {
+      "round": 15,
+      "type": "CONSTRUCTOR",
+      "family": "conditional-driver-prior",
+      "weight": 0.5,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "MAE": 16.28057969120482
+    },
+    {
+      "round": 16,
+      "type": "DRIVER",
+      "family": "conditional-overtakes",
+      "weight": 1,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "MAE": 10.502967171717172
+    },
+    {
+      "round": 16,
+      "type": "CONSTRUCTOR",
+      "family": "conditional-driver-prior",
+      "weight": 0.5,
+      "trainingRounds": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "MAE": 16.55255648196074
+    }
+  ],
+  "byRound": [
+    {
+      "round": 9,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 11.89507471136294,
+          "RMSE": 14.744058642411769
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 13.1399186387196,
+          "RMSE": 15.641077209266335
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 10.9082416769652,
+          "RMSE": 13.809654468035475
+        }
+      ]
+    },
+    {
+      "round": 9,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 19.526894987472378,
+          "RMSE": 21.201011069291503
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 22.35223203716856,
+          "RMSE": 24.34212922170611
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 15.596237373737374,
+          "RMSE": 18.24553950206407
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 9.258915997506033,
+          "RMSE": 13.39760772585556
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 9.279160723947438,
+          "RMSE": 13.24944333651699
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 8.80925505050505,
+          "RMSE": 13.39282676292049
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 15.729498830467765,
+          "RMSE": 18.081454299813142
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 14.934491706616955,
+          "RMSE": 18.080311284241922
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 15.033055555555556,
+          "RMSE": 18.45240382088685
+        }
+      ]
+    },
+    {
+      "round": 11,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 8.34737909188495,
+          "RMSE": 11.339030800910407
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 8.409834580425725,
+          "RMSE": 11.29352539614302
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 8.055517676767677,
+          "RMSE": 11.423755787208268
+        }
+      ]
+    },
+    {
+      "round": 11,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 14.12582984076606,
+          "RMSE": 17.956087961166673
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 13.566077145663174,
+          "RMSE": 18.17273262969981
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 15.623131313131314,
+          "RMSE": 19.93659928954189
+        }
+      ]
+    },
+    {
+      "round": 12,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 10.22621064908286,
+          "RMSE": 14.35161693478796
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 9.960882474610502,
+          "RMSE": 14.163260848395272
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 11.687803030303032,
+          "RMSE": 15.064452066950233
+        }
+      ]
+    },
+    {
+      "round": 12,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 15.036816974986685,
+          "RMSE": 21.149485454383022
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 15.619514609828142,
+          "RMSE": 20.636512334870723
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 14.38449494949495,
+          "RMSE": 19.8210178871867
+        }
+      ]
+    },
+    {
+      "round": 13,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 12.85518901665575,
+          "RMSE": 18.87535488691337
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 12.92681767877332,
+          "RMSE": 18.798012337275505
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 12.128030303030306,
+          "RMSE": 18.425023880809967
+        }
+      ]
+    },
+    {
+      "round": 13,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 24.95026773662278,
+          "RMSE": 29.350646135281625
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 25.508867083173808,
+          "RMSE": 29.659279305351166
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 26.33830808080808,
+          "RMSE": 30.27199990545411
+        }
+      ]
+    },
+    {
+      "round": 14,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 8.213136862282415,
+          "RMSE": 12.598965723251133
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 8.155828105938838,
+          "RMSE": 12.582915783070758
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 8.877045454545456,
+          "RMSE": 13.062612742305552
+        }
+      ]
+    },
+    {
+      "round": 14,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 16.057029686106578,
+          "RMSE": 19.388312771666772
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 16.311801233074885,
+          "RMSE": 19.71626422692406
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 16.397747220306687,
+          "RMSE": 19.8961653488996
+        }
+      ]
+    },
+    {
+      "round": 15,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 13.284195264963275,
+          "RMSE": 16.160203140625534
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 13.589041099738777,
+          "RMSE": 16.250386457137477
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 13.199937216536057,
+          "RMSE": 16.021807422393618
+        }
+      ]
+    },
+    {
+      "round": 15,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 18.825298313954562,
+          "RMSE": 26.308895679679395
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 19.33694752599254,
+          "RMSE": 26.89211354255393
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 19.00034759876403,
+          "RMSE": 26.320652611596362
+        }
+      ]
+    },
+    {
+      "round": 16,
+      "type": "DRIVER",
+      "models": [
+        {
+          "model": "current",
+          "n": 22,
+          "MAE": 11.79599202812314,
+          "RMSE": 14.36830644240547
+        },
+        {
+          "model": "baseline-only",
+          "n": 22,
+          "MAE": 11.923448125039608,
+          "RMSE": 14.43303892416649
+        },
+        {
+          "model": "past-selected",
+          "n": 22,
+          "MAE": 11.220618686868685,
+          "RMSE": 14.27215866157784
+        }
+      ]
+    },
+    {
+      "round": 16,
+      "type": "CONSTRUCTOR",
+      "models": [
+        {
+          "model": "current",
+          "n": 11,
+          "MAE": 24.62286094578717,
+          "RMSE": 29.277680231065666
+        },
+        {
+          "model": "baseline-only",
+          "n": 11,
+          "MAE": 25.403006513574812,
+          "RMSE": 31.052024823244647
+        },
+        {
+          "model": "past-selected",
+          "n": 11,
+          "MAE": 22.374445175979325,
+          "RMSE": 26.6839496692017
+        }
+      ]
+    }
+  ],
+  "intervals": [
+    {
+      "type": "DRIVER",
+      "deltaMAE": -0.1237055657924875,
+      "low": -0.5966649066909038,
+      "high": 0.44361770414530377,
+      "note": "Descriptive paired race bootstrap, does not account for adaptive research on reused data"
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "deltaMAE": -0.5158412560483329,
+      "low": -1.8017381394389702,
+      "high": 0.6093336429830751,
+      "note": "Descriptive paired race bootstrap, does not account for adaptive research on reused data"
+    }
+  ],
+  "quoteFieldValidity": {
+    "status": "Historical2026 price-dependent comparisons require recomputation",
+    "usedField": "OldPlayerValue",
+    "correctedField": "Value",
+    "audit": "docs/official-price-field-2026-audit.json",
+    "note": "Original numbers retained as a record; not current accuracy evidence. Price-free candidate-only calculations may be unchanged, but price-dependent references and blends are affected. Frozen protocols are not rewritten."
+  }
+}

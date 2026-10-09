@@ -1,0 +1,51 @@
+{
+  "version": "point-history-team-ensemble-v2",
+  "developmentSeason": 2026,
+  "developmentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "selected": {
+    "DRIVER": {
+      "alpha": 0.15,
+      "ridge": 10,
+      "sprintFactor": 1,
+      "pointWeight": 0
+    },
+    "CONSTRUCTOR": {
+      "alpha": 0.15,
+      "ridge": 10,
+      "sprintFactor": 1.3,
+      "pointWeight": 0.5
+    }
+  },
+  "selectionObjective": "per-type MAE, ties favor lower point weight",
+  "candidateCount": 90,
+  "independentSeason": 2025,
+  "independentRounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "reservedRounds": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "independentComparator": "price-free adaptation of current historical baseline and component blend; exact production comparator unavailable without historical prices",
+  "featureDefinition": "Same point-history-team-v1 features; combine frozen point model with current forecast at pointWeight. Fit each season only on earlier rows. No production activation."
+}

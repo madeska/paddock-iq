@@ -1,3 +1,7 @@
+import {applyGridDrops} from './grid-penalty-news';
+import {pitPodiumAwards2024} from './pit-podium-2024';
+import {expectedRaceOvertakes,type OvertakeModel} from './overtake-model';
+import type {ComponentCalibration} from './component-calibration';
 import {
   constructorQualifyingPoints,
   constructorRacePoints,
@@ -20,10 +24,28 @@ export type ComponentConstructorInput={
 };
 
 export type ComponentSimulationOptions={
+  scoringSeason?:number;
   sprint:boolean;
   simulations?:number;
   seed?:number;
   overtakeIntensity?:number;
+  calibration?:ComponentCalibration;
+  overtakeModel?:OvertakeModel;
+  qualifyingPace?:Record<string,number>;
+  qualifyingNoise?:number;
+  racePace?:Record<string,number>;
+  /** Research-only pre-lock sprint pace; qualifying order is a signal, not an actual starting grid. */
+  sprintPace?:Record<string,number>;
+  raceNoise?:number;
+  raceProgress?:Record<string,number>;
+  raceStartingGrid?:Record<string,number>;
+  sprintStartingGrid?:Record<string,number>;
+  gridDrops?:{race?:Record<string,number>;sprint?:Record<string,number>};
+  includeRankDiagnostics?:boolean;
+  /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
+  rankingCorrelation?:number;
+  /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
+  calibrationMode?:'all'|'reliability-dotd-pits';
 };
 
 export type DriverComponentExpectation={
@@ -58,6 +80,12 @@ function rng32(seed:number){
     t=(t+Math.imul(t^(t>>>7),61|t))^t;
     return ((t^(t>>>14))>>>0)/4294967296;
   };
+}
+const standardNormal=(r:()=>number)=>Math.sqrt(-2*Math.log(clamp(r(),1e-9,1)))*Math.cos(2*Math.PI*r());
+function normalCdf(x:number){
+ const a=Math.abs(x),t=1/(1+.2316419*a);
+ const tail=Math.exp(-a*a/2)/Math.sqrt(2*Math.PI)*t*(.319381530+t*(-.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));
+ return x>=0?1-tail:tail;
 }
 const gumbel=(r:()=>number)=>-Math.log(-Math.log(clamp(r(),1e-9,1-1e-9)));
 const poisson=(lambda:number,r:()=>number)=>{
@@ -98,6 +126,20 @@ export function simulateComponentWeekend(
   constructorInputs:ComponentConstructorInput[],
   options:ComponentSimulationOptions
 ){
+  if([2023,2024].includes(options.scoringSeason??2026)&&constructorInputs.length!==0&&(constructorInputs.length!==10||new Set(constructorInputs.map(c=>c.code)).size!==10))throw Error('2024 pit adapter requires a complete ten-constructor field');
+  const correlation=options.rankingCorrelation??0;
+  if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
+  if(options.raceStartingGrid){
+    const seen=new Set<number>();for(const driver of driverInputs){const start=options.raceStartingGrid[driver.code];if(!Number.isInteger(start)||start<1||start>driverInputs.length+1||start<=driverInputs.length&&seen.has(start))throw Error('Invalid known race grid');seen.add(start)}
+  }
+  if(options.sprintStartingGrid){
+    if(!options.sprint)throw Error('Sprint grid on normal weekend');
+    const values=driverInputs.map(d=>options.sprintStartingGrid![d.code]);
+    if(values.some(p=>!Number.isInteger(p)||p<1||p>driverInputs.length)||new Set(values).size!==values.length)throw Error('Incomplete or invalid sprint grid');
+  }
+  for(const drops of [options.gridDrops?.race,options.gridDrops?.sprint])if(drops)applyGridDrops(driverInputs.map(d=>d.code),drops);
+  if(options.raceStartingGrid&&options.gridDrops?.race&&Object.values(options.gridDrops.race).some(n=>n>0))throw Error('Do not apply penalties twice to a known race grid');
+  const rankStats=options.includeRankDiagnostics?new Map(driverInputs.map(d=>[d.code,{starts:0,classifiedStarts:0,finishes:0,classified:0}])):undefined;
   const simulations=Math.max(200,options.simulations??3000);
   const r=rng32(options.seed??170026);
   const overtakeIntensity=options.overtakeIntensity??2.2;
@@ -106,7 +148,8 @@ export function simulateComponentWeekend(
   const baselineSd=sd(driverInputs.map(d=>d.baselineXPts));
   const driverState=driverInputs.map(d=>{
     const negRate=d.recentScores.length?d.recentScores.filter(x=>x<0).length/d.recentScores.length:0;
-    return {...d,strength:(d.baselineXPts-baselineMean)/baselineSd,dnfProb:clamp(.045+.14*negRate,.035,.18)};
+    const events=options.calibration&&options.calibration.driverSessions>0?(options.calibration.drivers[d.code]??options.calibration.globalDriverRates):undefined;
+    return {...d,events,strength:(d.baselineXPts-baselineMean)/baselineSd,dnfProb:events?.dnfProbability??clamp(.045+.14*negRate,.035,.18)};
   });
 
   const constructorMean=mean(constructorInputs.map(c=>c.baselineXPts));
@@ -118,6 +161,7 @@ export function simulateComponentWeekend(
   for(const d of driverState)dAcc.set(d.code,{code:d.code,qualifying:0,sprint:0,raceFinish:0,positions:0,overtakes:0,fastestLap:0,driverOfTheDay:0,dnfPenalty:0,total:0});
   for(const c of constructorState)cAcc.set(c.code,{code:c.code,qualifying:0,sprint:0,raceDrivers:0,pitStops:0,total:0});
 
+  const q2Cutoff=Math.min(driverState.length,[2023,2024].includes(options.scoringSeason??2026)?15:Math.floor((driverState.length+10)/2));
   const teamDrivers=new Map<string,typeof driverState>();
   for(const d of driverState){
     const list=teamDrivers.get(d.team)??[];
@@ -125,26 +169,44 @@ export function simulateComponentWeekend(
   }
 
   for(let sim=0;sim<simulations;sim++){
-    const quali=sampleRanking(driverState,1.05,r);
+    const form=correlation>0?new Map(driverState.map(d=>[d.code,standardNormal(r)])):undefined;
+    function rank<T extends {code:string;strength:number}>(items:T[],noise:number,randomTies=false):T[]{
+      if(!form&&!randomTies)return sampleRanking(items,noise,r);
+      return items.map(item=>{
+        const z=form?Math.sqrt(correlation)*form.get(item.code)!+Math.sqrt(1-correlation)*standardNormal(r):0;
+        const shock=form?-Math.log(-Math.log(clamp(normalCdf(z),1e-9,1-1e-9))):gumbel(r);
+        return {item,key:item.strength+noise*shock,shock};
+      }).sort((a,b)=>b.key-a.key||(randomTies?b.shock-a.shock:0)).map(entry=>entry.item);
+    }
+    const rankedQuali=rank(options.qualifyingPace?driverState.map(d=>({...d,strength:options.qualifyingPace![d.code]??0})):driverState,options.qualifyingNoise??1.05);
+    const noTimes=new Set(driverState.filter(d=>r()<(d.events?.noTimeProbability??.008)).map(d=>d.code));
+    const quali=[...rankedQuali.filter(d=>!noTimes.has(d.code)),...rankedQuali.filter(d=>noTimes.has(d.code))];
     const qPos=new Map(quali.map((d,i)=>[d.code,i+1]));
+    const raceStart=options.raceStartingGrid?new Map(driverState.map(d=>[d.code,options.raceStartingGrid![d.code]])):options.gridDrops?.race?applyGridDrops(quali.map(d=>d.code),options.gridDrops.race):qPos;
     const qPts=new Map(driverState.map(d=>{
-      const noTime=r()<.008;
+      const noTime=noTimes.has(d.code);
       return [d.code,qualifyingDriverPoints({position:noTime?null:qPos.get(d.code)??null,noTime})] as const;
     }));
 
     let sprintPts=new Map<string,number>();
     if(options.sprint){
-      const sprintGrid=sampleRanking(driverState,1.15,r);
-      const sgPos=new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
-      const sprintClassified=driverState.filter(d=>r()>=Math.min(.07,d.dnfProb*.55));
-      const sprintFinish=sampleRanking(sprintClassified,1.2,r);
+      const baseSprintState=options.sprintPace?driverState.map(d=>({...d,strength:options.sprintPace![d.code]??0})):driverState;
+      const gridMean=(driverState.length+1)/2,gridSd=Math.sqrt((driverState.length**2-1)/12)||1;
+      const sprintState=options.sprintStartingGrid?baseSprintState.map(d=>({...d,strength:.5*d.strength+.5*(gridMean-options.sprintStartingGrid![d.code])/gridSd})):baseSprintState;
+      // Consume the same ranking draw even with observed grid: fixed-seed comparisons remain paired.
+      const sampledSprintGrid=rank(sprintState,1.15);
+      const sprintGrid=options.sprintStartingGrid?[...sprintState].sort((a,b)=>options.sprintStartingGrid![a.code]-options.sprintStartingGrid![b.code]):sampledSprintGrid;
+      const sgPos=options.gridDrops?.sprint?applyGridDrops(sprintGrid.map(d=>d.code),options.gridDrops.sprint):new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
+      const sprintClassified=sprintState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
+      const sprintFinish=rank(options.gridDrops?.sprint?sprintClassified.map(d=>({...d,strength:d.strength+.1*((sprintGrid.findIndex(x=>x.code===d.code)+1)-(sgPos.get(d.code)??1))})):sprintClassified,1.2);
       const sfPos=new Map(sprintFinish.map((d,i)=>[d.code,i+1]));
-      const sprintFastest=chooseWeighted(sprintClassified,d=>Math.exp(d.strength*.8),r);
+      const sprintFastest=chooseWeighted(sprintClassified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.sprintFastestLapWeight)??Math.exp(d.strength*.8),r);
       sprintPts=new Map(driverState.map(d=>{
         const classified=sfPos.has(d.code);
         const gain=classified?(sgPos.get(d.code)!-sfPos.get(d.code)!):0;
-        const overtakes=classified?Math.max(0,gain)+poisson(Math.max(.15,overtakeIntensity*.32),r):0;
+        const overtakes=d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(classified?d.events.sprintOvertakesMean:d.events.failedSprintOvertakesMean,r):classified?Math.max(0,gain)+poisson(Math.max(.15,overtakeIntensity*.32),r):0;
         const pts=sprintDriverPoints({
+          season:options.scoringSeason,
           startPosition:sgPos.get(d.code)??null,
           finishPosition:sfPos.get(d.code)??null,
           classified,
@@ -155,12 +217,13 @@ export function simulateComponentWeekend(
       }));
     }
 
-    const classified=driverState.filter(d=>r()>=d.dnfProb);
-    const raceFinish=sampleRanking(classified,1.0,r);
+    const classified=driverState.filter(d=>r()>=d.dnfProb).map(d=>options.gridDrops?.race?{...d,strength:d.strength+.1*((qPos.get(d.code)??1)-(raceStart.get(d.code)??1))}:d);
+    const raceFinish=rank(options.raceProgress?classified.map(d=>({...d,strength:(11.5-(raceStart.get(d.code)??11.5)+(options.raceProgress![d.code]??0))/6})):options.racePace?classified.map(d=>({...d,strength:options.racePace![d.code]??0})):classified,options.raceNoise??1.0,options.raceProgress!==undefined);
     const finishPos=new Map(raceFinish.map((d,i)=>[d.code,i+1]));
-    const fastest=chooseWeighted(classified,d=>Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
+    const fastest=chooseWeighted(classified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.fastestLapWeight)??Math.exp(d.strength*1.05)*(finishPos.get(d.code)!<=10?1.8:.45),r);
     const dotd=chooseWeighted(classified,d=>{
-      const start=qPos.get(d.code)??22,finish=finishPos.get(d.code)??22,gain=Math.max(0,start-finish);
+      if(d.events)return d.events.dotdWeight;
+      const start=raceStart.get(d.code)??22,finish=finishPos.get(d.code)??22,gain=Math.max(0,start-finish);
       return Math.exp(d.strength*.35)*(1+gain*.8)*(finish<=10?1.7:1);
     },r);
 
@@ -168,10 +231,11 @@ export function simulateComponentWeekend(
     const racePtsNoDotd=new Map<string,number>();
     for(const d of driverState){
       const isClassified=finishPos.has(d.code);
-      const start=qPos.get(d.code)??null,finish=finishPos.get(d.code)??null;
+      const start=raceStart.get(d.code)??null,finish=finishPos.get(d.code)??null;
+      if(rankStats){const stat=rankStats.get(d.code)!;stat.starts+=start??0;if(isClassified&&finish!==null){stat.classified++;stat.classifiedStarts+=start??0;stat.finishes+=finish}}
       const gain=isClassified&&start!=null&&finish!=null?start-finish:0;
       const extraOvertakes=isClassified?poisson(Math.max(.15,overtakeIntensity*(.45+.025*(start??11))),r):0;
-      const overtakes=isClassified?Math.max(0,gain)+extraOvertakes:0;
+      const overtakes=options.overtakeModel?poisson(expectedRaceOvertakes(options.overtakeModel,d.code,start,isClassified),r):d.events&&options.calibrationMode!=='reliability-dotd-pits'?poisson(isClassified?d.events.raceOvertakesMean:d.events.failedRaceOvertakesMean,r):isClassified?Math.max(0,gain)+extraOvertakes:0;
       const isFastest=fastest?.code===d.code,isDotd=dotd?.code===d.code;
       const full=raceDriverPoints({startPosition:start,finishPosition:finish,classified:isClassified,overtakes,fastestLap:isFastest,driverOfTheDay:isDotd});
       const noDotd=raceDriverPoints({startPosition:start,finishPosition:finish,classified:isClassified,overtakes,fastestLap:isFastest,driverOfTheDay:false});
@@ -184,7 +248,7 @@ export function simulateComponentWeekend(
       a.sprint+=s;
       a.raceFinish+=isClassified?finishOnly:0;
       a.positions+=isClassified?gain:0;
-      a.overtakes+=isClassified?overtakes:0;
+      a.overtakes+=overtakes;
       a.fastestLap+=isFastest?10:0;
       a.driverOfTheDay+=isDotd?10:0;
       a.dnfPenalty+=isClassified?0:-20;
@@ -198,17 +262,20 @@ export function simulateComponentWeekend(
     }
     const fastestPit=[...teamPit.entries()].sort((a,b)=>a[1].seconds-b[1].seconds)[0]?.[0]??null;
 
+    // Historical research adapter: two synthetic stops per constructor, not inferred physical stop counts.
+    const historicalPit=[2023,2024].includes(options.scoringSeason??2026)&&constructorState.length>0?pitPodiumAwards2024(constructorState.flatMap(c=>[0,1].map(i=>({id:c.code+':'+i,team:c.code,seconds:Math.exp(Math.log(2.48)-.10*c.strength+.08*(gumbel(r)-.577))})))):undefined;
     for(const c of constructorState){
       const ds=teamDrivers.get(c.code)??[];
       if(ds.length<2)continue;
       const [d1,d2]=ds;
       const qp:[number,number]=[qPts.get(d1.code)??0,qPts.get(d2.code)??0];
-      const q2Count=[d1,d2].filter(d=>(qPos.get(d.code)??99)<=15).length;
-      const q3Count=[d1,d2].filter(d=>(qPos.get(d.code)??99)<=10).length;
-      const qualifying=constructorQualifyingPoints(qp,q2Count,q3Count,0);
+      const q2Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=q2Cutoff).length;
+      const q3Count=[d1,d2].filter(d=>!noTimes.has(d.code)&&(qPos.get(d.code)??99)<=10).length;
+      const qualifying=constructorQualifyingPoints(qp,q2Count,q3Count,0)+(options.scoringSeason===2024&&ds.every(d=>noTimes.has(d.code))?1:0);
       const sprint=options.sprint?constructorSprintPoints([sprintPts.get(d1.code)??0,sprintPts.get(d2.code)??0],0):0;
       const pit=teamPit.get(c.code)!;
       const race=constructorRacePoints({
+        season:options.scoringSeason,
         driverRacePointsExcludingDotD:[racePtsNoDotd.get(d1.code)??0,racePtsNoDotd.get(d2.code)??0],
         bestPitStopSeconds:pit.seconds,
         fastestPitStop:fastestPit===c.code,
@@ -219,8 +286,10 @@ export function simulateComponentWeekend(
       a.qualifying+=qualifying;
       a.sprint+=sprint;
       a.raceDrivers+=raceDrivers;
-      a.pitStops+=race-raceDrivers;
-      a.total+=qualifying+sprint+race;
+      const observedPit=options.calibration?.pitPoints[c.code];
+      const pitPoints=historicalPit?historicalPit[c.code]??0:observedPit?.length?(chooseWeighted(observedPit,x=>x.probability,r)?.points??0):race-raceDrivers;
+      a.pitStops+=pitPoints;
+      a.total+=qualifying+sprint+raceDrivers+pitPoints;
     }
   }
 
@@ -244,5 +313,5 @@ export function simulateComponentWeekend(
     pitStops:a.pitStops/simulations,
     total:a.total/simulations,
   }));
-  return {drivers,constructors,simulations,overtakeIntensity};
+  return {drivers,constructors,simulations,overtakeIntensity,...(rankStats?{rankDiagnostics:[...rankStats].map(([code,s])=>({code,expectedStart:s.starts/simulations,finishProbability:s.classified/simulations,expectedClassifiedFinish:s.classified?s.finishes/s.classified:null,expectedClassifiedPositionChange:s.classified?(s.classifiedStarts-s.finishes)/s.classified:null}))}:{})};
 }

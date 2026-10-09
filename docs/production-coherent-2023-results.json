@@ -1,0 +1,877 @@
+{
+  "scoringSeason": 2023,
+  "sprintNCPenalty": -20,
+  "protocol": {
+    "version": 1,
+    "status": "frozen-before-next-coherent-model-comparison",
+    "selectionData": "consumed2025 R6–24",
+    "candidate": "Full coherent constructor identity; final unrounded driver predictions unchanged; same QT/pit/DOTD expectation corrections",
+    "halfVariant": "diagnostic only, no further tuning",
+    "reference": "Shared production25% blend",
+    "parameters": {
+      "coherentWeight": 1,
+      "driverComponentWeight": 0.25
+    },
+    "validation": {
+      "supplementary": "2024 already consumed by other candidate evaluations; source/adapter limits prevent fully blind claim",
+      "independent": "2023 if complete causal inputs and year scoring can be verified, or genuinely new pre-lock forecasts",
+      "driverGate": "exactly unchanged for this constructor-only hypothesis",
+      "constructorGate": "Convincing held-out MAE/RMSE improvement, report bias and race-block uncertainty, no source-invalid activation"
+    },
+    "note": "No claim of global optimality. All current2025 errors consumed; this protocol does not relabel them as independent."
+  },
+  "cohortProtocol": {
+    "version": 1,
+    "candidateProtocolCommit": "c84365c",
+    "sourceSHA256": "cbcd067a6134ce2439c9d883b7cee71b7c06ac21a0ef62cbeae396f42f9746eb",
+    "status": "frozen-before-2023-forecast-errors",
+    "calendarRoundIds": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "excludedLabels": [
+      {
+        "round": 11,
+        "code": "SAU",
+        "type": "CONSTRUCTOR"
+      },
+      {
+        "round": 19,
+        "code": "FER",
+        "type": "CONSTRUCTOR"
+      },
+      {
+        "round": 19,
+        "code": "MER",
+        "type": "CONSTRUCTOR"
+      }
+    ],
+    "trainingRule": "Excluded labels never enter later score histories; future labels/quotes never enter target features.",
+    "rosterRule": "All valid active quote identities remain; no loss of constructor membership merely because a historical label is disputed.",
+    "contextRule": "2023 lock at Qualifying, including sprint weekends. Completed practice before both calendar/provider lock; no Saturday SQ data into Friday prediction. Missing context explicit with incumbent fallback, never fabricated.",
+    "pitAdapter": "Fixed historical two-synthetic-stop model shared by reference/candidate, unchanged from46ad0b9; not fitted to2023 outcomes.",
+    "model": "Full coherent constructor identity, unchanged driver forecasts and incumbent25% driver blend; no tuning or half-variant selection.",
+    "limitations": "Quote timing requires corroboration; retrospective publication timestamps and absent explicit DSQ simulation disclosed. No activation from source-invalid evidence."
+  },
+  "quoteMode": "reported-unverified-retrospective",
+  "note": "First forecast-error evaluation of2023 under frozen coherent constructor protocol c84365c and cohort fd93e99. Three disputed labels excluded from both outcomes and every later history. Drivers unchanged. Same field/practice/seed/scoring/rounding. Fixed historical pit adapter and unverified quote/publication timing limit certified production claims. No tuning/activation.",
+  "rounds": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "quoteOmissions": [],
+  "cohortAudit": [
+    {
+      "round": 7,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 8,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 9,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 10,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 11,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 12,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 19,
+      "unsupportedConstructors": [
+        "RB"
+      ]
+    },
+    {
+      "round": 13,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 14,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 19,
+      "unsupportedConstructors": [
+        "RB"
+      ]
+    },
+    {
+      "round": 15,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 16,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 17,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 18,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 19,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 20,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 21,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 22,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    },
+    {
+      "round": 23,
+      "quotedDrivers": 20,
+      "simulatedDrivers": 20,
+      "unsupportedConstructors": []
+    }
+  ],
+  "missing": [
+    {
+      "round": 12,
+      "code": "RIC",
+      "type": "DRIVER"
+    },
+    {
+      "round": 14,
+      "code": "LAW",
+      "type": "DRIVER"
+    }
+  ],
+  "summary": [
+    {
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 338,
+      "MAE": 10.807396449704143,
+      "RMSE": 14.296408908964086,
+      "Bias": 0.19615384615384607
+    },
+    {
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 167,
+      "MAE": 16.10838323353294,
+      "RMSE": 21.067389733415972,
+      "Bias": -0.761077844311377
+    },
+    {
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 338,
+      "MAE": 10.807396449704143,
+      "RMSE": 14.296408908964086,
+      "Bias": 0.19615384615384607
+    },
+    {
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 167,
+      "MAE": 16.097604790419165,
+      "RMSE": 21.00860245817196,
+      "Bias": 0.0712574850299402
+    }
+  ],
+  "pairedRaceBootstrap": [
+    {
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "deltaMAE": 0,
+      "low": 0,
+      "high": 0
+    },
+    {
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "deltaMAE": -0.010778443113771416,
+      "low": -0.643452380952379,
+      "high": 0.5970588235294128
+    }
+  ],
+  "byRound": [
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.924999999999999,
+      "RMSE": 13.160452119893144,
+      "Bias": 2.2849999999999997
+    },
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 12.569999999999999,
+      "RMSE": 16.4008231500739,
+      "Bias": 4.390000000000001
+    },
+    {
+      "round": 7,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.924999999999999,
+      "RMSE": 13.160452119893144,
+      "Bias": 2.2849999999999997
+    },
+    {
+      "round": 7,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.979999999999999,
+      "RMSE": 19.59581587992702,
+      "Bias": 4.7
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.879999999999999,
+      "RMSE": 7.445266952903704,
+      "Bias": -2.9400000000000004
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 6.8100000000000005,
+      "RMSE": 8.434986662704333,
+      "Bias": -5.050000000000001
+    },
+    {
+      "round": 8,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.879999999999999,
+      "RMSE": 7.445266952903704,
+      "Bias": -2.9400000000000004
+    },
+    {
+      "round": 8,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 6.789999999999999,
+      "RMSE": 8.910162737009914,
+      "Bias": -5.91
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 6.845000000000001,
+      "RMSE": 9.952462006960891,
+      "Bias": 2.3849999999999993
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 9.02,
+      "RMSE": 11.96227403130358,
+      "Bias": 4.5600000000000005
+    },
+    {
+      "round": 9,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 6.845000000000001,
+      "RMSE": 9.952462006960891,
+      "Bias": 2.3849999999999993
+    },
+    {
+      "round": 9,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 8.650000000000002,
+      "RMSE": 11.679255113233891,
+      "Bias": 5.029999999999999
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.54,
+      "RMSE": 12.85188702097867,
+      "Bias": -8.350000000000001
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.08,
+      "RMSE": 22.714532792905956,
+      "Bias": -16.54
+    },
+    {
+      "round": 10,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.54,
+      "RMSE": 12.85188702097867,
+      "Bias": -8.350000000000001
+    },
+    {
+      "round": 10,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.720000000000002,
+      "RMSE": 22.667024506979295,
+      "Bias": -16.440000000000005
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.054999999999998,
+      "RMSE": 13.48196944070116,
+      "Bias": 5.044999999999998
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 9,
+      "MAE": 21.444444444444446,
+      "RMSE": 25.726423942881937,
+      "Bias": 9.311111111111114
+    },
+    {
+      "round": 11,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.054999999999998,
+      "RMSE": 13.48196944070116,
+      "Bias": 5.044999999999998
+    },
+    {
+      "round": 11,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 9,
+      "MAE": 21.33333333333333,
+      "RMSE": 26.557568496465265,
+      "Bias": 10.244444444444444
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 8.078947368421055,
+      "RMSE": 10.347361728326797,
+      "Bias": 3.1947368421052635
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.819999999999997,
+      "RMSE": 19.143510649825963,
+      "Bias": 5.4
+    },
+    {
+      "round": 12,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 8.078947368421055,
+      "RMSE": 10.347361728326797,
+      "Bias": 3.1947368421052635
+    },
+    {
+      "round": 12,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 12.99,
+      "RMSE": 19.167289844941564,
+      "Bias": 6.490000000000002
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.485000000000003,
+      "RMSE": 13.40815050631518,
+      "Bias": -1.595
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.579999999999998,
+      "RMSE": 18.645964710896564,
+      "Bias": -2.8199999999999994
+    },
+    {
+      "round": 13,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.485000000000003,
+      "RMSE": 13.40815050631518,
+      "Bias": -1.595
+    },
+    {
+      "round": 13,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 12.05,
+      "RMSE": 14.813203569788676,
+      "Bias": -3.4499999999999984
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 13.684210526315793,
+      "RMSE": 17.76602316072363,
+      "Bias": -5.3473684210526296
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.39,
+      "RMSE": 26.744737800172953,
+      "Bias": -14.37
+    },
+    {
+      "round": 14,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 13.684210526315793,
+      "RMSE": 17.76602316072363,
+      "Bias": -5.3473684210526296
+    },
+    {
+      "round": 14,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.05,
+      "RMSE": 25.528239265566278,
+      "Bias": -12.009999999999998
+    },
+    {
+      "round": 15,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.840000000000002,
+      "RMSE": 11.640231956451727,
+      "Bias": 4.68
+    },
+    {
+      "round": 15,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.69,
+      "RMSE": 21.14722203978575,
+      "Bias": 7.93
+    },
+    {
+      "round": 15,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.840000000000002,
+      "RMSE": 11.640231956451727,
+      "Bias": 4.68
+    },
+    {
+      "round": 15,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.729999999999997,
+      "RMSE": 21.635503229645483,
+      "Bias": 9.190000000000001
+    },
+    {
+      "round": 16,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.260000000000002,
+      "RMSE": 14.14280735921974,
+      "Bias": 2.81
+    },
+    {
+      "round": 16,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.029999999999998,
+      "RMSE": 20.2319796362096,
+      "Bias": 4.970000000000001
+    },
+    {
+      "round": 16,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 12.260000000000002,
+      "RMSE": 14.14280735921974,
+      "Bias": 2.81
+    },
+    {
+      "round": 16,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.68,
+      "RMSE": 20.55062042859047,
+      "Bias": 5.58
+    },
+    {
+      "round": 17,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.115,
+      "RMSE": 14.19251563324839,
+      "Bias": 4.665
+    },
+    {
+      "round": 17,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.28,
+      "RMSE": 22.097239646616497,
+      "Bias": 7.840000000000001
+    },
+    {
+      "round": 17,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.115,
+      "RMSE": 14.19251563324839,
+      "Bias": 4.665
+    },
+    {
+      "round": 17,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.18,
+      "RMSE": 23.24349371329534,
+      "Bias": 9.180000000000001
+    },
+    {
+      "round": 18,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 17.920000000000005,
+      "RMSE": 20.836650402595904,
+      "Bias": -0.8899999999999999
+    },
+    {
+      "round": 18,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.5,
+      "RMSE": 27.193087356900097,
+      "Bias": -4.500000000000001
+    },
+    {
+      "round": 18,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 17.920000000000005,
+      "RMSE": 20.836650402595904,
+      "Bias": -0.8899999999999999
+    },
+    {
+      "round": 18,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 21.020000000000003,
+      "RMSE": 27.220102865345677,
+      "Bias": -1.8200000000000016
+    },
+    {
+      "round": 19,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.2,
+      "RMSE": 18.718199699757452,
+      "Bias": 0.2700000000000008
+    },
+    {
+      "round": 19,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 8,
+      "MAE": 20.75,
+      "RMSE": 23.55811961935842,
+      "Bias": -5.624999999999999
+    },
+    {
+      "round": 19,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.2,
+      "RMSE": 18.718199699757452,
+      "Bias": 0.2700000000000008
+    },
+    {
+      "round": 19,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 8,
+      "MAE": 18.1,
+      "RMSE": 20.43556948068734,
+      "Bias": -3.2249999999999996
+    },
+    {
+      "round": 20,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.040000000000001,
+      "RMSE": 13.635835141273892,
+      "Bias": 0.35000000000000003
+    },
+    {
+      "round": 20,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.419999999999998,
+      "RMSE": 19.426888582580588,
+      "Bias": -0.5000000000000003
+    },
+    {
+      "round": 20,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.040000000000001,
+      "RMSE": 13.635835141273892,
+      "Bias": 0.35000000000000003
+    },
+    {
+      "round": 20,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.29,
+      "RMSE": 21.041649174910223,
+      "Bias": 0.5500000000000004
+    },
+    {
+      "round": 21,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.525,
+      "RMSE": 17.75183089148835,
+      "Bias": 0.8049999999999997
+    },
+    {
+      "round": 21,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 27.28,
+      "RMSE": 32.34192325759246,
+      "Bias": 1.8799999999999997
+    },
+    {
+      "round": 21,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 15.525,
+      "RMSE": 17.75183089148835,
+      "Bias": 0.8049999999999997
+    },
+    {
+      "round": 21,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 26.880000000000006,
+      "RMSE": 30.847333758365572,
+      "Bias": 1.3399999999999999
+    },
+    {
+      "round": 22,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.365,
+      "RMSE": 18.08376343574534,
+      "Bias": -3.8849999999999993
+    },
+    {
+      "round": 22,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.149999999999997,
+      "RMSE": 18.902671768826753,
+      "Bias": -8.55
+    },
+    {
+      "round": 22,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.365,
+      "RMSE": 18.08376343574534,
+      "Bias": -3.8849999999999993
+    },
+    {
+      "round": 22,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 15.820000000000002,
+      "RMSE": 20.77763220388695,
+      "Bias": -7.519999999999999
+    },
+    {
+      "round": 23,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.975,
+      "RMSE": 6.972983579501675,
+      "Bias": -0.275
+    },
+    {
+      "round": 23,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 6.489999999999999,
+      "RMSE": 8.875640821935058,
+      "Bias": -1.2299999999999995
+    },
+    {
+      "round": 23,
+      "model": "frozen-coherent-constructors",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 5.975,
+      "RMSE": 6.972983579501675,
+      "Bias": -0.275
+    },
+    {
+      "round": 23,
+      "model": "frozen-coherent-constructors",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 5.319999999999999,
+      "RMSE": 7.220941766833464,
+      "Bias": -0.3599999999999999
+    }
+  ]
+}

@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/**"
+      - "prisma/**"
       - "src/**"
       - "package.json"
       - "package-lock.json"
@@ -33,6 +34,27 @@ jobs:
 
       - name: Check F1 team import
         run: npm run fantasy:check-team-import
+
+      - name: Check shared and portable forecast inference
+        run: |
+          npx tsx --test scripts/check-production-forecast.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts scripts/check-tree-residual-inference.ts scripts/check-official-historical-price.ts scripts/check-official-price-field-data.ts
+          npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-snapshot-tree-parity.ts scripts/check-tree-residual-inference.ts scripts/tree-forecast-frames.ts scripts/export-prospective-tree-frames.ts scripts/check-tree-forecast-frames.ts scripts/check-prospective-tree-export.ts
+
+      - name: Check pre-lock weekend sessions and penalty news
+        run: |
+          npx tsx --test scripts/check-weekend-impact.ts scripts/check-f1-direct-transfer.ts scripts/check-google-identity.ts scripts/check-team-auth.ts scripts/check-forecast-preparation.ts scripts/check-forecast-rollover.ts scripts/check-completed-fantasy-scores.ts scripts/check-completed-scores-market.ts scripts/check-official-forecast-context.ts scripts/check-current-model-registry.ts scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts scripts/check-practice-cutoff.ts scripts/check-production-history-replay.ts scripts/check-component-calibration.ts
+          npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts
+
+      - name: Setup Python for source-independent guards
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check prospective capture and evaluation guards
+        run: |
+          python scripts/check_capture_tree_forecast.py
+          python scripts/check_tree_publication_receipt.py
+          python scripts/check_prospective_tree_evaluation.py
 
       - name: Run selected fantasy backtest
         run: npm run fantasy:backtest-ci

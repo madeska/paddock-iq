@@ -1,0 +1,230 @@
+{
+  "season": 2024,
+  "checkedConstructorPitAwards": 240,
+  "verifiedRounds": 24,
+  "awards": {
+    "first": 10,
+    "second": 5,
+    "third": 3
+  },
+  "multipleStopsSameConstructorAllowed": true,
+  "weekends": [
+    {
+      "round": 1,
+      "total": 18,
+      "owners": {
+        "1": "FER",
+        "2": "FER",
+        "3": "RED"
+      }
+    },
+    {
+      "round": 2,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "MER",
+        "3": "RED"
+      }
+    },
+    {
+      "round": 3,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "FER",
+        "3": "FER"
+      }
+    },
+    {
+      "round": 4,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "RED",
+        "3": "RED"
+      }
+    },
+    {
+      "round": 5,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "RED",
+        "3": "RED"
+      }
+    },
+    {
+      "round": 6,
+      "total": 18,
+      "owners": {
+        "1": "FER",
+        "2": "RED",
+        "3": "MCL"
+      }
+    },
+    {
+      "round": 7,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "MER",
+        "3": "MCL"
+      }
+    },
+    {
+      "round": 8,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "AST",
+        "3": "KCK"
+      }
+    },
+    {
+      "round": 9,
+      "total": 18,
+      "owners": {
+        "1": "FER",
+        "2": "MER",
+        "3": "FER"
+      }
+    },
+    {
+      "round": 10,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "RED",
+        "3": "ALP"
+      }
+    },
+    {
+      "round": 11,
+      "total": 18,
+      "owners": {
+        "1": "FER",
+        "2": "FER",
+        "3": "RED"
+      }
+    },
+    {
+      "round": 12,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "RED",
+        "3": "ALP"
+      }
+    },
+    {
+      "round": 13,
+      "total": 18,
+      "owners": {
+        "1": "VRB",
+        "2": "RED",
+        "3": "ALP"
+      }
+    },
+    {
+      "round": 14,
+      "total": 18,
+      "owners": {
+        "1": "MCL",
+        "2": "RED",
+        "3": "VRB"
+      }
+    },
+    {
+      "round": 15,
+      "total": 18,
+      "owners": {
+        "1": "VRB",
+        "2": "MCL",
+        "3": "FER"
+      }
+    },
+    {
+      "round": 16,
+      "total": 18,
+      "owners": {
+        "1": "ALP",
+        "2": "MCL",
+        "3": "MCL"
+      }
+    },
+    {
+      "round": 17,
+      "total": 18,
+      "owners": {
+        "1": "KCK",
+        "2": "MCL",
+        "3": "MER"
+      }
+    },
+    {
+      "round": 18,
+      "total": 18,
+      "owners": {
+        "1": "MCL",
+        "2": "RED",
+        "3": "MER"
+      }
+    },
+    {
+      "round": 19,
+      "total": 18,
+      "owners": {
+        "1": "MCL",
+        "2": "RED",
+        "3": "VRB"
+      }
+    },
+    {
+      "round": 20,
+      "total": 18,
+      "owners": {
+        "1": "MCL",
+        "2": "RED",
+        "3": "MCL"
+      }
+    },
+    {
+      "round": 21,
+      "total": 18,
+      "owners": {
+        "1": "KCK",
+        "2": "FER",
+        "3": "AST"
+      }
+    },
+    {
+      "round": 22,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "MCL",
+        "3": "FER"
+      }
+    },
+    {
+      "round": 23,
+      "total": 18,
+      "owners": {
+        "1": "RED",
+        "2": "MCL",
+        "3": "KCK"
+      }
+    },
+    {
+      "round": 24,
+      "total": 18,
+      "owners": {
+        "1": "MCL",
+        "2": "FER",
+        "3": "VRB"
+      }
+    }
+  ],
+  "note": "All source award texts and points conserve 18 points per event, with each rank assigned once. Does not supply actual stop durations or original publication timestamps. Research scoring audit only; no forecast errors."
+}
