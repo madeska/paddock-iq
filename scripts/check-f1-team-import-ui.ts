@@ -8,7 +8,7 @@ async function main(){
  const market=[...['VER','NOR','LEC','ANT','PIA'].map(code=>({code,name:code,type:'DRIVER' as const})),{code:'MER',name:'Mercedes',type:'CONSTRUCTOR' as const},{code:'RBR',name:'Red Bull Racing',type:'CONSTRUCTOR' as const}];
  const players=market.map((a,i)=>({PlayerId:String(i+1),DriverTLA:a.type==='DRIVER'?a.code:'',TeamName:a.name,PositionName:a.type}));
  const rawTeam={teamno:1,teamname:'Race%20Team',playerid:players.map(p=>({id:p.PlayerId})),capplayerid:'1',team_info:{teamBal:0,userSubsleft:2,subsallowed:2},usersubsleft:0,ovpoints:-5};
- const apiPage=await browser.newPage();const helperResponse=await apiPage.request.get(new URL('/api/team/f1/helper',process.env.PADDOCK_TEST_URL||'http://localhost:3100/team/import').href);assert.ok(helperResponse.ok());const actualHelper=(await helperResponse.json()).bookmarklet;await apiPage.close();
+ const apiPage=await browser.newPage();const helperResponse=await apiPage.request.get(new URL('/api/team/f1/helper',process.env.PADDOCK_TEST_URL||'http://localhost:3100/team/import').href);assert.ok(helperResponse.ok());const actualHelper=(await helperResponse.json()).fileBookmarklet;await apiPage.close();
  const f1=await browser.newPage({acceptDownloads:true});
  await f1.route('https://fantasy.formula1.com/**',async route=>{const path=new URL(route.request().url()).pathname;const value=path.includes('/schedule/')?[{GamedayId:18,PhaseId:1,Season:'2026',MatchStatus:'1'}]:path.includes('/getteam/')?{mdid:18,userTeam:[{...rawTeam,GUID:'private',token:'private'},{...rawTeam,teamno:2,teamname:'Second',capplayerid:'2',team_info:{teamBal:0.4,userSubsleft:3},ovpoints:100}]}:players;await route.fulfill({contentType:path==='/en/'?'text/html':'application/json',body:path==='/en/'?'<html><body>F1 fixture</body></html>':JSON.stringify({Meta:{Success:true},Data:{Value:value}})})});
  await f1.goto('https://fantasy.formula1.com/en/');await f1.evaluate(()=>fetch('/services/user/gameplay/private/getteam/0/1/17/1'));
@@ -22,7 +22,7 @@ async function main(){
  await page.route('**/api/market?*',route=>route.fulfill({json:{assets:market}}));
  await page.route('**/api/team/f1/import',async route=>{const body=route.request().postDataJSON();if(body.action==='save'){saved=body;await route.fulfill({json:{ok:true,snapshotId:'ui-snapshot',teamId:'ui-team',teams:[{teamNo:1,teamId:'ui-team'},{teamNo:2,teamId:'ui-other'}]}})}else await route.fulfill({json:normalized})});
  await page.goto(process.env.PADDOCK_TEST_URL||'http://localhost:3100/team/import');
- await page.getByLabel('F1 team export').setInputFiles({name:'f1-team.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
+ await page.getByText('File import (fallback)',{exact:true}).evaluate(el=>(el.parentElement as HTMLDetailsElement).open=true);await page.getByLabel('F1 team export').setInputFiles({name:'f1-team.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exported))});
  await page.getByRole('button',{name:'Preview F1 team'}).click();await page.getByRole('heading',{name:'Race Team'}).waitFor();assert.match(await page.locator('main').innerText(),/VER · Driver · 2×/);
  assert.equal(await page.getByRole('button',{name:'Save all 2 teams'}).count(),1);
  assert.equal(await page.getByLabel('Paddock IQ profile email').count(),0);await page.getByRole('button',{name:'Save all 2 teams'}).click();await page.getByRole('status').filter({hasText:'2 teams saved.'}).waitFor();assert.equal(saved.teamNo,1);assert.equal(saved.season,2026);assert.equal(saved.round,18);

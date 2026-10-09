@@ -1,3 +1,7 @@
+# Current browser flow
+
+Direct transfer without a file is now the default. See [f1-direct-transfer.md](f1-direct-transfer.md). The download steps below describe the retained file fallback.
+
 # F1 Fantasy team import
 
 ## User flow
