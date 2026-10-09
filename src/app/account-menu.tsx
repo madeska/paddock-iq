@@ -1,0 +1,1 @@
+'use client';import {signOut} from 'next-auth/react';export default function AccountMenu(){return <button onClick={()=>{try{localStorage.removeItem('paddock-iq:profile')}catch{};void signOut({callbackUrl:'/login'})}}>Sign out</button>}

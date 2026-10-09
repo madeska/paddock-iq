@@ -28,3 +28,6 @@ Thumbs.db
 # Python research bytecode
 __pycache__/
 *.pyc
+
+# Playwright authenticated browser state
+.auth/

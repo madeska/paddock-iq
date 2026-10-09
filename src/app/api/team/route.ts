@@ -1,3 +1,4 @@
+import {authorizeTeamRequest} from '../../../lib/auth';
 import {forecastSeasonState} from '../../../lib/forecast-season-state';
 import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import {NextRequest,NextResponse} from 'next/server';
@@ -6,11 +7,12 @@ import {prisma} from '../../../lib/prisma';
 import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
 
 export async function GET(request:NextRequest){
- const email=request.nextUrl.searchParams.get('email')?.trim().toLowerCase();
+ const auth=await authorizeTeamRequest(request);if(auth.response)return auth.response;
+ const owner=auth.owner!;
  const season=Number(request.nextUrl.searchParams.get('season')??2026);
- if(!email)return NextResponse.json({error:'email is required'},{status:400});
 
- const user=await prisma.user.findUnique({where:{email},include:{teams:{where:{season},orderBy:{name:'asc'}}}});
+
+ const user=await prisma.user.findUnique({where:{id:owner.id},include:{teams:{where:{season},orderBy:{name:'asc'}}}});
  if(!user)return NextResponse.json({error:'User not found'},{status:404});
  if(!user.teams.length)return NextResponse.json({error:'No team found for this season'},{status:404});
 
@@ -74,5 +76,5 @@ export async function GET(request:NextRequest){
    }),
    chips:snapshot.team.chipUses.map(c=>({code:c.chipCode,status:c.status}))
   }
- });
+ },{headers:{'Cache-Control':'private, no-store'}});
 }

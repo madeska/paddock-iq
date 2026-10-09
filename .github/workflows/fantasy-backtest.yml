@@ -42,7 +42,7 @@ jobs:
 
       - name: Check pre-lock weekend sessions and penalty news
         run: |
-          npx tsx --test scripts/check-forecast-preparation.ts scripts/check-forecast-rollover.ts scripts/check-completed-fantasy-scores.ts scripts/check-completed-scores-market.ts scripts/check-official-forecast-context.ts scripts/check-current-model-registry.ts scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts scripts/check-practice-cutoff.ts scripts/check-production-history-replay.ts scripts/check-component-calibration.ts
+          npx tsx --test scripts/check-google-identity.ts scripts/check-team-auth.ts scripts/check-forecast-preparation.ts scripts/check-forecast-rollover.ts scripts/check-completed-fantasy-scores.ts scripts/check-completed-scores-market.ts scripts/check-official-forecast-context.ts scripts/check-current-model-registry.ts scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts scripts/check-practice-cutoff.ts scripts/check-production-history-replay.ts scripts/check-component-calibration.ts
           npx tsc --noEmit --incremental false --strict --skipLibCheck --esModuleInterop --resolveJsonModule --target ES2017 --lib esnext,dom --module esnext --moduleResolution bundler scripts/check-weekend-signals.ts scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts
 
       - name: Setup Python for source-independent guards

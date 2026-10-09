@@ -27,6 +27,7 @@ enum StrategyMode {
 }
 
 model User {
+  googleSubject String? @unique
   id    String        @id @default(cuid())
   email String?       @unique
   name  String?
