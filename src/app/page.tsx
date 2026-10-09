@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect,useMemo,useState,useRef} from 'react';
+import {prepareForecast} from '../lib/forecast-preparation';
 import styles from './market-dashboard.module.css';
 
 type Score={round:number;points:number;name:string};
@@ -271,6 +272,7 @@ export default function Home(){
  const roundRef=useRef(17);
  const season=2026,round=data?.round??roundRef.current;
  const completedRef=useRef(false);
+ const preparationPending=useRef(false);
 
  async function load(){
   setStatus('Loading market…');
@@ -294,24 +296,24 @@ export default function Home(){
    const j=await r.json();
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
    setWeekendContext(j);
-   await load();
+   return await load();
   }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
  }
 
  async function updateOfficialScores(){
   if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
-  try{const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
+  try{if(preparationPending.current){preparationPending.current=!(await prepareForecast(load,refresh));if(preparationPending.current)return;}const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
    setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
    if(result.forecast?.completed){completedRef.current=true;await load()}
    else if(result.forecast?.round!==undefined&&result.forecast.round!==roundRef.current){
     roundRef.current=result.forecast.round;setWeekendContext(null);setBuilderTeams([]);setData(null);
     setScoresStatus('Results saved. Preparing forecast for R'+result.forecast.round+'…');
-    const next=await load();if(next&&!next.complete)await refresh(next.round);
-    setScoresStatus('Official results saved. Forecast round: R'+result.forecast.round);
+    preparationPending.current=!(await prepareForecast(load,refresh));
+    setScoresStatus(preparationPending.current?'Results saved. Next forecast is not ready; retrying automatically.':'Official results saved. Forecast round: R'+result.forecast.round);
    }else if(result.saved>0)await load();
   }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
  }
- useEffect(()=>{let mounted=true;void load().then(async market=>{if(!mounted||!market)return;if(!market.complete&&market.round>17&&!market.seasonCompleted)await refresh(market.round);if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
+ useEffect(()=>{let mounted=true;void load().then(async market=>{if(!mounted)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
