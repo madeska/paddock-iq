@@ -1,26 +1,18 @@
+import {authorizeTeamRequest} from '../../../lib/auth';
+import {forecastSeasonState} from '../../../lib/forecast-season-state';
+import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../lib/prisma';
 
-const MAIN_MODELS=[
- 'xpts-driver-baseline75-component25-practice-v1 + price-probability-v0.4-bounded',
- 'xpts-driver-baseline75-component25-v1 + price-probability-v0.4-bounded',
- 'xpts-constructor-baseline75-component25-v1 + price-probability-v0.4-bounded',
- 'xpts-driver-ridge50-ewma50-practice-v2 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge50-ewma50-v2 + price-probability-v0.3-floor-aware',
- 'xpts-constructor-ewma50-mean3-50-v2 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge3-practice-v1 + price-probability-v0.3-floor-aware',
- 'xpts-driver-ridge3-v1 + price-probability-v0.3-floor-aware',
- 'xpts-constructor-hybrid-v1 + price-probability-v0.3-floor-aware',
-];
-const BOOST_MODELS=['xpts-driver-ridge50-boost-practice-v1','xpts-driver-ridge50-boost-v1'];
-const CURRENT_MODELS=[...MAIN_MODELS,...BOOST_MODELS];
+import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
 
 export async function GET(request:NextRequest){
- const email=request.nextUrl.searchParams.get('email')?.trim().toLowerCase();
+ const auth=await authorizeTeamRequest(request);if(auth.response)return auth.response;
+ const owner=auth.owner!;
  const season=Number(request.nextUrl.searchParams.get('season')??2026);
- if(!email)return NextResponse.json({error:'email is required'},{status:400});
 
- const user=await prisma.user.findUnique({where:{email},include:{teams:{where:{season},orderBy:{name:'asc'}}}});
+
+ const user=await prisma.user.findUnique({where:{id:owner.id},include:{teams:{where:{season},orderBy:{name:'asc'}}}});
  if(!user)return NextResponse.json({error:'User not found'},{status:404});
  if(!user.teams.length)return NextResponse.json({error:'No team found for this season'},{status:404});
 
@@ -28,8 +20,7 @@ export async function GET(request:NextRequest){
  const team=user.teams.find(t=>t.id===teamId);
  if(!team)return NextResponse.json({error:'Team not found for user'},{status:404});
 
- const latestCompletedGp=await prisma.grandPrix.findFirst({where:{season,fantasyScores:{some:{points:{not:0}}}},orderBy:{round:'desc'}});
- const targetRound=(latestCompletedGp?.round??0)+1;
+ const targetRound=(await forecastSeasonState(prisma,season)).round;
  const targetGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:targetRound}}});
 
  const snapshot=await prisma.teamSnapshot.findFirst({
@@ -40,7 +31,7 @@ export async function GET(request:NextRequest){
    slots:{include:{asset:{include:{
     prices:targetGp?{where:{grandPrixId:targetGp.id},orderBy:{recordedAt:'desc'},take:1}:{orderBy:{recordedAt:'desc'},take:1},
     predictions:targetGp?{where:{grandPrixId:targetGp.id,modelVersion:{in:CURRENT_MODELS}},orderBy:{createdAt:'desc'}}:{orderBy:{createdAt:'desc'}},
-    fantasyScores:{orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE}},orderBy:{grandPrix:{round:'desc'}},take:3,include:{grandPrix:true}}
    }}}},
    team:{include:{chipUses:true}}
   }
@@ -85,5 +76,5 @@ export async function GET(request:NextRequest){
    }),
    chips:snapshot.team.chipUses.map(c=>({code:c.chipCode,status:c.status}))
   }
- });
+ },{headers:{'Cache-Control':'private, no-store'}});
 }

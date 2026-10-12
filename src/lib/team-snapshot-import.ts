@@ -12,9 +12,9 @@ export type TeamImport = {
   chips?:Record<string,'AVAILABLE'|'USED'|'LOCKED'|'UNKNOWN'>;
 };
 
-export async function saveTeamSnapshot(tx:Prisma.TransactionClient,body:TeamImport,existingTeamId?:string,externalId?:string){
+export async function saveTeamSnapshot(tx:Prisma.TransactionClient,body:TeamImport,existingTeamId?:string,externalId?:string,ownerId?:string){
   const email=body.user.email.trim().toLowerCase(),teamName=body.team.name.trim(),season=Number(body.team.season),round=Number(body.round);
-  const user=await tx.user.upsert({
+  const user=ownerId?await tx.user.findUniqueOrThrow({where:{id:ownerId}}):await tx.user.upsert({
     where:{email},
     update:{name:body.user.name?.trim() || undefined},
     create:{email,name:body.user.name?.trim() || undefined}

@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import fixture from './fixtures/production-baseline-parity.json';
+import {forecastProductionBaselines,simulateProductionForecast,type ProductionForecastAsset} from '../src/lib/production-forecast';
+import * as impact from '../src/lib/weekend-impact';
+const assets=fixture.assets as ProductionForecastAsset[];
+const teams={D0:'C8',D1:'C8',D2:'C9',D3:'C9'};
+const options={season:2026,round:9,sprint:true};
+test('weekend comparison reproduces deployed blend, isolating FP1 and complete SQ from identical history',()=>{
+ assert.equal(typeof impact.compareWeekendImpact,'function');
+ const practice={isSprint:true,positions:new Map([['D0',1],['D1',2],['D2',3],['D3',4]]),sprintQualifyingPositions:new Map([['D0',4],['D1',3],['D2',2],['D3',1]])};
+ const before=forecastProductionBaselines(assets,options),after=forecastProductionBaselines(assets,{...options,practice});
+ const beforeSimulation=simulateProductionForecast(before.baselines,teams,options),afterSimulation=simulateProductionForecast(after.baselines,teams,{...options,practice});
+ const rows=impact.compareWeekendImpact(before.baselines,beforeSimulation,after.baselines,afterSimulation);
+ const driver=rows.find(r=>r.code==='D0')!;
+ assert.equal(driver.before,Math.round((.75*before.baselines.get('D0')!.rawXPts+.25*beforeSimulation.drivers.find(d=>d.code==='D0')!.total)*10)/10);
+ assert.equal(driver.after,Math.round((.75*after.baselines.get('D0')!.rawXPts+.25*afterSimulation.drivers.find(d=>d.code==='D0')!.total)*10)/10);
+ assert.equal(driver.change,Math.round((driver.after-driver.before)*10)/10);
+ assert.notEqual(driver.change,0);
+ assert.ok(rows.some(r=>r.type==='CONSTRUCTOR'&&r.change!==0));
+ assert.deepEqual(impact.compareWeekendImpact(before.baselines,beforeSimulation,before.baselines,beforeSimulation).map(r=>r.change),rows.map(()=>0));
+});
+test('unsupported constructor keeps baseline and a missing comparison is never represented as zero',()=>{
+ const baseline=forecastProductionBaselines(assets,options).baselines;
+ const simulation=simulateProductionForecast(baseline,{},options);
+ const subset=new Map(baseline);subset.delete('D0');
+ const rows=impact.compareWeekendImpact(subset,simulation,baseline,simulation);
+ assert.ok(!rows.some(r=>r.code==='D0'));
+ const constructor=rows.find(r=>r.code==='C9')!;
+ assert.equal(constructor.before,Math.round(baseline.get('C9')!.rawXPts*10)/10);
+ assert.equal(constructor.change,0);
+});

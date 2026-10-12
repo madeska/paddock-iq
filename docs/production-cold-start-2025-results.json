@@ -1,0 +1,409 @@
+{
+  "scoringSeason": 2025,
+  "sprintNCPenalty": -20,
+  "note": "Exploratory consumed2025 R6–14. Fixed research prior uses half teammate pastEWMA and half pooled past score; global fallback if no teammate, no fabricated own history/practice modifier for prior. Same25% component weight. Common cohort metrics exclude newly covered labels and report them separately; adding driver changes simulated field and constructor support. No independent validation or activation.",
+  "rounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "missing": [
+    {
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER"
+    }
+  ],
+  "newCoverage": [
+    {
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER",
+      "prediction": 7.7,
+      "actual": 0,
+      "error": 7.7
+    }
+  ],
+  "summary": [
+    {
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 179,
+      "MAE": 10.66256983240224,
+      "RMSE": 14.017881636916192,
+      "Bias": 0.7474860335195528
+    },
+    {
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 90,
+      "MAE": 17.433333333333337,
+      "RMSE": 21.43404353411232,
+      "Bias": -0.23555555555555557
+    },
+    {
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 179,
+      "MAE": 10.659217877094978,
+      "RMSE": 14.015813096633979,
+      "Bias": 0.7441340782122904
+    },
+    {
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 90,
+      "MAE": 17.390000000000008,
+      "RMSE": 21.42387297696972,
+      "Bias": -0.19888888888888878
+    }
+  ],
+  "pairedRaceBootstrap": [
+    {
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "deltaMAE": -0.0033519553072626274,
+      "low": -0.010169491525423903,
+      "high": 0
+    },
+    {
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "deltaMAE": -0.0433333333333334,
+      "low": -0.1300000000000002,
+      "high": 0
+    }
+  ],
+  "byRound": [
+    {
+      "round": 6,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.405000000000001,
+      "RMSE": 15.597451714943695,
+      "Bias": -0.5150000000000006
+    },
+    {
+      "round": 6,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.819999999999999,
+      "RMSE": 17.463504802873906,
+      "Bias": -0.3400000000000004
+    },
+    {
+      "round": 6,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.405000000000001,
+      "RMSE": 15.597451714943695,
+      "Bias": -0.5150000000000006
+    },
+    {
+      "round": 6,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 13.819999999999999,
+      "RMSE": 17.463504802873906,
+      "Bias": -0.3400000000000004
+    },
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 9.073684210526316,
+      "RMSE": 13.980926857310774,
+      "Bias": 1.8631578947368423
+    },
+    {
+      "round": 7,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 18.23,
+      "RMSE": 22.928214060410376,
+      "Bias": -0.8300000000000001
+    },
+    {
+      "round": 7,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 19,
+      "MAE": 9.042105263157895,
+      "RMSE": 13.961375290421786,
+      "Bias": 1.8315789473684212
+    },
+    {
+      "round": 7,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 17.84,
+      "RMSE": 22.842504240997744,
+      "Bias": -0.5
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.014999999999997,
+      "RMSE": 11.769898045437776,
+      "Bias": 3.935
+    },
+    {
+      "round": 8,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.62,
+      "RMSE": 18.462990007038407,
+      "Bias": 5.74
+    },
+    {
+      "round": 8,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.014999999999997,
+      "RMSE": 11.769898045437776,
+      "Bias": 3.935
+    },
+    {
+      "round": 8,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.62,
+      "RMSE": 18.462990007038407,
+      "Bias": 5.74
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.55,
+      "RMSE": 13.664955177387155,
+      "Bias": 0.07999999999999971
+    },
+    {
+      "round": 9,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.74,
+      "RMSE": 20.888130600893895,
+      "Bias": -2.0200000000000005
+    },
+    {
+      "round": 9,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 10.55,
+      "RMSE": 13.664955177387155,
+      "Bias": 0.07999999999999971
+    },
+    {
+      "round": 9,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.74,
+      "RMSE": 20.888130600893895,
+      "Bias": -2.0200000000000005
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.38,
+      "RMSE": 15.463990429381417,
+      "Bias": -0.21000000000000069
+    },
+    {
+      "round": 10,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.889999999999997,
+      "RMSE": 27.193436708147058,
+      "Bias": -2.5700000000000007
+    },
+    {
+      "round": 10,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.38,
+      "RMSE": 15.463990429381417,
+      "Bias": -0.21000000000000069
+    },
+    {
+      "round": 10,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.889999999999997,
+      "RMSE": 27.193436708147058,
+      "Bias": -2.5700000000000007
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.755000000000003,
+      "RMSE": 16.158697348486974,
+      "Bias": 0.8649999999999999
+    },
+    {
+      "round": 11,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.159999999999997,
+      "RMSE": 25.363398825867165,
+      "Bias": -0.42000000000000026
+    },
+    {
+      "round": 11,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 11.755000000000003,
+      "RMSE": 16.158697348486974,
+      "Bias": 0.8649999999999999
+    },
+    {
+      "round": 11,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 22.159999999999997,
+      "RMSE": 25.363398825867165,
+      "Bias": -0.42000000000000026
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.789999999999997,
+      "RMSE": 16.91292405233347,
+      "Bias": 3.470000000000001
+    },
+    {
+      "round": 12,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.09,
+      "RMSE": 23.8390226309721,
+      "Bias": 7.5500000000000025
+    },
+    {
+      "round": 12,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 13.789999999999997,
+      "RMSE": 16.91292405233347,
+      "Bias": 3.470000000000001
+    },
+    {
+      "round": 12,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 19.09,
+      "RMSE": 23.8390226309721,
+      "Bias": 7.5500000000000025
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.464999999999998,
+      "RMSE": 10.32567189097155,
+      "Bias": -2.094999999999999
+    },
+    {
+      "round": 13,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.170000000000002,
+      "RMSE": 15.689646267523052,
+      "Bias": -4.01
+    },
+    {
+      "round": 13,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 8.464999999999998,
+      "RMSE": 10.32567189097155,
+      "Bias": -2.094999999999999
+    },
+    {
+      "round": 13,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 14.170000000000002,
+      "RMSE": 15.689646267523052,
+      "Bias": -4.01
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 7.450000000000001,
+      "RMSE": 10.561439295853573,
+      "Bias": -0.6099999999999994
+    },
+    {
+      "round": 14,
+      "model": "shared-production-pre-lock",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.18,
+      "RMSE": 18.15604582501377,
+      "Bias": -5.220000000000001
+    },
+    {
+      "round": 14,
+      "model": "cold-start-prior",
+      "type": "DRIVER",
+      "n": 20,
+      "MAE": 7.450000000000001,
+      "RMSE": 10.561439295853573,
+      "Bias": -0.6099999999999994
+    },
+    {
+      "round": 14,
+      "model": "cold-start-prior",
+      "type": "CONSTRUCTOR",
+      "n": 10,
+      "MAE": 16.18,
+      "RMSE": 18.15604582501377,
+      "Bias": -5.220000000000001
+    }
+  ]
+}

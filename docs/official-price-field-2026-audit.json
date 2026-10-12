@@ -1,0 +1,247 @@
+{
+  "season": 2026,
+  "throughRound": 16,
+  "verifiedField": "Value",
+  "previousSnapshotField": "OldPlayerValue",
+  "adjacentSameIdLinks": 491,
+  "archiveQuoteMatches": 528,
+  "oldFieldMatches": 57,
+  "anchors": [
+    {
+      "code": "ANT",
+      "type": "DRIVER",
+      "change": 3.8,
+      "initialQuote": 23.2,
+      "archiveR16Quote": 26.9,
+      "archiveR16Change": 0.1,
+      "inferredCurrentQuote": 27
+    },
+    {
+      "code": "LIN",
+      "type": "DRIVER",
+      "change": 3.2,
+      "initialQuote": 6.2,
+      "archiveR16Quote": 8.8,
+      "archiveR16Change": 0.6,
+      "inferredCurrentQuote": 9.4
+    },
+    {
+      "code": "COL",
+      "type": "DRIVER",
+      "change": 3.2,
+      "initialQuote": 6.2,
+      "archiveR16Quote": 10,
+      "archiveR16Change": -0.6,
+      "inferredCurrentQuote": 9.4
+    },
+    {
+      "code": "LAW",
+      "type": "DRIVER",
+      "change": 2.8,
+      "initialQuote": 6.5,
+      "archiveR16Quote": 9.1,
+      "archiveR16Change": 0.2,
+      "inferredCurrentQuote": 9.3
+    },
+    {
+      "code": "OCO",
+      "type": "DRIVER",
+      "change": 2,
+      "initialQuote": 7.3,
+      "archiveR16Quote": 9.1,
+      "archiveR16Change": 0.2,
+      "inferredCurrentQuote": 9.3
+    },
+    {
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "change": 9.6,
+      "initialQuote": 6.3,
+      "archiveR16Quote": 15.3,
+      "archiveR16Change": 0.6,
+      "inferredCurrentQuote": 15.9
+    },
+    {
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "change": 6.6,
+      "initialQuote": 12.5,
+      "archiveR16Quote": 19.4,
+      "archiveR16Change": -0.3,
+      "inferredCurrentQuote": 19.1
+    },
+    {
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "change": 4.7,
+      "initialQuote": 29.3,
+      "archiveR16Quote": 33.8,
+      "archiveR16Change": 0.2,
+      "inferredCurrentQuote": 34
+    },
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "change": 4.6,
+      "initialQuote": 23.3,
+      "archiveR16Quote": 27.6,
+      "archiveR16Change": 0.3,
+      "inferredCurrentQuote": 27.9
+    },
+    {
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "change": 4.2,
+      "initialQuote": 28.2,
+      "archiveR16Quote": 32.1,
+      "archiveR16Change": 0.3,
+      "inferredCurrentQuote": 32.4
+    }
+  ],
+  "totals": [
+    {
+      "code": "ANT",
+      "type": "DRIVER",
+      "points": 651,
+      "archiveTotal": 651
+    },
+    {
+      "code": "VER",
+      "type": "DRIVER",
+      "points": 433,
+      "archiveTotal": 433
+    },
+    {
+      "code": "HAM",
+      "type": "DRIVER",
+      "points": 427,
+      "archiveTotal": 427
+    },
+    {
+      "code": "RUS",
+      "type": "DRIVER",
+      "points": 408,
+      "archiveTotal": 408
+    },
+    {
+      "code": "LEC",
+      "type": "DRIVER",
+      "points": 384,
+      "archiveTotal": 384
+    },
+    {
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "points": 1308,
+      "archiveTotal": 1308
+    },
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "points": 1007,
+      "archiveTotal": 1007
+    },
+    {
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "points": 813,
+      "archiveTotal": 813
+    },
+    {
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "points": 800,
+      "archiveTotal": 800
+    },
+    {
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "points": 494,
+      "archiveTotal": 494
+    }
+  ],
+  "sourceHashes": [
+    {
+      "round": 1,
+      "sha256": "441d35983e3eb46d85bb6277e17bb7e5be81b4eb7bd94200d04c8610d30eb2ed",
+      "serverTimestamp": "3/8/2026 9:11:40 AM"
+    },
+    {
+      "round": 2,
+      "sha256": "832d256463020d31ddfb51340b26631167199e47749848b822c509d637986b00",
+      "serverTimestamp": "3/15/2026 1:46:24 PM"
+    },
+    {
+      "round": 3,
+      "sha256": "825951fc4c00857a69dff3368c8332f0c740514b33f2bde9997b297789cdffa8",
+      "serverTimestamp": "3/29/2026 10:38:00 AM"
+    },
+    {
+      "round": 4,
+      "sha256": "878aa4ef950afae7deedfd8180f4f3e58f5e3e56bb0288d48b6a7d52b9998a1e",
+      "serverTimestamp": "6/1/2026 2:45:19 PM"
+    },
+    {
+      "round": 5,
+      "sha256": "d730ee0b5e01e625b637aebb4980e852eb1a225f535d837d85fab8073417580a",
+      "serverTimestamp": "6/1/2026 7:12:41 PM"
+    },
+    {
+      "round": 6,
+      "sha256": "bc797fdae0eb35d188d7a81ef83a2080571cc4f59d2edc20aaae412fb610cb10",
+      "serverTimestamp": "9/17/2026 11:55:41 AM"
+    },
+    {
+      "round": 7,
+      "sha256": "ba5f33b161b5bcb061036cebc03b2a72da5c493f6f7ef5fa312e7adef3d2daa2",
+      "serverTimestamp": "9/17/2026 12:10:59 PM"
+    },
+    {
+      "round": 8,
+      "sha256": "59b8860d6775274a720db81502f4b27c42651ab1faf2bfa814d404b15cd25516",
+      "serverTimestamp": "9/17/2026 12:25:28 PM"
+    },
+    {
+      "round": 9,
+      "sha256": "8645ca5b019c5f1af0eb91f9ae33bc0d3f20da8a93a13eba902f8bcf079ea7d6",
+      "serverTimestamp": "9/17/2026 12:40:41 PM"
+    },
+    {
+      "round": 10,
+      "sha256": "105d22ed323549c36a9144c5f41867ef30ac7ef0f4d8e35da7067c0b10aa76d9",
+      "serverTimestamp": "9/17/2026 12:55:30 PM"
+    },
+    {
+      "round": 11,
+      "sha256": "3456c1b317a1bca4b4ebfad8052a423ba09712e7217534f34d5e08f72f9cc083",
+      "serverTimestamp": "9/17/2026 1:13:33 PM"
+    },
+    {
+      "round": 12,
+      "sha256": "c8b860121d88cf91f845843836fac8bee1226a9ed3b3ea0edb0825ed968c0555",
+      "serverTimestamp": "9/17/2026 1:28:13 PM"
+    },
+    {
+      "round": 13,
+      "sha256": "ab91db47fb77e42df3345a28e6be1f21743ef68c9cebf4bd1983c3381fb87f7b",
+      "serverTimestamp": "9/17/2026 1:43:55 PM"
+    },
+    {
+      "round": 14,
+      "sha256": "06066c61fcbaf10ef337b186745b284865a8b0cea273ed8bc17b58e3ba6e4fd2",
+      "serverTimestamp": "9/17/2026 1:59:39 PM"
+    },
+    {
+      "round": 15,
+      "sha256": "b153c6bb9ec2e5bd563f6908107abe1af6af3f90d6b6594794ec1477e553b5e1",
+      "serverTimestamp": "9/26/2026 5:33:08 PM"
+    },
+    {
+      "round": 16,
+      "sha256": "d933d52c64254f4f2efefa4dd3a021685a0d39100f3c75db4bdbad92e9adb22a",
+      "serverTimestamp": "10/5/2026 9:41:10 AM"
+    }
+  ],
+  "archiveSHA256": "c558b1f27cc9c24f6d7865a501d148ddf5faf3fb1143c4cf7b26bafeaaabfc7d",
+  "limitations": "Field semantics corroborated by historical chains and current primary aggregate anchors. Exact historical publication-before-lock timing remains unverified. Aggregate totals do not validate every individual label. No new model selection or activation."
+}

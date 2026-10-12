@@ -1,0 +1,1397 @@
+{
+  "note": "Cross-season retrospective test with fixed previously selected settings, not an as-if-live 2025 forecast or full Fantasy xPts validation. Current comparator uses an ordinal qualifying/finishing-history index because 2025 Fantasy prices/points are unavailable. Pre-qualifying forecasts use simulated qualifying from prior sessions; known-grid forecasts use actual starting grid available before race. Target failure/finish labels enter evaluation only. Physical OpenF1 flags do not imply Fantasy non-classification. No overtake labels are fabricated. No production activation.",
+  "year": 2025,
+  "settings": {
+    "firstEvaluationRound": 6,
+    "seeds": 5,
+    "simulationsPerSeed": 2000,
+    "historyPrior": 5,
+    "racePaceNoise": 0.15,
+    "progressRaceNoise": 0
+  },
+  "coverage": {
+    "races": 24,
+    "driverRecords": 480,
+    "unknownResults": 1,
+    "unknownQualifying": 1,
+    "excluded": []
+  },
+  "summary": [
+    {
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 333,
+        "MAE": 2.9898347410343113,
+        "RMSE": 3.677086279604111,
+        "Bias": -0.035790128804899596
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 3.344197669669452,
+        "RMSE": 4.284346790500776,
+        "Bias": 0.12403669667609958
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    },
+    {
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 333,
+        "MAE": 2.947201637078472,
+        "RMSE": 3.8110946150466596,
+        "Bias": -0.02917070287915743
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 2.9815436734503558,
+        "RMSE": 4.020075222265268,
+        "Bias": 0.11741727075035725
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    },
+    {
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 333,
+        "MAE": 3.033359426558728,
+        "RMSE": 3.9160741448166445,
+        "Bias": -0.06384437607301563
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 2.786470060867672,
+        "RMSE": 3.8154408850863955,
+        "Bias": 0.1520909439442155
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    },
+    {
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 333,
+        "MAE": 2.9898347410343113,
+        "RMSE": 3.677086279604111,
+        "Bias": -0.035790128804899596
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 2.9898347410343113,
+        "RMSE": 3.677086279604112,
+        "Bias": 0.035790128804899735
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    },
+    {
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 333,
+        "MAE": 2.947201637078472,
+        "RMSE": 3.8110946150466596,
+        "Bias": -0.02917070287915743
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 2.947201637078472,
+        "RMSE": 3.8110946150466596,
+        "Bias": 0.02917070287915742
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    },
+    {
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 333,
+        "MAE": 2.550683027094448,
+        "RMSE": 3.5340535464225704,
+        "Bias": -0.15798010328778955
+      },
+      "positionChange": {
+        "n": 333,
+        "MAE": 2.550683027094449,
+        "RMSE": 3.5340535464225704,
+        "Bias": 0.15798010328778958
+      },
+      "physicalFailureBrier": 0.11051016485488128
+    }
+  ],
+  "byRound": [
+    {
+      "round": 6,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.6692520819915075,
+        "RMSE": 2.046764372400728,
+        "Bias": -0.07495473411684295
+      }
+    },
+    {
+      "round": 6,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.4698481668450851,
+        "RMSE": 1.738727837714958,
+        "Bias": -0.39690845327443747
+      }
+    },
+    {
+      "round": 6,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.5577495208297423,
+        "RMSE": 1.9100166306873787,
+        "Bias": -0.5007095261798636
+      }
+    },
+    {
+      "round": 6,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.6692520819915075,
+        "RMSE": 2.046764372400728,
+        "Bias": -0.07495473411684295
+      }
+    },
+    {
+      "round": 6,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.4698481668450851,
+        "RMSE": 1.738727837714958,
+        "Bias": -0.39690845327443747
+      }
+    },
+    {
+      "round": 6,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.0327760753881354,
+        "RMSE": 2.5053266166484063,
+        "Bias": -0.07673327934915963
+      }
+    },
+    {
+      "round": 7,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.3578097395103934,
+        "RMSE": 2.9169035317146386,
+        "Bias": -0.2200517163669216
+      }
+    },
+    {
+      "round": 7,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.122458800472393,
+        "RMSE": 2.652027321543263,
+        "Bias": -0.16796187917646113
+      }
+    },
+    {
+      "round": 7,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.057175325674233,
+        "RMSE": 2.5541450635503637,
+        "Bias": -0.2665816043964077
+      }
+    },
+    {
+      "round": 7,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.3578097395103934,
+        "RMSE": 2.9169035317146386,
+        "Bias": -0.2200517163669216
+      }
+    },
+    {
+      "round": 7,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.122458800472393,
+        "RMSE": 2.652027321543263,
+        "Bias": -0.16796187917646113
+      }
+    },
+    {
+      "round": 7,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.32223103064136,
+        "RMSE": 4.089027826272814,
+        "Bias": -0.7629531569565687
+      }
+    },
+    {
+      "round": 8,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.2349472135000763,
+        "RMSE": 4.264709561109289,
+        "Bias": -0.40042278112459595
+      }
+    },
+    {
+      "round": 8,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.1207216133627136,
+        "RMSE": 4.356364903702433,
+        "Bias": -0.459149705973357
+      }
+    },
+    {
+      "round": 8,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.585070365403825,
+        "RMSE": 4.762481890207939,
+        "Bias": -0.39628843869234703
+      }
+    },
+    {
+      "round": 8,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.2349472135000763,
+        "RMSE": 4.264709561109289,
+        "Bias": -0.40042278112459595
+      }
+    },
+    {
+      "round": 8,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 3.1207216133627136,
+        "RMSE": 4.356364903702433,
+        "Bias": -0.459149705973357
+      }
+    },
+    {
+      "round": 8,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 1.6732686514052943,
+        "RMSE": 2.5787704529330444,
+        "Bias": -0.4459125672528754
+      }
+    },
+    {
+      "round": 9,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.2034693875597036,
+        "RMSE": 3.603133165268097,
+        "Bias": 0.3163787773848339
+      }
+    },
+    {
+      "round": 9,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.1395772243127054,
+        "RMSE": 4.050910251636797,
+        "Bias": 0.2992640048992693
+      }
+    },
+    {
+      "round": 9,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.167777188270561,
+        "RMSE": 4.04887688231186,
+        "Bias": 0.2144811561655567
+      }
+    },
+    {
+      "round": 9,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.2034693875597036,
+        "RMSE": 3.603133165268097,
+        "Bias": 0.3163787773848339
+      }
+    },
+    {
+      "round": 9,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.1395772243127054,
+        "RMSE": 4.050910251636797,
+        "Bias": 0.2992640048992693
+      }
+    },
+    {
+      "round": 9,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.5960206482928045,
+        "RMSE": 3.5556193383616272,
+        "Bias": 0.34473363269055757
+      }
+    },
+    {
+      "round": 10,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.637149743442659,
+        "RMSE": 3.3438529459745134,
+        "Bias": 0.5670158313758282
+      }
+    },
+    {
+      "round": 10,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.633193587361128,
+        "RMSE": 3.292177237380709,
+        "Bias": 0.7435581792112446
+      }
+    },
+    {
+      "round": 10,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.843240629081357,
+        "RMSE": 3.5068610436384473,
+        "Bias": 0.609106993223351
+      }
+    },
+    {
+      "round": 10,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.637149743442659,
+        "RMSE": 3.3438529459745134,
+        "Bias": 0.5670158313758282
+      }
+    },
+    {
+      "round": 10,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.633193587361128,
+        "RMSE": 3.292177237380709,
+        "Bias": 0.7435581792112446
+      }
+    },
+    {
+      "round": 10,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.0730203965532827,
+        "RMSE": 2.5395190767213562,
+        "Bias": 0.28111846065115814
+      }
+    },
+    {
+      "round": 11,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.953919342526053,
+        "RMSE": 3.4288578630997435,
+        "Bias": 1.224835560742867
+      }
+    },
+    {
+      "round": 11,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.6571934094657412,
+        "RMSE": 3.491910084992025,
+        "Bias": 1.504662434612194
+      }
+    },
+    {
+      "round": 11,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 3.2285741606813767,
+        "RMSE": 4.0469730592111315,
+        "Bias": 1.5284284541623019
+      }
+    },
+    {
+      "round": 11,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.953919342526053,
+        "RMSE": 3.4288578630997435,
+        "Bias": 1.224835560742867
+      }
+    },
+    {
+      "round": 11,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.6571934094657412,
+        "RMSE": 3.491910084992025,
+        "Bias": 1.504662434612194
+      }
+    },
+    {
+      "round": 11,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 1.8841329334488575,
+        "RMSE": 2.780429408146738,
+        "Bias": 0.5025407095263806
+      }
+    },
+    {
+      "round": 12,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 3.5171824210625133,
+        "RMSE": 4.390509854844678,
+        "Bias": 0.6753220525696595
+      }
+    },
+    {
+      "round": 12,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 3.5934818775374207,
+        "RMSE": 4.849568867280547,
+        "Bias": 0.36279959508236
+      }
+    },
+    {
+      "round": 12,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 3.783352215281502,
+        "RMSE": 5.208127217278111,
+        "Bias": 0.47382743348321743
+      }
+    },
+    {
+      "round": 12,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 3.5171824210625133,
+        "RMSE": 4.390509854844678,
+        "Bias": 0.6753220525696595
+      }
+    },
+    {
+      "round": 12,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 3.5934818775374207,
+        "RMSE": 4.849568867280547,
+        "Bias": 0.36279959508236
+      }
+    },
+    {
+      "round": 12,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 4.27387459181136,
+        "RMSE": 5.518590619293962,
+        "Bias": -0.10172614403510198
+      }
+    },
+    {
+      "round": 13,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.4013161803242697,
+        "RMSE": 4.431449085512862,
+        "Bias": -1.307928701953718
+      }
+    },
+    {
+      "round": 13,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.3168872195001726,
+        "RMSE": 4.495088172665273,
+        "Bias": -1.3082490333922956
+      }
+    },
+    {
+      "round": 13,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.5788270849055195,
+        "RMSE": 4.811471005236775,
+        "Bias": -1.3072020864979188
+      }
+    },
+    {
+      "round": 13,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.4013161803242697,
+        "RMSE": 4.431449085512862,
+        "Bias": -1.307928701953718
+      }
+    },
+    {
+      "round": 13,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.3168872195001726,
+        "RMSE": 4.495088172665273,
+        "Bias": -1.3082490333922956
+      }
+    },
+    {
+      "round": 13,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.7619797588679478,
+        "RMSE": 4.321264650710436,
+        "Bias": -1.2557877586277182
+      }
+    },
+    {
+      "round": 14,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 4.0377768720994265,
+        "RMSE": 4.566865504410056,
+        "Bias": -0.8188622312579691
+      }
+    },
+    {
+      "round": 14,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 4.013938377420339,
+        "RMSE": 5.055539233701774,
+        "Bias": -0.8644334928949672
+      }
+    },
+    {
+      "round": 14,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 4.276720384981961,
+        "RMSE": 5.203137263094173,
+        "Bias": -0.8849020591253685
+      }
+    },
+    {
+      "round": 14,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 4.0377768720994265,
+        "RMSE": 4.566865504410056,
+        "Bias": -0.8188622312579691
+      }
+    },
+    {
+      "round": 14,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 4.013938377420339,
+        "RMSE": 5.055539233701774,
+        "Bias": -0.8644334928949672
+      }
+    },
+    {
+      "round": 14,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 1.6426598352471822,
+        "RMSE": 2.163798676185635,
+        "Bias": -0.538152489188139
+      }
+    },
+    {
+      "round": 15,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.2915733537848646,
+        "RMSE": 3.8665373137563637,
+        "Bias": 1.0451990137886993
+      }
+    },
+    {
+      "round": 15,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.6095805102141636,
+        "RMSE": 4.555399125943657,
+        "Bias": 1.3385520087868616
+      }
+    },
+    {
+      "round": 15,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.354407565995564,
+        "RMSE": 4.387570345169829,
+        "Bias": 1.3292826175945995
+      }
+    },
+    {
+      "round": 15,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.2915733537848646,
+        "RMSE": 3.8665373137563637,
+        "Bias": 1.0451990137886993
+      }
+    },
+    {
+      "round": 15,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.6095805102141636,
+        "RMSE": 4.555399125943657,
+        "Bias": 1.3385520087868616
+      }
+    },
+    {
+      "round": 15,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 4.018087673409013,
+        "RMSE": 5.0355693647108986,
+        "Bias": 1.2049351388093108
+      }
+    },
+    {
+      "round": 16,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.182425644300926,
+        "RMSE": 2.773123202045428,
+        "Bias": -0.3742098792141541
+      }
+    },
+    {
+      "round": 16,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 1.6645979534423665,
+        "RMSE": 2.442735446552296,
+        "Bias": -0.32516382565104934
+      }
+    },
+    {
+      "round": 16,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 18,
+        "MAE": 1.6423012395194665,
+        "RMSE": 2.25186991693323,
+        "Bias": -0.45783350749221996
+      }
+    },
+    {
+      "round": 16,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.182425644300926,
+        "RMSE": 2.773123202045428,
+        "Bias": -0.3742098792141541
+      }
+    },
+    {
+      "round": 16,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 1.6645979534423665,
+        "RMSE": 2.442735446552296,
+        "Bias": -0.32516382565104934
+      }
+    },
+    {
+      "round": 16,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 18,
+        "MAE": 2.3245972241859576,
+        "RMSE": 2.811750032848604,
+        "Bias": -0.10307513696046547
+      }
+    },
+    {
+      "round": 17,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.7502246874531813,
+        "RMSE": 4.300398942579556,
+        "Bias": -0.34007280092889947
+      }
+    },
+    {
+      "round": 17,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.9862873568355446,
+        "RMSE": 4.642025887275397,
+        "Bias": -0.2770338948353977
+      }
+    },
+    {
+      "round": 17,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.6389575617525884,
+        "RMSE": 4.258028061210978,
+        "Bias": -0.26135692368275304
+      }
+    },
+    {
+      "round": 17,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.7502246874531813,
+        "RMSE": 4.300398942579556,
+        "Bias": -0.34007280092889947
+      }
+    },
+    {
+      "round": 17,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.9862873568355446,
+        "RMSE": 4.642025887275397,
+        "Bias": -0.2770338948353977
+      }
+    },
+    {
+      "round": 17,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 1.9969819754114446,
+        "RMSE": 2.4416366870453867,
+        "Bias": -0.658498963530139
+      }
+    },
+    {
+      "round": 18,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.907254542270505,
+        "RMSE": 3.6187252222354607,
+        "Bias": -1.117014194733808
+      }
+    },
+    {
+      "round": 18,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.9048783790624486,
+        "RMSE": 3.5228025999854733,
+        "Bias": -1.1339410390293814
+      }
+    },
+    {
+      "round": 18,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.642450639958087,
+        "RMSE": 3.089216148649828,
+        "Bias": -1.1288575374387708
+      }
+    },
+    {
+      "round": 18,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.907254542270505,
+        "RMSE": 3.6187252222354607,
+        "Bias": -1.117014194733808
+      }
+    },
+    {
+      "round": 18,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.9048783790624486,
+        "RMSE": 3.5228025999854733,
+        "Bias": -1.1339410390293814
+      }
+    },
+    {
+      "round": 18,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.675485474608416,
+        "RMSE": 3.825239608431768,
+        "Bias": -1.0873108543679286
+      }
+    },
+    {
+      "round": 19,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.1609022191591345,
+        "RMSE": 3.650860011879641,
+        "Bias": -0.6117731621546435
+      }
+    },
+    {
+      "round": 19,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 2.9024789251583103,
+        "RMSE": 3.6145028567488824,
+        "Bias": -0.6351351157594128
+      }
+    },
+    {
+      "round": 19,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.10752281068565,
+        "RMSE": 3.8200292243297693,
+        "Bias": -0.6001943917218288
+      }
+    },
+    {
+      "round": 19,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 3.1609022191591345,
+        "RMSE": 3.650860011879641,
+        "Bias": -0.6117731621546435
+      }
+    },
+    {
+      "round": 19,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 2.9024789251583103,
+        "RMSE": 3.6145028567488824,
+        "Bias": -0.6351351157594128
+      }
+    },
+    {
+      "round": 19,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 19,
+        "MAE": 2.1149757922938437,
+        "RMSE": 2.8618849381767273,
+        "Bias": -0.5597080765034189
+      }
+    },
+    {
+      "round": 20,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.5477565888817937,
+        "RMSE": 3.0197236757512957,
+        "Bias": 0.5208064835394042
+      }
+    },
+    {
+      "round": 20,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.605257917423581,
+        "RMSE": 3.231895745734799,
+        "Bias": 0.5910252051446852
+      }
+    },
+    {
+      "round": 20,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.7887950209171373,
+        "RMSE": 3.4781160775270425,
+        "Bias": 0.4026948858780446
+      }
+    },
+    {
+      "round": 20,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.5477565888817937,
+        "RMSE": 3.0197236757512957,
+        "Bias": 0.5208064835394042
+      }
+    },
+    {
+      "round": 20,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.605257917423581,
+        "RMSE": 3.231895745734799,
+        "Bias": 0.5910252051446852
+      }
+    },
+    {
+      "round": 20,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.1516160472176673,
+        "RMSE": 2.7758265130925883,
+        "Bias": 0.25014685189187225
+      }
+    },
+    {
+      "round": 21,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.832337630975206,
+        "RMSE": 3.458417781888647,
+        "Bias": 0.6334489113696665
+      }
+    },
+    {
+      "round": 21,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.826388513760341,
+        "RMSE": 3.255908174019712,
+        "Bias": 0.6328268002719262
+      }
+    },
+    {
+      "round": 21,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 17,
+        "MAE": 3.119353499691984,
+        "RMSE": 3.7623884455105503,
+        "Bias": 0.6827305974406856
+      }
+    },
+    {
+      "round": 21,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.832337630975206,
+        "RMSE": 3.458417781888647,
+        "Bias": 0.6334489113696665
+      }
+    },
+    {
+      "round": 21,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 2.826388513760341,
+        "RMSE": 3.255908174019712,
+        "Bias": 0.6328268002719262
+      }
+    },
+    {
+      "round": 21,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 17,
+        "MAE": 1.9919085499766658,
+        "RMSE": 3.3790619712746524,
+        "Bias": 0.12265053912624257
+      }
+    },
+    {
+      "round": 22,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 2.558892855748539,
+        "RMSE": 3.092501952975438,
+        "Bias": 1.659256262697383
+      }
+    },
+    {
+      "round": 22,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 2.6127282940976913,
+        "RMSE": 3.1275915203120452,
+        "Bias": 1.7325703593596427
+      }
+    },
+    {
+      "round": 22,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 15,
+        "MAE": 2.552186503014428,
+        "RMSE": 3.153490890889013,
+        "Bias": 1.6272997126572657
+      }
+    },
+    {
+      "round": 22,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 2.558892855748539,
+        "RMSE": 3.092501952975438,
+        "Bias": 1.659256262697383
+      }
+    },
+    {
+      "round": 22,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 2.6127282940976913,
+        "RMSE": 3.1275915203120452,
+        "Bias": 1.7325703593596427
+      }
+    },
+    {
+      "round": 22,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 15,
+        "MAE": 4.033425248612552,
+        "RMSE": 5.239328671638125,
+        "Bias": 1.4463150513005487
+      }
+    },
+    {
+      "round": 23,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.4425164329189566,
+        "RMSE": 3.076014938392164,
+        "Bias": 0.3868034195124058
+      }
+    },
+    {
+      "round": 23,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.81966404289287,
+        "RMSE": 3.3172135669002367,
+        "Bias": 0.23809033893609888
+      }
+    },
+    {
+      "round": 23,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.5162999643271196,
+        "RMSE": 3.0265306326448815,
+        "Bias": 0.1095142324047409
+      }
+    },
+    {
+      "round": 23,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.4425164329189566,
+        "RMSE": 3.076014938392164,
+        "Bias": 0.3868034195124058
+      }
+    },
+    {
+      "round": 23,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.81966404289287,
+        "RMSE": 3.3172135669002367,
+        "Bias": 0.23809033893609888
+      }
+    },
+    {
+      "round": 23,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 16,
+        "MAE": 2.449489986309615,
+        "RMSE": 2.9761850395719476,
+        "Bias": 0.606451397685539
+      }
+    },
+    {
+      "round": 24,
+      "model": "ordinal-index",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.6553921752090957,
+        "RMSE": 4.328256639651146,
+        "Bias": -1.1682364982782356
+      }
+    },
+    {
+      "round": 24,
+      "model": "historical-race-pace",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.600914383471472,
+        "RMSE": 4.376568210322953,
+        "Bias": -1.1817758128404658
+      }
+    },
+    {
+      "round": 24,
+      "model": "grid-progress",
+      "timing": "pre-qualifying",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.8191727475425132,
+        "RMSE": 4.6237127795771755,
+        "Bias": -1.1772342927307968
+      }
+    },
+    {
+      "round": 24,
+      "model": "ordinal-index",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.6553921752090957,
+        "RMSE": 4.328256639651146,
+        "Bias": -1.1682364982782356
+      }
+    },
+    {
+      "round": 24,
+      "model": "historical-race-pace",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 3.600914383471472,
+        "RMSE": 4.376568210322953,
+        "Bias": -1.1817758128404658
+      }
+    },
+    {
+      "round": 24,
+      "model": "grid-progress",
+      "timing": "known-grid",
+      "finishRank": {
+        "n": 20,
+        "MAE": 2.8543646370256264,
+        "RMSE": 3.6376080594682536,
+        "Bias": -1.1327701087709898
+      }
+    }
+  ],
+  "pairedRoundIntervals": [
+    {
+      "timing": "pre-qualifying",
+      "mean": 0.0435246855244197,
+      "low": -0.06520763409939712,
+      "high": 0.1429873030918757,
+      "negativeIsBetter": true,
+      "note": "Paired race-block bootstrap for conditional-finisher rank MAE; fixed settings on a new retrospective season, not full Fantasy forecasts"
+    },
+    {
+      "timing": "known-grid",
+      "mean": -0.43915171393986446,
+      "low": -0.866181889179227,
+      "high": 0.007391055812527367,
+      "negativeIsBetter": true,
+      "note": "Paired race-block bootstrap for conditional-finisher rank MAE; fixed settings on a new retrospective season, not full Fantasy forecasts"
+    }
+  ]
+}

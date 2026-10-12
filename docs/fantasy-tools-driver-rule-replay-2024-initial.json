@@ -1,0 +1,83 @@
+{
+  "season": 2024,
+  "checkedDriverSessions": 1078,
+  "constructorsChecked": 538,
+  "constructorMismatches": [
+    {
+      "round": 8,
+      "id": "AST",
+      "phase": "Q",
+      "expected": 3,
+      "actual": 1
+    },
+    {
+      "round": 8,
+      "id": "HAA",
+      "phase": "Q",
+      "expected": -31,
+      "actual": -30
+    },
+    {
+      "round": 15,
+      "id": "WIL",
+      "phase": "Q",
+      "expected": -21,
+      "actual": -20
+    }
+  ],
+  "missingConstructorDrivers": [
+    {
+      "round": 3,
+      "id": "WIL",
+      "drivers": [
+        "WIL_ALB"
+      ]
+    }
+  ],
+  "mismatches": [],
+  "penaltyCases": [
+    {
+      "round": 8,
+      "id": "HAA_HUL",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 8,
+      "id": "HAA_MAG",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 14,
+      "id": "MER_RUS",
+      "phase": "R",
+      "expected": -25,
+      "actual": -25
+    },
+    {
+      "round": 15,
+      "id": "WIL_ALB",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 17,
+      "id": "ALP_GAS",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 21,
+      "id": "HAA_HUL",
+      "phase": "R",
+      "expected": -25,
+      "actual": -25
+    }
+  ],
+  "note": "Research source replay only. Historical Q/R/S position tables and NC/DSQ deductions reconstructed from scored components. Constructor pit ranking rules and contemporaneous official rule corroboration remain required. No forecast errors computed."
+}

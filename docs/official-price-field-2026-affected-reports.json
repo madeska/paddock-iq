@@ -1,0 +1,18 @@
+{
+  "affected": [
+    "docs/component-calibration-results.json",
+    "docs/classified-progress-results.json",
+    "docs/joint-weekend-results.json",
+    "docs/overtake-model-results.json",
+    "docs/past-selected-weekend-results.json",
+    "docs/point-history-2026-results.json",
+    "docs/point-history-ensemble-2026-results.json",
+    "docs/qualifying-model-results.json",
+    "docs/qualifying-weekend-results.json",
+    "docs/race-progress-results.json",
+    "docs/recent-overtakes-results.json",
+    "docs/weekend-error-attribution-results.json"
+  ],
+  "unaffected": "2025/2024/2023 tree residual reports use independent season archives and are unchanged",
+  "activation": "No change to frozen driver-only tree parameters or production activation"
+}

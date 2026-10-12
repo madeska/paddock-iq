@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';import {test} from 'node:test';import {pitPodiumAwards2024,rankedPitPodiumAwards2024} from '../src/lib/pit-podium-2024';
+test('same constructor may earn all three distinct stop awards',()=>{const result=pitPodiumAwards2024([{id:'a',team:'MCL',seconds:1.9},{id:'b',team:'MCL',seconds:2},{id:'c',team:'MCL',seconds:2.1},{id:'d',team:'FER',seconds:2.2}]);assert.deepEqual(result,{MCL:18,FER:0})});
+test('awards follow stop times, not team order',()=>assert.deepEqual(pitPodiumAwards2024([{id:'a',team:'FER',seconds:2.4},{id:'b',team:'MCL',seconds:2.2},{id:'c',team:'MER',seconds:2.3}]),{FER:3,MCL:10,MER:5}));
+test('incomplete podium is rejected rather than fabricated',()=>assert.throws(()=>pitPodiumAwards2024([{id:'a',team:'FER',seconds:2}])));
+test('invalid or duplicated stop identity is rejected',()=>{for(const seconds of [NaN,Infinity,0,-1])assert.throws(()=>pitPodiumAwards2024([{id:'a',team:'FER',seconds},{id:'b',team:'MER',seconds:2},{id:'c',team:'MCL',seconds:3}]));assert.throws(()=>pitPodiumAwards2024([{id:'a',team:'FER',seconds:2},{id:'a',team:'MER',seconds:3},{id:'c',team:'MCL',seconds:4}]))});
+test('equal times require explicit source ordering rather than array accident',()=>assert.throws(()=>pitPodiumAwards2024([{id:'a',team:'FER',seconds:2},{id:'b',team:'MER',seconds:2},{id:'c',team:'MCL',seconds:3}])));
+
+import archived from '../docs/fantasy-tools-pit-rule-replay-2024.json';
+test('all archived podium identities conserve 18 points through the scoring helper',()=>{for(const weekend of archived.weekends){const owners=weekend.owners as Record<string,string>;const result=rankedPitPodiumAwards2024([1,2,3].map(rank=>({id:String(rank),team:owners[String(rank)]})));assert.equal(Object.values(result).reduce((n,v)=>n+v,0),weekend.total);for(const team of new Set(Object.values(owners)))assert.equal(result[team],[1,2,3].reduce((n,rank)=>n+(owners[String(rank)]===team?[10,5,3][rank-1]:0),0))}});

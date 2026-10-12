@@ -1,0 +1,1 @@
+import {NextResponse} from 'next/server';import {sessionOwner,authConfigured} from '../../../lib/auth';export async function GET(){const owner=await sessionOwner();return NextResponse.json({configured:authConfigured(),user:owner?{id:owner.id,email:owner.email,name:owner.name}:null},{headers:{'Cache-Control':'no-store'}})}

@@ -1,0 +1,17 @@
+# Shared production forecast and official roster inputs
+
+The API and future parity benchmarks now call the same pure functions in `src/lib/production-forecast.ts`. The deployed defaults are centralized: EWMA 0.25, ridge 50 with sample-SD feature scaling and training targets starting at R6, half ridge/half EWMA for drivers, constructor half EWMA/half recent-three mean with a -5 floor, 25% component blend, overtake intensity 1.2 and 3,000 simulations. Practice modification and the pure ridge boost remain as before.
+
+Before extracting the API math, synthetic golden outputs were generated from the original `ef2d5c9` formulas. `scripts/fixtures/production-baseline-parity.json` includes the no-trained-model fallback, fitted ridge, normal-GP practice and sprint cases, plus seeded full component outputs. Tests match all baseline values to 1e-10 and full valid-roster component objects exactly. Future labels and other asset seasons are excluded by the shared function. These fixtures prove refactor parity for the covered cases, not predictive superiority.
+
+The API now obtains driver-to-constructor membership from the current official feed. It no longer assigns LIN to RBR or HAD to RB through a hardcoded table. Constructor projections use model version component25-v4; market/team readers accept v4 with older fallbacks. Constructor components require exactly two known projected drivers. A missing or ambiguous pair falls back to historical baseline rather than treating an uncomputed component as a zero prediction.
+
+Official synchronization now honors explicit inactive flags for current and historical rows. Current-team overrides no longer discard active historical LAW rows. Duplicate active identities are rejected before writes. Null, empty, nonnumeric and boolean point values are not coerced to zero. A numeric or string zero from an eligible row and negative scores remain valid. A mocked synchronization integration test exercises those real write paths without touching a database or network.
+
+Missing active flags retain compatibility with older feed shapes; this is not proof of a played session. The current public feeds provide explicit flags. Closed-session validation and already-persisted legacy placeholders still need source-aware reconciliation. This change prevents new inactive placeholders but does not claim to have cleaned old database history. User-entered scores must be preserved during the next repair.
+
+No new experimental model or tuned hyperparameter is activated. The baseline equations are preserved; official membership and ingestion eligibility are corrected. Earlier reports labeled “current” retain their separate historical research configuration and are not silently reinterpreted as full API replays. Reserved 2025 R15–21 Fantasy-score errors remain unused.
+
+Commands: `npm run fantasy:check-production-forecast`, `npm run fantasy:check-official-context`. Next gate: reconcile generated historical placeholders safely, then construct source-timed benchmarks using the shared deployed predictor and known quote/practice availability before selecting a new model.
+
+Historical generated-zero reconciliation is now implemented before automatic prediction training. See official-history-reconciliation.md for its source, season and concurrency guards. Unknown records are preserved; no blanket history reset or historical price repair is performed.

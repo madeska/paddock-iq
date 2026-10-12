@@ -7,10 +7,10 @@ export const OFFICIAL_2026:FantasyScoringConfig={fastestLapPoints:10,driverOfDay
 const finish=[0,25,18,15,12,10,8,6,4,2,1];
 export function scoreDriverWeekend(i:DriverWeekendInput,c=OFFICIAL_2026){
  const qualifying=i.noQualifyingTime?-5:(i.qualifyingPosition&&i.qualifyingPosition<=10?11-i.qualifyingPosition:0);
- if(i.dnf||i.dsq)return {qualifying,race:c.dnfPoints,total:qualifying+c.dnfPoints};
- const raceFinish=i.raceFinishPosition&&i.raceFinishPosition<=10?finish[i.raceFinishPosition]:0;
- const change=i.raceStartPosition&&i.raceFinishPosition?(i.raceStartPosition-i.raceFinishPosition)*c.positionChangePoints:0;
- const race=raceFinish+change+i.overtakes*c.overtakePoints+(i.fastestLap?c.fastestLapPoints:0)+(i.driverOfDay?c.driverOfDayPoints:0);
+ const classified=!(i.dnf||i.dsq);
+ const raceFinish=classified&&i.raceFinishPosition&&i.raceFinishPosition<=10?finish[i.raceFinishPosition]:0;
+ const change=classified&&i.raceStartPosition&&i.raceFinishPosition?(i.raceStartPosition-i.raceFinishPosition)*c.positionChangePoints:0;
+ const race=(classified?raceFinish:c.dnfPoints)+change+i.overtakes*c.overtakePoints+(i.fastestLap?c.fastestLapPoints:0)+(i.driverOfDay?c.driverOfDayPoints:0);
  return {qualifying,race,total:qualifying+race};
 }
 export function scoreConstructorWeekend(driverTotals:[number,number],qualifyingBonus:number,pitStopPoints:number){

@@ -1,0 +1,113 @@
+{
+  "recordedAt": "2026-10-08T08:18:26.385Z",
+  "observedOn": "2026-10-08",
+  "source": "https://fantasy.formula1.com/en/statistics",
+  "access": "Public browser page without sign-in",
+  "season": 2026,
+  "completedRounds": 16,
+  "valuationChanges": [
+    {
+      "code": "ANT",
+      "type": "DRIVER",
+      "change": 3.8
+    },
+    {
+      "code": "LIN",
+      "type": "DRIVER",
+      "change": 3.2
+    },
+    {
+      "code": "COL",
+      "type": "DRIVER",
+      "change": 3.2
+    },
+    {
+      "code": "LAW",
+      "type": "DRIVER",
+      "change": 2.8
+    },
+    {
+      "code": "OCO",
+      "type": "DRIVER",
+      "change": 2
+    },
+    {
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "change": 9.6
+    },
+    {
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "change": 6.6
+    },
+    {
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "change": 4.7
+    },
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "change": 4.6
+    },
+    {
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "change": 4.2
+    }
+  ],
+  "totalPoints": [
+    {
+      "code": "ANT",
+      "type": "DRIVER",
+      "points": 651
+    },
+    {
+      "code": "VER",
+      "type": "DRIVER",
+      "points": 433
+    },
+    {
+      "code": "HAM",
+      "type": "DRIVER",
+      "points": 427
+    },
+    {
+      "code": "RUS",
+      "type": "DRIVER",
+      "points": 408
+    },
+    {
+      "code": "LEC",
+      "type": "DRIVER",
+      "points": 384
+    },
+    {
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "points": 1308
+    },
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "points": 1007
+    },
+    {
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "points": 813
+    },
+    {
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "points": 800
+    },
+    {
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "points": 494
+    }
+  ],
+  "limitations": "Visible aggregate facts, not a full roster quote export or proof of historical pre-lock publication. Initial quotes and all round quotes are separately compared to cached official feed and public archive."
+}

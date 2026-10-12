@@ -1,0 +1,5100 @@
+{
+  "schemaVersion": 1,
+  "season": 2025,
+  "source": "https://f1fantasytools.com/api/statistics/2025",
+  "sourceSHA256": "8f1603e517c0506e255ca1f274ce83297288fc24e870cd1e2dc56e37a73ff162",
+  "note": "Retrospective third-party historical quotes. price is pre-event, supported by official pre-lock article anchors and consecutive price-change identities. Snapshot outcomes excluded. No reserved R15–21 forecast errors computed.",
+  "audit": {
+    "checkedTransitions": 687,
+    "checkedTotals": 420,
+    "anchors": [
+      {
+        "round": 9,
+        "code": "NOR",
+        "price": 31
+      },
+      {
+        "round": 9,
+        "code": "SAI",
+        "price": 8.7
+      },
+      {
+        "round": 9,
+        "code": "BEA",
+        "price": 7.5
+      },
+      {
+        "round": 9,
+        "code": "HAD",
+        "price": 5.5
+      },
+      {
+        "round": 9,
+        "code": "ALO",
+        "price": 4.5
+      },
+      {
+        "round": 9,
+        "code": "MCL",
+        "price": 32.4
+      },
+      {
+        "round": 9,
+        "code": "RBR",
+        "price": 27.2
+      },
+      {
+        "round": 12,
+        "code": "HAD",
+        "price": 6.9
+      },
+      {
+        "round": 12,
+        "code": "SAU",
+        "price": 7.5
+      }
+    ]
+  },
+  "observations": [
+    {
+      "round": 1,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 7.2
+    },
+    {
+      "round": 1,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 1,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.8
+    },
+    {
+      "round": 1,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 1,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.2
+    },
+    {
+      "round": 1,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 25.9
+    },
+    {
+      "round": 1,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 1,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 1,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6
+    },
+    {
+      "round": 1,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.4
+    },
+    {
+      "round": 1,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 29
+    },
+    {
+      "round": 1,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 23
+    },
+    {
+      "round": 1,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 18.4
+    },
+    {
+      "round": 1,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 21
+    },
+    {
+      "round": 1,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 18
+    },
+    {
+      "round": 1,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.4
+    },
+    {
+      "round": 1,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 1,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 9.6
+    },
+    {
+      "round": 1,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12
+    },
+    {
+      "round": 1,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.1
+    },
+    {
+      "round": 1,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 1,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 1,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.1
+    },
+    {
+      "round": 1,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 7
+    },
+    {
+      "round": 1,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 1,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 30
+    },
+    {
+      "round": 1,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 22.7
+    },
+    {
+      "round": 1,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 25.2
+    },
+    {
+      "round": 1,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 8
+    },
+    {
+      "round": 1,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 13.1
+    },
+    {
+      "round": 2,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6.6
+    },
+    {
+      "round": 2,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 2,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.2
+    },
+    {
+      "round": 2,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 2,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.9
+    },
+    {
+      "round": 2,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 25.6
+    },
+    {
+      "round": 2,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.1
+    },
+    {
+      "round": 2,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 2,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 2,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7
+    },
+    {
+      "round": 2,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 29.3
+    },
+    {
+      "round": 2,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 22.7
+    },
+    {
+      "round": 2,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19
+    },
+    {
+      "round": 2,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 21.1
+    },
+    {
+      "round": 2,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 17.4
+    },
+    {
+      "round": 2,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.5
+    },
+    {
+      "round": 2,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.6
+    },
+    {
+      "round": 2,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 9
+    },
+    {
+      "round": 2,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.6
+    },
+    {
+      "round": 2,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.5
+    },
+    {
+      "round": 2,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 2,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 2,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.4
+    },
+    {
+      "round": 2,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 7.6
+    },
+    {
+      "round": 2,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 5.6
+    },
+    {
+      "round": 2,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 30.3
+    },
+    {
+      "round": 2,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 23
+    },
+    {
+      "round": 2,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 25.1
+    },
+    {
+      "round": 2,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 7.4
+    },
+    {
+      "round": 2,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 12.9
+    },
+    {
+      "round": 3,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6
+    },
+    {
+      "round": 3,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 10.6
+    },
+    {
+      "round": 3,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.6
+    },
+    {
+      "round": 3,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 3,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 3,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 25.3
+    },
+    {
+      "round": 3,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 3,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 3,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.8
+    },
+    {
+      "round": 3,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.6
+    },
+    {
+      "round": 3,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 29.6
+    },
+    {
+      "round": 3,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 23
+    },
+    {
+      "round": 3,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.3
+    },
+    {
+      "round": 3,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 21.4
+    },
+    {
+      "round": 3,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 16.8
+    },
+    {
+      "round": 3,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.6
+    },
+    {
+      "round": 3,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5
+    },
+    {
+      "round": 3,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 8.4
+    },
+    {
+      "round": 3,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.8
+    },
+    {
+      "round": 3,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.9
+    },
+    {
+      "round": 3,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 3,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 3,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.1
+    },
+    {
+      "round": 3,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 8.2
+    },
+    {
+      "round": 3,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 3,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 30.6
+    },
+    {
+      "round": 3,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 3,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 25.4
+    },
+    {
+      "round": 3,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 8
+    },
+    {
+      "round": 3,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 13.5
+    },
+    {
+      "round": 4,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 4,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 10
+    },
+    {
+      "round": 4,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7
+    },
+    {
+      "round": 4,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.9
+    },
+    {
+      "round": 4,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 4,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 25
+    },
+    {
+      "round": 4,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 4,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 4,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 4,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.8
+    },
+    {
+      "round": 4,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 29.9
+    },
+    {
+      "round": 4,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 23.1
+    },
+    {
+      "round": 4,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.6
+    },
+    {
+      "round": 4,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 21.7
+    },
+    {
+      "round": 4,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 16.6
+    },
+    {
+      "round": 4,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.7
+    },
+    {
+      "round": 4,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 4,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 7.8
+    },
+    {
+      "round": 4,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13
+    },
+    {
+      "round": 4,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.3
+    },
+    {
+      "round": 4,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 4,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 4,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27
+    },
+    {
+      "round": 4,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 8.8
+    },
+    {
+      "round": 4,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 6
+    },
+    {
+      "round": 4,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 30.9
+    },
+    {
+      "round": 4,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 4,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 25.7
+    },
+    {
+      "round": 4,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 8.6
+    },
+    {
+      "round": 4,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 14.1
+    },
+    {
+      "round": 5,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.6
+    },
+    {
+      "round": 5,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 9.4
+    },
+    {
+      "round": 5,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.4
+    },
+    {
+      "round": 5,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.7
+    },
+    {
+      "round": 5,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.2
+    },
+    {
+      "round": 5,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.7
+    },
+    {
+      "round": 5,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 5,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 5,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 5,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.2
+    },
+    {
+      "round": 5,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30
+    },
+    {
+      "round": 5,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 23.4
+    },
+    {
+      "round": 5,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.7
+    },
+    {
+      "round": 5,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22
+    },
+    {
+      "round": 5,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 16.4
+    },
+    {
+      "round": 5,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.8
+    },
+    {
+      "round": 5,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 5,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 7.2
+    },
+    {
+      "round": 5,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.8
+    },
+    {
+      "round": 5,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 10.7
+    },
+    {
+      "round": 5,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 5,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 5,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.3
+    },
+    {
+      "round": 5,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 9.4
+    },
+    {
+      "round": 5,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 5,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 31.2
+    },
+    {
+      "round": 5,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 23.9
+    },
+    {
+      "round": 5,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 26
+    },
+    {
+      "round": 5,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 9.2
+    },
+    {
+      "round": 5,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 14.7
+    },
+    {
+      "round": 6,
+      "code": "DOO",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5
+    },
+    {
+      "round": 6,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 8.8
+    },
+    {
+      "round": 6,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 6,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 6,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 6,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.6
+    },
+    {
+      "round": 6,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 6,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 6,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 6,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.6
+    },
+    {
+      "round": 6,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.1
+    },
+    {
+      "round": 6,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 23.7
+    },
+    {
+      "round": 6,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.6
+    },
+    {
+      "round": 6,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.1
+    },
+    {
+      "round": 6,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 15.8
+    },
+    {
+      "round": 6,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.9
+    },
+    {
+      "round": 6,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 6,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.6
+    },
+    {
+      "round": 6,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.6
+    },
+    {
+      "round": 6,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 10.1
+    },
+    {
+      "round": 6,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 6,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 6,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.6
+    },
+    {
+      "round": 6,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 10
+    },
+    {
+      "round": 6,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 4.8
+    },
+    {
+      "round": 6,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 31.5
+    },
+    {
+      "round": 6,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.2
+    },
+    {
+      "round": 6,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 26.3
+    },
+    {
+      "round": 6,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 9.8
+    },
+    {
+      "round": 6,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 15.3
+    },
+    {
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 7,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 8.2
+    },
+    {
+      "round": 7,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 5.6
+    },
+    {
+      "round": 7,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.7
+    },
+    {
+      "round": 7,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 7,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.3
+    },
+    {
+      "round": 7,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 7,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 7,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 7,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6
+    },
+    {
+      "round": 7,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.4
+    },
+    {
+      "round": 7,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 24
+    },
+    {
+      "round": 7,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.5
+    },
+    {
+      "round": 7,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.2
+    },
+    {
+      "round": 7,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 15.2
+    },
+    {
+      "round": 7,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.8
+    },
+    {
+      "round": 7,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.5
+    },
+    {
+      "round": 7,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6
+    },
+    {
+      "round": 7,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.8
+    },
+    {
+      "round": 7,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 7,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 7,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 7,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 27.9
+    },
+    {
+      "round": 7,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 10.6
+    },
+    {
+      "round": 7,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 7,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 31.8
+    },
+    {
+      "round": 7,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.5
+    },
+    {
+      "round": 7,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 26.6
+    },
+    {
+      "round": 7,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 10
+    },
+    {
+      "round": 7,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 15.9
+    },
+    {
+      "round": 8,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 8,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 7.6
+    },
+    {
+      "round": 8,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 5
+    },
+    {
+      "round": 8,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 8,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.7
+    },
+    {
+      "round": 8,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24
+    },
+    {
+      "round": 8,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 8,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 8,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 8,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 8,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.7
+    },
+    {
+      "round": 8,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 24.3
+    },
+    {
+      "round": 8,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 19.2
+    },
+    {
+      "round": 8,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.3
+    },
+    {
+      "round": 8,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 14.6
+    },
+    {
+      "round": 8,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.1
+    },
+    {
+      "round": 8,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.3
+    },
+    {
+      "round": 8,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 8,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.4
+    },
+    {
+      "round": 8,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 8,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 8,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 8,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 28.2
+    },
+    {
+      "round": 8,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 10
+    },
+    {
+      "round": 8,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 8,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 32.1
+    },
+    {
+      "round": 8,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.8
+    },
+    {
+      "round": 8,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 26.9
+    },
+    {
+      "round": 8,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 10.6
+    },
+    {
+      "round": 8,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 16.5
+    },
+    {
+      "round": 9,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 9,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 7
+    },
+    {
+      "round": 9,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 9,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.7
+    },
+    {
+      "round": 9,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.8
+    },
+    {
+      "round": 9,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.9
+    },
+    {
+      "round": 9,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 9,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 9,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 9,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6
+    },
+    {
+      "round": 9,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31
+    },
+    {
+      "round": 9,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 24.6
+    },
+    {
+      "round": 9,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 18.9
+    },
+    {
+      "round": 9,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.2
+    },
+    {
+      "round": 9,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 14.4
+    },
+    {
+      "round": 9,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.2
+    },
+    {
+      "round": 9,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.5
+    },
+    {
+      "round": 9,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.8
+    },
+    {
+      "round": 9,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.6
+    },
+    {
+      "round": 9,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 9,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 9,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 9,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 28.5
+    },
+    {
+      "round": 9,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 9.8
+    },
+    {
+      "round": 9,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 9,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 32.4
+    },
+    {
+      "round": 9,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.7
+    },
+    {
+      "round": 9,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 27.2
+    },
+    {
+      "round": 9,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 9,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 17.1
+    },
+    {
+      "round": 10,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 10,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6.4
+    },
+    {
+      "round": 10,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 10,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 10,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.7
+    },
+    {
+      "round": 10,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.2
+    },
+    {
+      "round": 10,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 10,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 10,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 10,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.6
+    },
+    {
+      "round": 10,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31.1
+    },
+    {
+      "round": 10,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 24.9
+    },
+    {
+      "round": 10,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 18.6
+    },
+    {
+      "round": 10,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 21.9
+    },
+    {
+      "round": 10,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 13.8
+    },
+    {
+      "round": 10,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.3
+    },
+    {
+      "round": 10,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.1
+    },
+    {
+      "round": 10,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 10,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13
+    },
+    {
+      "round": 10,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 10,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 10,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 10,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 28.8
+    },
+    {
+      "round": 10,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 9.6
+    },
+    {
+      "round": 10,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 10,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 32.7
+    },
+    {
+      "round": 10,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.4
+    },
+    {
+      "round": 10,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 27.5
+    },
+    {
+      "round": 10,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 10,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 17.3
+    },
+    {
+      "round": 11,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.7
+    },
+    {
+      "round": 11,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.8
+    },
+    {
+      "round": 11,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 11,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 11,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 11,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.3
+    },
+    {
+      "round": 11,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 11,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 11,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 11,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.2
+    },
+    {
+      "round": 11,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31
+    },
+    {
+      "round": 11,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.2
+    },
+    {
+      "round": 11,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 18.3
+    },
+    {
+      "round": 11,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22
+    },
+    {
+      "round": 11,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 13.2
+    },
+    {
+      "round": 11,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.2
+    },
+    {
+      "round": 11,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 11,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.8
+    },
+    {
+      "round": 11,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 11,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 11,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 11,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 11,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 29.1
+    },
+    {
+      "round": 11,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 10.2
+    },
+    {
+      "round": 11,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 11,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 33
+    },
+    {
+      "round": 11,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 24.7
+    },
+    {
+      "round": 11,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 27.8
+    },
+    {
+      "round": 11,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 11,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 16.7
+    },
+    {
+      "round": 12,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.9
+    },
+    {
+      "round": 12,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6
+    },
+    {
+      "round": 12,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 12,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 12,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.5
+    },
+    {
+      "round": 12,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.4
+    },
+    {
+      "round": 12,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 12,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 12,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 12,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.8
+    },
+    {
+      "round": 12,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.9
+    },
+    {
+      "round": 12,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.5
+    },
+    {
+      "round": 12,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 17.7
+    },
+    {
+      "round": 12,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.3
+    },
+    {
+      "round": 12,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 13
+    },
+    {
+      "round": 12,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.9
+    },
+    {
+      "round": 12,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 12,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 12,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 12,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 12,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 12,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 12,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 29.4
+    },
+    {
+      "round": 12,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 10.8
+    },
+    {
+      "round": 12,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 12,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 33.3
+    },
+    {
+      "round": 12,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 25
+    },
+    {
+      "round": 12,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 27.9
+    },
+    {
+      "round": 12,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 13
+    },
+    {
+      "round": 12,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 16.1
+    },
+    {
+      "round": 13,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 13,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6.6
+    },
+    {
+      "round": 13,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 13,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 13,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.4
+    },
+    {
+      "round": 13,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24.1
+    },
+    {
+      "round": 13,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 13,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 13,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.9
+    },
+    {
+      "round": 13,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 8.4
+    },
+    {
+      "round": 13,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.8
+    },
+    {
+      "round": 13,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.8
+    },
+    {
+      "round": 13,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 17.1
+    },
+    {
+      "round": 13,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.4
+    },
+    {
+      "round": 13,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 13,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.6
+    },
+    {
+      "round": 13,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 13,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 13,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 13,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 13,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 13,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 10.1
+    },
+    {
+      "round": 13,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 29.7
+    },
+    {
+      "round": 13,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 11.4
+    },
+    {
+      "round": 13,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 13,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 33.6
+    },
+    {
+      "round": 13,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 25.3
+    },
+    {
+      "round": 13,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 28
+    },
+    {
+      "round": 13,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 13,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 15.5
+    },
+    {
+      "round": 14,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 14,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6
+    },
+    {
+      "round": 14,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 14,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 14,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.7
+    },
+    {
+      "round": 14,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 24
+    },
+    {
+      "round": 14,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 14,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 14,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.7
+    },
+    {
+      "round": 14,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 9
+    },
+    {
+      "round": 14,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31.1
+    },
+    {
+      "round": 14,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.1
+    },
+    {
+      "round": 14,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 16.5
+    },
+    {
+      "round": 14,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.3
+    },
+    {
+      "round": 14,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 14,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.3
+    },
+    {
+      "round": 14,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 14,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 14,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 10.6
+    },
+    {
+      "round": 14,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 14,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 14,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 10.7
+    },
+    {
+      "round": 14,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30
+    },
+    {
+      "round": 14,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 12
+    },
+    {
+      "round": 14,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 14,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 33.9
+    },
+    {
+      "round": 14,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 25.4
+    },
+    {
+      "round": 14,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 28.1
+    },
+    {
+      "round": 14,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 14,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 14.9
+    },
+    {
+      "round": 15,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 15,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.4
+    },
+    {
+      "round": 15,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 15,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.7
+    },
+    {
+      "round": 15,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.8
+    },
+    {
+      "round": 15,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.9
+    },
+    {
+      "round": 15,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.5
+    },
+    {
+      "round": 15,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 15,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 15,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 9.6
+    },
+    {
+      "round": 15,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31.4
+    },
+    {
+      "round": 15,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.4
+    },
+    {
+      "round": 15,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 15.9
+    },
+    {
+      "round": 15,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.4
+    },
+    {
+      "round": 15,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 15,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.2
+    },
+    {
+      "round": 15,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 15,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 15,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 15,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 15,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 15,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 11.3
+    },
+    {
+      "round": 15,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30.3
+    },
+    {
+      "round": 15,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 15,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 15,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 34.2
+    },
+    {
+      "round": 15,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 25.7
+    },
+    {
+      "round": 15,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 28.4
+    },
+    {
+      "round": 15,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 15,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 15.5
+    },
+    {
+      "round": 16,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 16,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.8
+    },
+    {
+      "round": 16,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 16,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 10.3
+    },
+    {
+      "round": 16,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.5
+    },
+    {
+      "round": 16,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 16,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 16,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 16,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 16,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 9.8
+    },
+    {
+      "round": 16,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31.3
+    },
+    {
+      "round": 16,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.7
+    },
+    {
+      "round": 16,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 15.7
+    },
+    {
+      "round": 16,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.5
+    },
+    {
+      "round": 16,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 10.6
+    },
+    {
+      "round": 16,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.1
+    },
+    {
+      "round": 16,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 16,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 16,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 16,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 16,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 16,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 11.9
+    },
+    {
+      "round": 16,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30.4
+    },
+    {
+      "round": 16,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 16,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 9.9
+    },
+    {
+      "round": 16,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 34.5
+    },
+    {
+      "round": 16,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 26
+    },
+    {
+      "round": 16,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 28.7
+    },
+    {
+      "round": 16,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 11.8
+    },
+    {
+      "round": 16,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 16.1
+    },
+    {
+      "round": 17,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 17,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 17,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 17,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 10.5
+    },
+    {
+      "round": 17,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.2
+    },
+    {
+      "round": 17,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 17,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 17,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 17,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 17,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 9.2
+    },
+    {
+      "round": 17,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 31.2
+    },
+    {
+      "round": 17,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 27
+    },
+    {
+      "round": 17,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 15.1
+    },
+    {
+      "round": 17,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.6
+    },
+    {
+      "round": 17,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 10
+    },
+    {
+      "round": 17,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.2
+    },
+    {
+      "round": 17,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 17,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.3
+    },
+    {
+      "round": 17,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 17,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 5.1
+    },
+    {
+      "round": 17,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 17,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 12.5
+    },
+    {
+      "round": 17,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30.5
+    },
+    {
+      "round": 17,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 12.6
+    },
+    {
+      "round": 17,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 10.5
+    },
+    {
+      "round": 17,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 34.8
+    },
+    {
+      "round": 17,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 26.3
+    },
+    {
+      "round": 17,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 29
+    },
+    {
+      "round": 17,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 12.4
+    },
+    {
+      "round": 17,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 16.7
+    },
+    {
+      "round": 18,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 18,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 18,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 18,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.9
+    },
+    {
+      "round": 18,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.9
+    },
+    {
+      "round": 18,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23
+    },
+    {
+      "round": 18,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 18,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 18,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 18,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 8.6
+    },
+    {
+      "round": 18,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.9
+    },
+    {
+      "round": 18,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.9
+    },
+    {
+      "round": 18,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 14.9
+    },
+    {
+      "round": 18,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 22.7
+    },
+    {
+      "round": 18,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 9.8
+    },
+    {
+      "round": 18,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.5
+    },
+    {
+      "round": 18,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 18,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 18,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13
+    },
+    {
+      "round": 18,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 18,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.1
+    },
+    {
+      "round": 18,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 12.3
+    },
+    {
+      "round": 18,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30.6
+    },
+    {
+      "round": 18,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 13.2
+    },
+    {
+      "round": 18,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 10.7
+    },
+    {
+      "round": 18,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 35.1
+    },
+    {
+      "round": 18,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 26.6
+    },
+    {
+      "round": 18,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 29.3
+    },
+    {
+      "round": 18,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 13
+    },
+    {
+      "round": 18,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 17.3
+    },
+    {
+      "round": 19,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 19,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 19,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 19,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 19,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.8
+    },
+    {
+      "round": 19,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.9
+    },
+    {
+      "round": 19,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 19,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 19,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.1
+    },
+    {
+      "round": 19,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 8
+    },
+    {
+      "round": 19,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.8
+    },
+    {
+      "round": 19,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.6
+    },
+    {
+      "round": 19,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 15.1
+    },
+    {
+      "round": 19,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23
+    },
+    {
+      "round": 19,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 9.6
+    },
+    {
+      "round": 19,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 28.8
+    },
+    {
+      "round": 19,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 19,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 19,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.8
+    },
+    {
+      "round": 19,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 19,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 19,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 12.1
+    },
+    {
+      "round": 19,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 30.9
+    },
+    {
+      "round": 19,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 13
+    },
+    {
+      "round": 19,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 10.1
+    },
+    {
+      "round": 19,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 35.4
+    },
+    {
+      "round": 19,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 26.9
+    },
+    {
+      "round": 19,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 29.6
+    },
+    {
+      "round": 19,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 13.6
+    },
+    {
+      "round": 19,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 17.9
+    },
+    {
+      "round": 20,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 20,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 20,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.1
+    },
+    {
+      "round": 20,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 20,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.7
+    },
+    {
+      "round": 20,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23
+    },
+    {
+      "round": 20,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 20,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 20,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 20,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.4
+    },
+    {
+      "round": 20,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.5
+    },
+    {
+      "round": 20,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26.3
+    },
+    {
+      "round": 20,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 15.7
+    },
+    {
+      "round": 20,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 20,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 10.2
+    },
+    {
+      "round": 20,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.1
+    },
+    {
+      "round": 20,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 20,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 20,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13
+    },
+    {
+      "round": 20,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 20,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 20,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 11.9
+    },
+    {
+      "round": 20,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 31.2
+    },
+    {
+      "round": 20,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 13.2
+    },
+    {
+      "round": 20,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 10.7
+    },
+    {
+      "round": 20,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 35.3
+    },
+    {
+      "round": 20,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 27.2
+    },
+    {
+      "round": 20,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 29.9
+    },
+    {
+      "round": 20,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 14.2
+    },
+    {
+      "round": 20,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 18.5
+    },
+    {
+      "round": 21,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.7
+    },
+    {
+      "round": 21,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.7
+    },
+    {
+      "round": 21,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 5.5
+    },
+    {
+      "round": 21,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 8.5
+    },
+    {
+      "round": 21,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.8
+    },
+    {
+      "round": 21,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 21,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.3
+    },
+    {
+      "round": 21,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 21,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 21,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.8
+    },
+    {
+      "round": 21,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.4
+    },
+    {
+      "round": 21,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 26
+    },
+    {
+      "round": 21,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 16.3
+    },
+    {
+      "round": 21,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23.4
+    },
+    {
+      "round": 21,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 10.8
+    },
+    {
+      "round": 21,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.2
+    },
+    {
+      "round": 21,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 21,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 21,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.2
+    },
+    {
+      "round": 21,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 21,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 9.1
+    },
+    {
+      "round": 21,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 11.7
+    },
+    {
+      "round": 21,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 31.5
+    },
+    {
+      "round": 21,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 13.8
+    },
+    {
+      "round": 21,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 10.5
+    },
+    {
+      "round": 21,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 35.6
+    },
+    {
+      "round": 21,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 27.5
+    },
+    {
+      "round": 21,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 30.2
+    },
+    {
+      "round": 21,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 14.4
+    },
+    {
+      "round": 21,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 18.6
+    },
+    {
+      "round": 22,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 22,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.3
+    },
+    {
+      "round": 22,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 4.9
+    },
+    {
+      "round": 22,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 22,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.5
+    },
+    {
+      "round": 22,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.4
+    },
+    {
+      "round": 22,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 8.9
+    },
+    {
+      "round": 22,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 22,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 22,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.2
+    },
+    {
+      "round": 22,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.5
+    },
+    {
+      "round": 22,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.7
+    },
+    {
+      "round": 22,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 16.9
+    },
+    {
+      "round": 22,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23.5
+    },
+    {
+      "round": 22,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 11.4
+    },
+    {
+      "round": 22,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.5
+    },
+    {
+      "round": 22,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.7
+    },
+    {
+      "round": 22,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 22,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.8
+    },
+    {
+      "round": 22,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 22,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 9.7
+    },
+    {
+      "round": 22,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 11.1
+    },
+    {
+      "round": 22,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 31.8
+    },
+    {
+      "round": 22,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 14.4
+    },
+    {
+      "round": 22,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 9.9
+    },
+    {
+      "round": 22,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 35.9
+    },
+    {
+      "round": 22,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 27.8
+    },
+    {
+      "round": 22,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 30.5
+    },
+    {
+      "round": 22,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 15
+    },
+    {
+      "round": 22,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 18.9
+    },
+    {
+      "round": 23,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 23,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 23,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 23,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 23,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 22.2
+    },
+    {
+      "round": 23,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23.3
+    },
+    {
+      "round": 23,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.5
+    },
+    {
+      "round": 23,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.3
+    },
+    {
+      "round": 23,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 6.1
+    },
+    {
+      "round": 23,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.6
+    },
+    {
+      "round": 23,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.4
+    },
+    {
+      "round": 23,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.4
+    },
+    {
+      "round": 23,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 17.5
+    },
+    {
+      "round": 23,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23.6
+    },
+    {
+      "round": 23,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 11.2
+    },
+    {
+      "round": 23,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 29.8
+    },
+    {
+      "round": 23,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.3
+    },
+    {
+      "round": 23,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.3
+    },
+    {
+      "round": 23,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 13.2
+    },
+    {
+      "round": 23,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 7.1
+    },
+    {
+      "round": 23,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 9.9
+    },
+    {
+      "round": 23,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 10.5
+    },
+    {
+      "round": 23,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 31.9
+    },
+    {
+      "round": 23,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 15
+    },
+    {
+      "round": 23,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 23,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 36
+    },
+    {
+      "round": 23,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 28.1
+    },
+    {
+      "round": 23,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 30.8
+    },
+    {
+      "round": 23,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 15.6
+    },
+    {
+      "round": 23,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 19.2
+    },
+    {
+      "round": 24,
+      "code": "COL",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 4.5
+    },
+    {
+      "round": 24,
+      "code": "GAS",
+      "type": "DRIVER",
+      "team": "ALP",
+      "priceBefore": 6.5
+    },
+    {
+      "round": 24,
+      "code": "ALO",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 4.7
+    },
+    {
+      "round": 24,
+      "code": "STR",
+      "type": "DRIVER",
+      "team": "AMR",
+      "priceBefore": 6.7
+    },
+    {
+      "round": 24,
+      "code": "HAM",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 21.9
+    },
+    {
+      "round": 24,
+      "code": "LEC",
+      "type": "DRIVER",
+      "team": "FER",
+      "priceBefore": 23
+    },
+    {
+      "round": 24,
+      "code": "BEA",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 9.3
+    },
+    {
+      "round": 24,
+      "code": "OCO",
+      "type": "DRIVER",
+      "team": "HAS",
+      "priceBefore": 7.9
+    },
+    {
+      "round": 24,
+      "code": "BOR",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5.5
+    },
+    {
+      "round": 24,
+      "code": "HUL",
+      "type": "DRIVER",
+      "team": "SAU",
+      "priceBefore": 5
+    },
+    {
+      "round": 24,
+      "code": "NOR",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 30.3
+    },
+    {
+      "round": 24,
+      "code": "PIA",
+      "type": "DRIVER",
+      "team": "MCL",
+      "priceBefore": 25.1
+    },
+    {
+      "round": 24,
+      "code": "ANT",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 18.1
+    },
+    {
+      "round": 24,
+      "code": "RUS",
+      "type": "DRIVER",
+      "team": "MER",
+      "priceBefore": 23.7
+    },
+    {
+      "round": 24,
+      "code": "TSU",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 11.4
+    },
+    {
+      "round": 24,
+      "code": "VER",
+      "type": "DRIVER",
+      "team": "RBR",
+      "priceBefore": 30.1
+    },
+    {
+      "round": 24,
+      "code": "HAD",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 6.9
+    },
+    {
+      "round": 24,
+      "code": "LAW",
+      "type": "DRIVER",
+      "team": "RB",
+      "priceBefore": 5.9
+    },
+    {
+      "round": 24,
+      "code": "ALB",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 12.6
+    },
+    {
+      "round": 24,
+      "code": "SAI",
+      "type": "DRIVER",
+      "team": "WIL",
+      "priceBefore": 7.7
+    },
+    {
+      "round": 24,
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "team": "ALP",
+      "priceBefore": 10.1
+    },
+    {
+      "round": 24,
+      "code": "AMR",
+      "type": "CONSTRUCTOR",
+      "team": "AMR",
+      "priceBefore": 10.3
+    },
+    {
+      "round": 24,
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "team": "FER",
+      "priceBefore": 31.8
+    },
+    {
+      "round": 24,
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "team": "HAS",
+      "priceBefore": 15.6
+    },
+    {
+      "round": 24,
+      "code": "SAU",
+      "type": "CONSTRUCTOR",
+      "team": "SAU",
+      "priceBefore": 8.7
+    },
+    {
+      "round": 24,
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "team": "MCL",
+      "priceBefore": 36.1
+    },
+    {
+      "round": 24,
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "team": "MER",
+      "priceBefore": 28.4
+    },
+    {
+      "round": 24,
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "team": "RBR",
+      "priceBefore": 31.1
+    },
+    {
+      "round": 24,
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "team": "RB",
+      "priceBefore": 16.2
+    },
+    {
+      "round": 24,
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "team": "WIL",
+      "priceBefore": 19.5
+    }
+  ]
+}

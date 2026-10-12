@@ -1,0 +1,69 @@
+{
+  "season": 2024,
+  "checkedDriverSessions": 1078,
+  "constructorsChecked": 538,
+  "constructorMismatches": [],
+  "missingConstructorDrivers": [
+    {
+      "round": 3,
+      "id": "WIL",
+      "drivers": [
+        "WIL_ALB"
+      ]
+    }
+  ],
+  "mismatches": [],
+  "penaltyCases": [
+    {
+      "round": 8,
+      "id": "HAA_HUL",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 8,
+      "id": "HAA_MAG",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 14,
+      "id": "MER_RUS",
+      "phase": "R",
+      "expected": -25,
+      "actual": -25
+    },
+    {
+      "round": 15,
+      "id": "WIL_ALB",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 17,
+      "id": "ALP_GAS",
+      "phase": "Q",
+      "expected": -15,
+      "actual": -15
+    },
+    {
+      "round": 21,
+      "id": "HAA_HUL",
+      "phase": "R",
+      "expected": -25,
+      "actual": -25
+    }
+  ],
+  "progressionEvidence": {
+    "round": 8,
+    "driver": "AST_ALO",
+    "originalQualifyingPosition": 16,
+    "promotedPosition": 14,
+    "url": "https://api.fia.com/events/fia-formula-one-world-championship/season-2024/monaco-grand-prix/qualifying-classification"
+  },
+  "allUnclassifiedTeamwork": "Observed archived rule: zero when neither driver has a classified qualifying result; not asserted for 2025/26.",
+  "note": "Research source replay only. Historical Q/R/S position tables and NC/DSQ deductions reconstructed from scored components. Constructor pit ranking rules and contemporaneous official rule corroboration remain required. No forecast errors computed."
+}

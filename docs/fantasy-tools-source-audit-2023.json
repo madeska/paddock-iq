@@ -1,0 +1,220 @@
+{
+  "season": 2023,
+  "sha256": "cbcd067a6134ce2439c9d883b7cee71b7c06ac21a0ef62cbeae396f42f9746eb",
+  "availableRounds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "calendarGap": [
+    6
+  ],
+  "rows": 660,
+  "incomplete": [],
+  "priceMismatches": [],
+  "sessionMismatches": [
+    {
+      "round": 11,
+      "type": "constructors",
+      "id": "ALF",
+      "phase": "Q",
+      "sum": -21,
+      "reported": -16
+    },
+    {
+      "round": 19,
+      "type": "constructors",
+      "id": "FER",
+      "phase": "R",
+      "sum": -12,
+      "reported": -2
+    },
+    {
+      "round": 19,
+      "type": "constructors",
+      "id": "MER",
+      "phase": "R",
+      "sum": -19,
+      "reported": -9
+    }
+  ],
+  "weekendMismatches": [
+    {
+      "round": 11,
+      "type": "constructors",
+      "id": "ALF",
+      "sum": -5,
+      "reported": 0
+    },
+    {
+      "round": 19,
+      "type": "constructors",
+      "id": "FER",
+      "sum": 25,
+      "reported": 35
+    },
+    {
+      "round": 19,
+      "type": "constructors",
+      "id": "MER",
+      "sum": 21,
+      "reported": 31
+    }
+  ],
+  "conservedSessions": 1500,
+  "consistentConsecutivePriceTransitions": 627,
+  "phaseKeys": {
+    "drivers:Q": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "teamworkPoints"
+    ],
+    "drivers:R": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "fastestLapPoints",
+      "overtakes",
+      "positionsGained",
+      "dotdPoints",
+      "fastestPitStopPoints",
+      "overallFastestPitStopPoints",
+      "worldRecordPitStopPoints"
+    ],
+    "constructors:Q": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "teamworkPoints"
+    ],
+    "constructors:R": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "fastestLapPoints",
+      "overtakes",
+      "positionsGained",
+      "dotdPoints",
+      "fastestPitStopPoints",
+      "overallFastestPitStopPoints",
+      "worldRecordPitStopPoints"
+    ],
+    "drivers:S": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "fastestLapPoints",
+      "overtakes",
+      "positionsGained"
+    ],
+    "constructors:S": [
+      "positionPoints",
+      "notClassifiedPoints",
+      "disqualifiedPoints",
+      "totalPoints",
+      "fastestLapPoints",
+      "overtakes",
+      "positionsGained"
+    ]
+  },
+  "penaltyAndPitAwards": {
+    "drivers:Q:notClassifiedPoints": [
+      -5,
+      0
+    ],
+    "drivers:Q:disqualifiedPoints": [
+      -15,
+      0
+    ],
+    "drivers:R:notClassifiedPoints": [
+      -20,
+      0
+    ],
+    "drivers:R:disqualifiedPoints": [
+      -25,
+      0
+    ],
+    "drivers:R:fastestPitStopPoints": [
+      0
+    ],
+    "drivers:R:overallFastestPitStopPoints": [
+      0
+    ],
+    "drivers:R:worldRecordPitStopPoints": [
+      0
+    ],
+    "constructors:Q:notClassifiedPoints": [
+      -5,
+      0
+    ],
+    "constructors:Q:disqualifiedPoints": [
+      -20,
+      0
+    ],
+    "constructors:R:notClassifiedPoints": [
+      -40,
+      -20,
+      0
+    ],
+    "constructors:R:disqualifiedPoints": [
+      -35,
+      0
+    ],
+    "constructors:R:fastestPitStopPoints": [
+      0,
+      3,
+      5,
+      8,
+      10,
+      13,
+      15,
+      18
+    ],
+    "constructors:R:overallFastestPitStopPoints": [
+      0
+    ],
+    "constructors:R:worldRecordPitStopPoints": [
+      0
+    ],
+    "drivers:S:notClassifiedPoints": [
+      -20,
+      0
+    ],
+    "drivers:S:disqualifiedPoints": [
+      0
+    ],
+    "constructors:S:notClassifiedPoints": [
+      -20,
+      0
+    ],
+    "constructors:S:disqualifiedPoints": [
+      0
+    ]
+  },
+  "note": "Third-party retrospective source conservation and price chain only. No forecast errors computed. Price timing still needs official pre-event anchors. Historical rules must be audited before shared simulation replay."
+}

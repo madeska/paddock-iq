@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {verifiedCompletedPoints} from '../src/lib/completed-fantasy-scores';
+const row={PlayerId:'131',IsActive:1,GamedayPoints:0};
+const popup=(status='4',total=0,season='2026')=>({Value:{PlayerId:'131',FixtureWiseStats:[{GamedayId:17,RaceDayWise:[{Season:season,SessionName:'Race',MatchStatus:status,SessionStartDate:'2026-10-11T12:00:00Z'}]}],GamedayWiseStats:[{GamedayId:17,IsPlayed:1,IsActive:1,StatsWise:[{Event:'Total',Value:total}]}]}});
+const now=new Date('2026-10-11T16:00:00Z');
+test('completed zero and negative totals are valid official results',()=>{assert.equal(verifiedCompletedPoints(row,popup(),2026,17,now),0);assert.equal(verifiedCompletedPoints({...row,GamedayPoints:-20},popup('4',-20),2026,17,now),-20)});
+test('partial, unpublished, mismatched and future scores cannot be written',()=>{for(const data of [popup('2'),popup('4',5),popup('4',0,'2025'),{Value:{}}])assert.equal(verifiedCompletedPoints(row,data,2026,17,now),null);assert.equal(verifiedCompletedPoints(row,popup(),2026,17,new Date('2026-10-11T11:00:00Z')),null);assert.equal(verifiedCompletedPoints({...row,IsActive:0},popup(),2026,17,now),null);assert.equal(verifiedCompletedPoints({...row,GamedayPoints:null},popup(),2026,17,now),null)});
+import {syncCompletedFantasyScores,COMPLETED_SCORE_SOURCE} from '../src/lib/completed-fantasy-scores';
+import type {PrismaClient} from '@prisma/client';
+test('repeat sync is idempotent, accepts late corrections and preserves saved values while source is pending',async()=>{
+ let stored:any=null,value=0,status='4';
+ const fake:any={grandPrix:{findUnique:async()=>({id:'GP17'})},asset:{findMany:async()=>[{id:'VER',code:'VER',type:'DRIVER'}]}};
+ fake.$transaction=async(fn:any)=>fn({fantasyRoundScore:{findUnique:async()=>stored,createMany:async(args:any)=>{stored={id:'score',...args.data[0]};return {count:1}},updateMany:async(args:any)=>{stored={...stored,...args.data};return {count:1}}}});
+ const evidence={round:async()=>[{...row,PositionName:'DRIVER',DriverTLA:'VER',GamedayPoints:value}],popup:async()=>popup(status,value)};
+ assert.equal((await syncCompletedFantasyScores(fake as PrismaClient,2026,17,evidence,now)).saved,1);
+ assert.equal(stored.points,0);assert.equal(stored.source,COMPLETED_SCORE_SOURCE);
+ assert.equal((await syncCompletedFantasyScores(fake as PrismaClient,2026,17,evidence,now)).unchanged,1);
+ value=12;assert.equal((await syncCompletedFantasyScores(fake as PrismaClient,2026,17,evidence,now)).corrected,1);assert.equal(stored.points,12);
+ status='2';value=0;assert.equal((await syncCompletedFantasyScores(fake as PrismaClient,2026,17,evidence,now)).saved,0);assert.equal(stored.points,12);
+ status='4';stored.source='Manual import';value=20;assert.equal((await syncCompletedFantasyScores(fake as PrismaClient,2026,17,evidence,now)).protectedScores,1);assert.equal(stored.points,12);
+});
+test('before the race ends one official breakdown is enough to wait without writes',async()=>{let calls=0;const fake:any={grandPrix:{findUnique:async()=>({id:'GP17'})},asset:{findMany:async()=>[{id:'VER',code:'VER',type:'DRIVER'},{id:'NOR',code:'NOR',type:'DRIVER'}]},$transaction:async()=>{throw Error('unexpected write')}};const result=await syncCompletedFantasyScores(fake,2026,17,{round:async()=>[{...row,PositionName:'DRIVER',DriverTLA:'VER'},{...row,PlayerId:'117',PositionName:'DRIVER',DriverTLA:'NOR'}],popup:async()=>{calls++;return popup('2')}},now);assert.equal(result.status,'WAITING');assert.equal(calls,1)});
+test('concurrent edits cannot be overwritten after evidence is fetched',async()=>{const fake:any={grandPrix:{findUnique:async()=>({id:'GP17'})},asset:{findMany:async()=>[{id:'VER',code:'VER',type:'DRIVER'}]},$transaction:async(fn:any)=>fn({fantasyRoundScore:{findUnique:async()=>({id:'score',points:5,source:COMPLETED_SCORE_SOURCE}),updateMany:async()=>({count:0}),upsert:async()=>{throw Error('unconditional overwrite')}}})};const result=await syncCompletedFantasyScores(fake,2026,17,{round:async()=>[{...row,PositionName:'DRIVER',DriverTLA:'VER'}],popup:async()=>popup()},now);assert.equal(result.saved,0);assert.equal(result.protectedScores,1)});
+test('official played-zero breakdown can omit Total when all components sum to zero',()=>{const data=popup();data.Value.GamedayWiseStats[0].StatsWise=[{Event:'Race Position',Value:0},{Event:'Qualifying Position',Value:2},{Event:'Race Position lost',Value:-7},{Event:'race overtake bonus',Value:5}];assert.equal(verifiedCompletedPoints(row,data,2026,17,now),0);data.Value.GamedayWiseStats[0].StatsWise[3].Value=4;assert.equal(verifiedCompletedPoints(row,data,2026,17,now),null);data.Value.GamedayWiseStats[0].StatsWise=[];assert.equal(verifiedCompletedPoints(row,data,2026,17,now),null)});

@@ -1,0 +1,10 @@
+# Prospective evaluation implementation plan
+
+Goal: evaluate genuine frozen driver-only tree forecasts, both asset types, against later official outcomes without regenerating forecasts or treating local dates as proof. This does not establish source validity or activate a model.
+
+1. Add publication receipt verification in scripts/tree_publication_receipt.py. Bind a trusted GitHub Actions run created before lock to the exact head repository/commit and committed snapshot content. Use normalized LF hash to tolerate Git line-ending conversion. Reject other repositories, later runs, wrong commits and changed snapshots. Unit-test via injected JSON transport, then document external source-audit limits.
+2. Add scripts/evaluate_prospective_tree.py. Verify the frozen protocol, capture/model identity, prediction pairing, unchanged constructors and immutable publication receipt before inspecting labels. Read finite completed-round outcomes; never substitute missing scores with zero. Report coverage and all declared exclusions. Use first eligible events in round order without retuning.
+3. Compute full per-asset and per-type MAE, RMSE, bias and paired race-block bootstrap with 10,000 draws, Random771. Frozen numeric gate requires six eligible events, negative upper delta interval, no driver RMSE deterioration and unchanged constructors. Report numerical gate separately from independent-source confirmation; no automatic activation.
+4. Test nonzero/missing outcomes, late/mismatched receipts, label identities, unchanged constructors and insufficient events. Run current focused suite and type checks. Request read-only review, add code/results documentation to PR154. No synthetic capture is committed as race evidence.
+
+Source audits still must establish official Fantasy lock, roster completeness, quote timing, historical feature cutoffs and outcome identities. A manifest assertion is not that evidence. CurrentR18 public roster is empty and official feed403; an actual prospective evaluation is not possible yet. Previous code work is progress, not completion of the goal.

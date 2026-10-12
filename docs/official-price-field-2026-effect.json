@@ -1,0 +1,46 @@
+{
+  "note": "Consumed2026R6–16 field-effect diagnostic only. Same active cohort, scores, fixed shared production math, simulations and seeds. No practice modifier on either side. Not a replay of persisted forecasts or independent model validation. Correct field is determined by source audit, not selected by lower error.",
+  "summary": [
+    {
+      "type": "DRIVER",
+      "staleOldField": {
+        "n": 241,
+        "MAE": 11.271369294605803,
+        "RMSE": 15.227347641088798
+      },
+      "correctValueField": {
+        "n": 241,
+        "MAE": 11.273443983402485,
+        "RMSE": 15.223468179179456
+      }
+    },
+    {
+      "type": "CONSTRUCTOR",
+      "staleOldField": {
+        "n": 121,
+        "MAE": 17.934710743801656,
+        "RMSE": 22.327263473495265
+      },
+      "correctValueField": {
+        "n": 121,
+        "MAE": 17.936363636363637,
+        "RMSE": 22.328610783121555
+      }
+    },
+    {
+      "type": "ALL",
+      "staleOldField": {
+        "n": 362,
+        "MAE": 13.498618784530386,
+        "RMSE": 17.916356457976654
+      },
+      "correctValueField": {
+        "n": 362,
+        "MAE": 13.50055248618784,
+        "RMSE": 17.914722794887993
+      }
+    }
+  ],
+  "sourceAudit": "official-price-field-2026-audit.json",
+  "activation": false
+}

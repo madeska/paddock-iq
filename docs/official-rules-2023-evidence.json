@@ -1,0 +1,86 @@
+{
+  "year": 2023,
+  "artifacts": [
+    {
+      "timestamp": "20230604001933",
+      "cache": "fantasy-official-rules-20230604001933.html",
+      "sha256": "b272b29702b1b93d98eb8b608a2acbef789ffd44f4695292b1a28149af5faf4d"
+    },
+    {
+      "timestamp": "20230902105123",
+      "cache": "fantasy-official-rules-20230902105123.html",
+      "sha256": "f335400cccb87d25d19545a684ba45e97afedc8e0c56fab94808b6e0c83e8511"
+    },
+    {
+      "timestamp": "20230602002512",
+      "cache": "fantasy-official-main.06642047.js",
+      "sha256": "01283d8b6d62c9113f78f3ae87e754e71d038577513472b2a9202e3ae90b7333"
+    },
+    {
+      "timestamp": "20231018222608",
+      "cache": "fantasy-official-main.b065b824.js",
+      "sha256": "82e50e48846b865c86bf08daa821eb6229eda9f0a6d72b2fdf3dd62bd8a51b14"
+    },
+    {
+      "timestamp": "20231018222610",
+      "cache": "fantasy-official-rules.6de99bd2.chunk.js",
+      "sha256": "6ed402e73eb0ae521fdcf51d1c7ed99914b9f6ecca37328643282ffc929f86e7"
+    }
+  ],
+  "rulesAssetURL": "https://web.archive.org/web/20231018222610id_/https://fantasy.formula1.com/static-assets/build/static/js/rules.6de99bd2.chunk.js",
+  "ruleKeys": {
+    "qualifyingDsq": "qr_tbl_row_13_cell_2",
+    "constructorQualifyingInheritance": "rules_title_4_intro_1",
+    "constructorRaceInheritance": "rules_title_9_intro_1",
+    "pitRankAwards": [
+      "rules_title_9_tbl_row_1_cell_2",
+      "rules_title_9_tbl_row_2_cell_2",
+      "rules_title_9_tbl_row_3_cell_2"
+    ]
+  },
+  "derivedFacts": {
+    "driverQualifyingDsq": -15,
+    "driverRaceDsq": -25,
+    "constructorQualifying": "combined driver totals plus teamwork",
+    "constructorRace": "combined driver totals excluding DOTD plus pit awards",
+    "pitRankAwards": [
+      10,
+      5,
+      3
+    ]
+  },
+  "disputedSourceReconciliation": [
+    {
+      "round": 11,
+      "code": "ALF",
+      "phase": "Q",
+      "driverSum": -15,
+      "extras": -1,
+      "reported": -16,
+      "componentPenalty": -20,
+      "driverPenalties": -15,
+      "primaryTiming": "October rules support same formula but pre-July rule chunk not yet recovered; do not certify event-time rule from October alone."
+    },
+    {
+      "round": 19,
+      "code": "FER",
+      "phase": "R",
+      "driverSum": -5,
+      "extras": 3,
+      "reported": -2,
+      "componentPenalty": -35,
+      "driverPenalties": -25
+    },
+    {
+      "round": 19,
+      "code": "MER",
+      "phase": "R",
+      "driverSum": -9,
+      "extras": 0,
+      "reported": -9,
+      "componentPenalty": -35,
+      "driverPenalties": -25
+    }
+  ],
+  "limitation": "Primary archived client English defaults; runtime translation overrides were not separately recovered. Raw third-party source remains unchanged. No2023 forecast errors computed."
+}

@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "status": "frozen-before-2024-forecast-errors",
+  "season": 2024,
+  "rounds": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "reference": {
+    "sharedProductionBaseline": true,
+    "componentWeight": 0.25,
+    "practice": "completed pre-lock incumbent modifier, sprint skip"
+  },
+  "candidate": {
+    "sharedProductionBaseline": true,
+    "componentWeight": 0.5,
+    "practice": "same reference context",
+    "newPace": false,
+    "newCalibration": false
+  },
+  "allowTuning": false,
+  "metrics": [
+    "MAE",
+    "RMSE",
+    "Bias"
+  ],
+  "pairedIntervals": "race-block bootstrap, same asset identities for every comparison",
+  "historicalAdapterRequirements": [
+    "Sprint NC -20",
+    "2024 individual-stop10/5/3 pit allocation with multiple stops per constructor; no target pit labels as predictor",
+    "original qualifying progression, not promoted final place",
+    "source-compatible2024 constructor rules"
+  ],
+  "priceRequirements": [
+    "Initial quote timing corroboration or explicitly limited sensitivity report",
+    "No target/future price changes as forecast inputs",
+    "Report disputed Red Bull quote and missing reconstructed entrant/gap prices"
+  ],
+  "coverageRequirements": [
+    "Report one-car Williams Australia and unsupported constructor fallback",
+    "Missing predictions never zero",
+    "Compare full driver and constructor outputs"
+  ],
+  "activation": "Require convincing independent improvement for both asset types; distinguish historical adapter from exact2026 production parity; no automatic activation from one metric.",
+  "note": "All2025 errors consumed;2024 source labels and historical scoring audited but model forecast errors not computed. Input adapters must be verified before evaluation; candidate parameters cannot be tuned using2024 errors."
+}

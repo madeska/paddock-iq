@@ -1,0 +1,545 @@
+{
+  "capturedAt": "2026-10-12T08:41:05.532Z",
+  "scope": "Exploratory previously consumed 2025 R6–14 and 2026 R6–16; not independent validation. No reserved 2025 R15–21 errors are evaluated. 2025 uses the tracked pre-lock practice archive; 2026 deliberately uses no practice for both paired policies. These are separate protocols, not a replay of the saved Singapore live forecast.",
+  "policy": "Only race and sprint failure probabilities change. Fixed priorStrength=16/halfLife=16 from earlier research; no parameter search. Every target is forecast from earlier-round scores and components. No production activation.",
+  "summary": [
+    {
+      "season": 2025,
+      "weekend": "ALL",
+      "type": "ALL",
+      "baseline": {
+        "n": 269,
+        "MAE": 12.838661710037181,
+        "RMSE": 16.81561276652608,
+        "Bias": 0.4788104089219332
+      },
+      "reliabilityOnly": {
+        "n": 269,
+        "MAE": 12.863568773234205,
+        "RMSE": 16.794738289141137,
+        "Bias": 0.1847583643122676
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": 0.02490706319702621,
+        "low": -0.030370370370370044,
+        "high": 0.08000000000000021
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "ALL",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 179,
+        "MAE": 10.546368715083803,
+        "RMSE": 13.942924358426552,
+        "Bias": 0.8357541899441342
+      },
+      "reliabilityOnly": {
+        "n": 179,
+        "MAE": 10.564804469273744,
+        "RMSE": 13.919218256479361,
+        "Bias": 0.6150837988826817
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": 0.01843575418994414,
+        "low": -0.021787709497206705,
+        "high": 0.06033519553072625
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "ALL",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 90,
+        "MAE": 17.397777777777776,
+        "RMSE": 21.412670184833196,
+        "Bias": -0.23111111111111077
+      },
+      "reliabilityOnly": {
+        "n": 90,
+        "MAE": 17.43555555555555,
+        "RMSE": 21.394371014617636,
+        "Bias": -0.671111111111111
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": 0.0377777777777781,
+        "low": -0.058888888888888505,
+        "high": 0.12555555555555611
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "NORMAL",
+      "type": "ALL",
+      "baseline": {
+        "n": 209,
+        "MAE": 13.207177033492824,
+        "RMSE": 17.500776469445373,
+        "Bias": 0.9966507177033489
+      },
+      "reliabilityOnly": {
+        "n": 209,
+        "MAE": 13.21148325358852,
+        "RMSE": 17.44878767672871,
+        "Bias": 0.7119617224880379
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 7,
+        "deltaMAE": 0.004306220095693935,
+        "low": -0.05384615384615365,
+        "high": 0.06586538461538485
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "NORMAL",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 139,
+        "MAE": 10.584172661870513,
+        "RMSE": 14.237371028843409,
+        "Bias": 1.3381294964028776
+      },
+      "reliabilityOnly": {
+        "n": 139,
+        "MAE": 10.587050359712235,
+        "RMSE": 14.19028951595994,
+        "Bias": 1.1251798561151078
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 7,
+        "deltaMAE": 0.0028776978417266084,
+        "low": -0.03823529411764726,
+        "high": 0.0478571428571427
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "NORMAL",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 70,
+        "MAE": 18.415714285714287,
+        "RMSE": 22.62623319448972,
+        "Bias": 0.318571428571429
+      },
+      "reliabilityOnly": {
+        "n": 70,
+        "MAE": 18.42285714285714,
+        "RMSE": 22.56499817986128,
+        "Bias": -0.10857142857142864
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 7,
+        "deltaMAE": 0.007142857142857473,
+        "low": -0.09714285714285677,
+        "high": 0.10714285714285796
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "SPRINT",
+      "type": "ALL",
+      "baseline": {
+        "n": 60,
+        "MAE": 11.555,
+        "RMSE": 14.17263207735246,
+        "Bias": -1.3249999999999995
+      },
+      "reliabilityOnly": {
+        "n": 60,
+        "MAE": 11.651666666666667,
+        "RMSE": 14.284507925254783,
+        "Bias": -1.6516666666666668
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.09666666666666697,
+        "low": 0.043333333333333356,
+        "high": 0.1500000000000006
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "SPRINT",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 40,
+        "MAE": 10.415000000000003,
+        "RMSE": 12.867439527738222,
+        "Bias": -0.9099999999999995
+      },
+      "reliabilityOnly": {
+        "n": 40,
+        "MAE": 10.4875,
+        "RMSE": 12.933145402414679,
+        "Bias": -1.1575000000000002
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.07250000000000005,
+        "low": 0.02999999999999998,
+        "high": 0.11500000000000013
+      }
+    },
+    {
+      "season": 2025,
+      "weekend": "SPRINT",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 20,
+        "MAE": 13.834999999999999,
+        "RMSE": 16.475694219060998,
+        "Bias": -2.1550000000000002
+      },
+      "reliabilityOnly": {
+        "n": 20,
+        "MAE": 13.979999999999999,
+        "RMSE": 16.66160256397925,
+        "Bias": -2.6400000000000006
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.1450000000000003,
+        "low": 0.06999999999999922,
+        "high": 0.22000000000000136
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "ALL",
+      "type": "ALL",
+      "baseline": {
+        "n": 362,
+        "MAE": 13.50055248618784,
+        "RMSE": 17.914722794887993,
+        "Bias": 0.21657458563535875
+      },
+      "reliabilityOnly": {
+        "n": 362,
+        "MAE": 13.575690607734803,
+        "RMSE": 17.90675202139687,
+        "Bias": -0.37127071823204416
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 11,
+        "deltaMAE": 0.0751381215469613,
+        "low": -0.0491712707182319,
+        "high": 0.18705234159779588
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "ALL",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 241,
+        "MAE": 11.273443983402485,
+        "RMSE": 15.223468179179456,
+        "Bias": -0.30000000000000027
+      },
+      "reliabilityOnly": {
+        "n": 241,
+        "MAE": 11.346058091286304,
+        "RMSE": 15.238777245901568,
+        "Bias": -0.7394190871369294
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 11,
+        "deltaMAE": 0.07261410788381757,
+        "low": -0.0028925619834708257,
+        "high": 0.1400826446280992
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "ALL",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 121,
+        "MAE": 17.936363636363637,
+        "RMSE": 22.328610783121555,
+        "Bias": 1.245454545454545
+      },
+      "reliabilityOnly": {
+        "n": 121,
+        "MAE": 18.016528925619834,
+        "RMSE": 22.288647371540797,
+        "Bias": 0.3619834710743804
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 11,
+        "deltaMAE": 0.08016528925619792,
+        "low": -0.16033057851239718,
+        "high": 0.29421487603305735
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "NORMAL",
+      "type": "ALL",
+      "baseline": {
+        "n": 297,
+        "MAE": 13.506734006734005,
+        "RMSE": 18.065825206838475,
+        "Bias": 1.0124579124579116
+      },
+      "reliabilityOnly": {
+        "n": 297,
+        "MAE": 13.543434343434338,
+        "RMSE": 18.010868398591455,
+        "Bias": 0.4228956228956225
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": 0.03670033670033669,
+        "low": -0.09461279461279455,
+        "high": 0.15185185185185168
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "NORMAL",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 198,
+        "MAE": 11.19040404040404,
+        "RMSE": 15.263320064584223,
+        "Bias": 0.38131313131313116
+      },
+      "reliabilityOnly": {
+        "n": 198,
+        "MAE": 11.251010101010097,
+        "RMSE": 15.252727856705077,
+        "Bias": -0.05909090909090882
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": 0.06060606060606077,
+        "low": -0.02222222222222202,
+        "high": 0.13030303030303025
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "NORMAL",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 99,
+        "MAE": 18.139393939393944,
+        "RMSE": 22.653570191566768,
+        "Bias": 2.2747474747474747
+      },
+      "reliabilityOnly": {
+        "n": 99,
+        "MAE": 18.128282828282828,
+        "RMSE": 22.536253621059718,
+        "Bias": 1.386868686868688
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 9,
+        "deltaMAE": -0.011111111111111485,
+        "low": -0.267676767676768,
+        "high": 0.20707070707070643
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "SPRINT",
+      "type": "ALL",
+      "baseline": {
+        "n": 65,
+        "MAE": 13.472307692307691,
+        "RMSE": 17.207426840220432,
+        "Bias": -3.42
+      },
+      "reliabilityOnly": {
+        "n": 65,
+        "MAE": 13.723076923076924,
+        "RMSE": 17.423105790432867,
+        "Bias": -3.9999999999999982
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.2507692307692307,
+        "low": 0.11250000000000038,
+        "high": 0.3848484848484843
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "SPRINT",
+      "type": "DRIVER",
+      "baseline": {
+        "n": 43,
+        "MAE": 11.655813953488371,
+        "RMSE": 15.038601493613722,
+        "Bias": -3.43720930232558
+      },
+      "reliabilityOnly": {
+        "n": 43,
+        "MAE": 11.78372093023256,
+        "RMSE": 15.174374053218035,
+        "Bias": -3.872093023255814
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.12790697674418605,
+        "low": 0.004761904761905189,
+        "high": 0.24545454545454506
+      }
+    },
+    {
+      "season": 2026,
+      "weekend": "SPRINT",
+      "type": "CONSTRUCTOR",
+      "baseline": {
+        "n": 22,
+        "MAE": 17.022727272727273,
+        "RMSE": 20.803572682682088,
+        "Bias": -3.3863636363636362
+      },
+      "reliabilityOnly": {
+        "n": 22,
+        "MAE": 17.513636363636365,
+        "RMSE": 21.138558048354113,
+        "Bias": -4.249999999999999
+      },
+      "pairedRaceBootstrap": {
+        "rounds": 2,
+        "deltaMAE": 0.4909090909090903,
+        "low": 0.3181818181818185,
+        "high": 0.6636363636363621
+      }
+    }
+  ],
+  "reliability": [
+    {
+      "season": 2025,
+      "session": "RACE",
+      "weekend": "ALL",
+      "n": 179,
+      "observedRate": 0.12849162011173185,
+      "baselineBrier": 0.11533396089385459,
+      "candidateBrier": 0.1131901738896058
+    },
+    {
+      "season": 2025,
+      "session": "RACE",
+      "weekend": "NORMAL",
+      "n": 139,
+      "observedRate": 0.1366906474820144,
+      "baselineBrier": 0.12270822302158264,
+      "candidateBrier": 0.11855924499402117
+    },
+    {
+      "season": 2025,
+      "session": "RACE",
+      "weekend": "SPRINT",
+      "n": 40,
+      "observedRate": 0.1,
+      "baselineBrier": 0.08970840000000006,
+      "candidateBrier": 0.09453265180176225
+    },
+    {
+      "season": 2025,
+      "session": "SPRINT",
+      "weekend": "ALL",
+      "n": 40,
+      "observedRate": 0.1,
+      "baselineBrier": 0.09208953537499999,
+      "candidateBrier": 0.09913894859549058
+    },
+    {
+      "season": 2025,
+      "session": "SPRINT",
+      "weekend": "NORMAL",
+      "n": 0,
+      "observedRate": null,
+      "baselineBrier": null,
+      "candidateBrier": null
+    },
+    {
+      "season": 2025,
+      "session": "SPRINT",
+      "weekend": "SPRINT",
+      "n": 40,
+      "observedRate": 0.1,
+      "baselineBrier": 0.09208953537499999,
+      "candidateBrier": 0.09913894859549058
+    },
+    {
+      "season": 2026,
+      "session": "RACE",
+      "weekend": "ALL",
+      "n": 241,
+      "observedRate": 0.17842323651452283,
+      "baselineBrier": 0.15451927385892142,
+      "candidateBrier": 0.13896219954287073
+    },
+    {
+      "season": 2026,
+      "session": "RACE",
+      "weekend": "NORMAL",
+      "n": 198,
+      "observedRate": 0.18181818181818182,
+      "baselineBrier": 0.1576430606060604,
+      "candidateBrier": 0.14027273641214316
+    },
+    {
+      "season": 2026,
+      "session": "RACE",
+      "weekend": "SPRINT",
+      "n": 43,
+      "observedRate": 0.16279069767441862,
+      "baselineBrier": 0.14013532558139533,
+      "candidateBrier": 0.1329276344238959
+    },
+    {
+      "season": 2026,
+      "session": "SPRINT",
+      "weekend": "ALL",
+      "n": 43,
+      "observedRate": 0.023255813953488372,
+      "baselineBrier": 0.022568738023255815,
+      "candidateBrier": 0.025619283260021938
+    },
+    {
+      "season": 2026,
+      "session": "SPRINT",
+      "weekend": "NORMAL",
+      "n": 0,
+      "observedRate": null,
+      "baselineBrier": null,
+      "candidateBrier": null
+    },
+    {
+      "season": 2026,
+      "session": "SPRINT",
+      "weekend": "SPRINT",
+      "n": 43,
+      "observedRate": 0.023255813953488372,
+      "baselineBrier": 0.022568738023255815,
+      "candidateBrier": 0.025619283260021938
+    }
+  ],
+  "missing": [
+    {
+      "season": 2025,
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER"
+    },
+    {
+      "season": 2026,
+      "round": 12,
+      "code": "TSU",
+      "type": "DRIVER"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-08T07:12:28.928Z",
+  "officialTargetFeed": {
+    "url": "https://fantasy.formula1.com/feeds/drivers/18_en.json",
+    "status": 403
+  },
+  "publicArchive": {
+    "url": "https://f1fantasytools.com/api/statistics/2026",
+    "status": 200,
+    "sha256": "c558b1f27cc9c24f6d7865a501d148ddf5faf3fb1143c4cf7b26bafeaaabfc7d",
+    "round18Drivers": 0,
+    "round18Constructors": 0,
+    "qualifying": "2026-10-24T21:00:00.000Z",
+    "race": "2026-10-25T20:00:00.000Z"
+  },
+  "calendarPrimary": "https://www.formula1.com/en/racing/2026/united-states",
+  "calendarNote": "Official race timetable supports October23–25; Fantasy lock still requires official Fantasy confirmation before capture eligibility.",
+  "status": "No real R18 quote roster available from checked sources; no prospective forecast captured. Earlier2026 outcomes already consumed; do not count them as independent confirmation.",
+  "auditRecordedAt": "2026-10-08T07:21:07.825Z",
+  "checkedAtNote": "Initial official/OpenF1 requests at checkedAt; public archive fetched subsequently in same audit session. Raw public response is identified by SHA256."
+}

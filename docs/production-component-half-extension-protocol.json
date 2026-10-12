@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "originalProtocolCommit": "b6e5f91",
+  "candidateComponentWeight": 0.5,
+  "referenceComponentWeight": 0.25,
+  "allowTuning": false,
+  "sourceSHA256": "8f1603e517c0506e255ca1f274ce83297288fc24e870cd1e2dc56e37a73ff162",
+  "additionalEvaluationRounds": [
+    22,
+    23,
+    24
+  ],
+  "sensitivityRounds": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "recoveredLabels": [
+    {
+      "round": 16,
+      "code": "TSU",
+      "points": 0
+    },
+    {
+      "round": 16,
+      "code": "LAW",
+      "points": 6
+    },
+    {
+      "round": 19,
+      "code": "TSU",
+      "points": 37
+    },
+    {
+      "round": 19,
+      "code": "LAW",
+      "points": 15
+    }
+  ],
+  "note": "Extension fixed after observing R15–21 directional improvement with intervals crossing zero. R22–24 forecast errors not yet evaluated. Do not pool extension and previous validation and call it wholly independent. Use full conserved source totals consistently for prior training and outcomes; report source-sensitive changes separately. Existing activation requirement remains unchanged."
+}

@@ -1,0 +1,2511 @@
+{
+  "schemaVersion": 1,
+  "season": 2023,
+  "maximumRound": 23,
+  "source": "https://openf1.org/docs/",
+  "calendarSource": "https://f1fantasytools.com/api/statistics/2023",
+  "calendarSHA256": "cbcd067a6134ce2439c9d883b7cee71b7c06ac21a0ef62cbeae396f42f9746eb",
+  "note": "Retrospective session-end cutoff, not contemporaneous provider publication timestamps. End must precede both provider and Fantasy calendar lock. 2023 lock at Qualifying, including sprint weekends; no Saturday SQ imported. No forecast errors or inferred publication timestamps. Calendar/meeting/session identity checked; retrospective source limitations remain.",
+  "sourceHashes": {
+    "all-sessions": "66288b28cbfdc01628b854f1a9c17b689461bfe1124dc24a6e128b7c24d1c58d",
+    "races": "1c4ebc39663a3ae9e1ce069a7739e4b2f14366b75e79769317499bcf8b6a3554",
+    "prelock-result-7767": "abae63e442c6f4f54f29c2358a759125210164a6f8abe4438a9a0e614608202f",
+    "drivers-7767": "c2e3368405e7af4ee44f1ac4fda80b08f813636305db0e747c968b14ee0951ba",
+    "prelock-result-7774": "9c6f996b21a96fe5ba35437a469a914bf3e027863e1360d0bb5820daf50ec6f9",
+    "drivers-7774": "1ddbb68f7f4f8c93f3b2e31e41641556ace5a08e178e67534c17515f7aa3f910",
+    "prelock-result-7782": "0135c783c804be63421878fc7f37615ee3043c4351df657ed4f3a95739ee7f15",
+    "drivers-7782": "10acc8c9e2762761b7112545afd129d78daa35a64093abf3e89fd8ea31de2fc1",
+    "prelock-result-9063": "e92ed413cd423da5d5ddd300dfa33d4d412ef195fad51f42e82cdd9b07b109b5",
+    "drivers-9063": "8fe01857c7069437fb14462b8b362886b9f9895fd7207adf5df608e5c63a209e",
+    "prelock-result-9073": "0f1e8ce53ba90bfff7c29b6420afd1ca9a493df8eaa09baefeea0792480bc4c7",
+    "drivers-9073": "7efb42fdcc259305c2a0111f3d6219282a790222eb8798d877e2951e63057ad5",
+    "prelock-result-9089": "f9ad3567a7abc925a03edcfe77bf431477e14963c62770b934b7626fe279acc8",
+    "drivers-9089": "2d8419517b30302fa61a2add4268f2b7bed4692fa80c082e78c514a82fa31e06",
+    "prelock-result-9097": "54e83a58aab38adce7e68d44eddb5e7f2555852b7519e18d43b7ef69b3834d3d",
+    "drivers-9097": "2706cb394ba55a7858244ef59c54b46788cfa6227770f922d3f8014ee984f8dc",
+    "prelock-result-9105": "79fe2df5ed1e113d63a71c09fc742882666b960188632ee746cd3b703e9fcf60",
+    "drivers-9105": "3c211cc98f683a6ffbda9056f4668d6206214dd4134e06d0f8a16c4eff2d87c6",
+    "prelock-result-9111": "87467bf8fc6432317b5ccfc65b0facb8b67f3778f24a674bbfac59e5aaf24178",
+    "drivers-9111": "e57ee3476c3600141dcfa499d446b03da7ea5bab5f193d6c19784b24a7fcdff1",
+    "prelock-result-9121": "b59e0cbb03595afe60067ba04bc52cdb25d9214f94b6ab2c92eac6e8a98da7ca",
+    "drivers-9121": "eb4a9abc5119bcc89515c1adf0f0538f842b8fa6ec2fe9a685a16043b5fa2af1",
+    "prelock-result-9128": "af06d905d71c7d9963c3a4ce82cd43f047e059483a802c591b0a6e38d638e467",
+    "drivers-9128": "613f9dc9615d99c351b83a909904262a1936b093d84850d2da1d633c9991c9b7",
+    "prelock-result-9134": "898eff406d02c255f4de090f5ce9076435b29b473adb817a6567997dc9a32c91",
+    "drivers-9134": "c0f3951299d604950a5679b3899bddd321eb8078ff697f186ed3bda6e745cfad",
+    "prelock-result-9144": "f406a3b47480b3bd618c1e4bfc6068486ca8f3c89a7e5ec4c6622567cf6b8a78",
+    "drivers-9144": "4f8900ce6007e51d0377a716ea1a3e755c7bd00f4abb91f35e3b284f9b06c9f7",
+    "prelock-result-9152": "22bea33c2112398ebb5dc97dc1aa012b8c9f547ae87cf5ceb4a8280c6ce46f23",
+    "drivers-9152": "140c0635c864b54172f48291fd470fa6693a5a38baae19c8059902e6f25b093c",
+    "prelock-result-9160": "88ee2d46214e6b6dab053aad3602bdf0aa81d26ecefdb0c99aa6865dde006d48",
+    "drivers-9160": "a299a1085de3298ee79adb64384363c222325f58cb54f3bbe1cbab6d860e04ce",
+    "prelock-result-9168": "8ef7a0e47865d6d808eea6dc5e9b59bfe996196b1e4053bc64fd8a1e2e2c4fb5",
+    "drivers-9168": "23747f99a5c3462ab7eb08a2ac87dd05e509d76b84e7ef13d8ae477e2eeb30ff",
+    "prelock-result-9206": "c5ba514c96992374e22e5478596b2cf8151b946d48792761f1b1f37183b300f9",
+    "drivers-9206": "315fddb82c51f2edb8995a22b56d7ae7e0d4d0a168065e350eb60a34015817aa",
+    "prelock-result-9176": "b26da522e7410e5ce5b16c771ed501abc755f69a563ac514c30dae300847bb1e",
+    "drivers-9176": "e16540e1ed6e2ff0fb42a7eda46114246e5cc3069ab2b9616fc32eb4f8501510",
+    "prelock-result-9198": "6691285c4989275fc8ec2264da142678ab55def460f78d5a88198a027f24de85",
+    "drivers-9198": "cb197e8cb259857574f467bcc81e4b47cafa77723d92f0e665c1bbe174dc5860",
+    "prelock-result-9184": "3b795c3bf60aa43a1d9e89d65a31763ba5fca9454200e070b43263a2adc22203",
+    "drivers-9184": "4d45d5461f668f7dc2b2bcb4dcce9acad896eb572f8b2b6902d6283933a8d0cb",
+    "prelock-result-9192": "e88efff57a50a1f10ddd9feea621980c38057e84321d5ab4b16af05a981f6e44",
+    "drivers-9192": "ed06a8ef10268401abdf72e037dcf694f9beae874118dba0c11c0aa7716aceb5"
+  },
+  "weekends": [
+    {
+      "round": 1,
+      "meetingKey": 1141,
+      "lockTime": "2023-03-04T15:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 7767,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-03-04T11:30:00+00:00",
+        "endedAt": "2023-03-04T12:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "ALO",
+            "position": 1,
+            "bestLapSeconds": 92.34
+          },
+          {
+            "code": "VER",
+            "position": 2,
+            "bestLapSeconds": 92.345
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 92.446
+          },
+          {
+            "code": "HAM",
+            "position": 4,
+            "bestLapSeconds": 92.555
+          },
+          {
+            "code": "LEC",
+            "position": 5,
+            "bestLapSeconds": 92.624
+          },
+          {
+            "code": "RUS",
+            "position": 6,
+            "bestLapSeconds": 92.731
+          },
+          {
+            "code": "STR",
+            "position": 7,
+            "bestLapSeconds": 92.919
+          },
+          {
+            "code": "SAI",
+            "position": 8,
+            "bestLapSeconds": 92.945
+          },
+          {
+            "code": "PIA",
+            "position": 9,
+            "bestLapSeconds": 93.045
+          },
+          {
+            "code": "GAS",
+            "position": 10,
+            "bestLapSeconds": 93.064
+          },
+          {
+            "code": "OCO",
+            "position": 11,
+            "bestLapSeconds": 93.116
+          },
+          {
+            "code": "ZHO",
+            "position": 12,
+            "bestLapSeconds": 93.18
+          },
+          {
+            "code": "NOR",
+            "position": 13,
+            "bestLapSeconds": 93.202
+          },
+          {
+            "code": "MAG",
+            "position": 14,
+            "bestLapSeconds": 93.381
+          },
+          {
+            "code": "HUL",
+            "position": 15,
+            "bestLapSeconds": 93.423
+          },
+          {
+            "code": "TSU",
+            "position": 16,
+            "bestLapSeconds": 93.475
+          },
+          {
+            "code": "BOT",
+            "position": 17,
+            "bestLapSeconds": 93.629
+          },
+          {
+            "code": "SAR",
+            "position": 18,
+            "bestLapSeconds": 93.665
+          },
+          {
+            "code": "ALB",
+            "position": 19,
+            "bestLapSeconds": 93.882
+          },
+          {
+            "code": "DEV",
+            "position": 20,
+            "bestLapSeconds": 94.082
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 2,
+      "meetingKey": 1142,
+      "lockTime": "2023-03-18T17:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 7774,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-03-18T13:30:00+00:00",
+        "endedAt": "2023-03-18T14:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 88.485
+          },
+          {
+            "code": "PER",
+            "position": 2,
+            "bestLapSeconds": 89.098
+          },
+          {
+            "code": "ALO",
+            "position": 3,
+            "bestLapSeconds": 89.483
+          },
+          {
+            "code": "STR",
+            "position": 4,
+            "bestLapSeconds": 89.509
+          },
+          {
+            "code": "HAM",
+            "position": 5,
+            "bestLapSeconds": 89.568
+          },
+          {
+            "code": "LEC",
+            "position": 6,
+            "bestLapSeconds": 89.588
+          },
+          {
+            "code": "NOR",
+            "position": 7,
+            "bestLapSeconds": 89.69
+          },
+          {
+            "code": "PIA",
+            "position": 8,
+            "bestLapSeconds": 89.698
+          },
+          {
+            "code": "GAS",
+            "position": 9,
+            "bestLapSeconds": 89.701
+          },
+          {
+            "code": "SAI",
+            "position": 10,
+            "bestLapSeconds": 89.761
+          },
+          {
+            "code": "RUS",
+            "position": 11,
+            "bestLapSeconds": 89.811
+          },
+          {
+            "code": "ZHO",
+            "position": 12,
+            "bestLapSeconds": 89.917
+          },
+          {
+            "code": "HUL",
+            "position": 13,
+            "bestLapSeconds": 89.933
+          },
+          {
+            "code": "OCO",
+            "position": 14,
+            "bestLapSeconds": 89.953
+          },
+          {
+            "code": "ALB",
+            "position": 15,
+            "bestLapSeconds": 89.983
+          },
+          {
+            "code": "SAR",
+            "position": 16,
+            "bestLapSeconds": 90.035
+          },
+          {
+            "code": "MAG",
+            "position": 17,
+            "bestLapSeconds": 90.131
+          },
+          {
+            "code": "BOT",
+            "position": 18,
+            "bestLapSeconds": 90.317
+          },
+          {
+            "code": "TSU",
+            "position": 19,
+            "bestLapSeconds": 90.797
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 3,
+      "meetingKey": 1143,
+      "lockTime": "2023-04-01T05:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 7782,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-04-01T02:30:00+00:00",
+        "endedAt": "2023-04-01T03:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 77.565
+          },
+          {
+            "code": "ALO",
+            "position": 2,
+            "bestLapSeconds": 77.727
+          },
+          {
+            "code": "OCO",
+            "position": 3,
+            "bestLapSeconds": 77.938
+          },
+          {
+            "code": "RUS",
+            "position": 4,
+            "bestLapSeconds": 77.955
+          },
+          {
+            "code": "GAS",
+            "position": 5,
+            "bestLapSeconds": 78.094
+          },
+          {
+            "code": "PER",
+            "position": 6,
+            "bestLapSeconds": 78.123
+          },
+          {
+            "code": "SAI",
+            "position": 7,
+            "bestLapSeconds": 78.127
+          },
+          {
+            "code": "HAM",
+            "position": 8,
+            "bestLapSeconds": 78.138
+          },
+          {
+            "code": "STR",
+            "position": 9,
+            "bestLapSeconds": 78.198
+          },
+          {
+            "code": "ZHO",
+            "position": 10,
+            "bestLapSeconds": 78.33
+          },
+          {
+            "code": "HUL",
+            "position": 11,
+            "bestLapSeconds": 78.41
+          },
+          {
+            "code": "ALB",
+            "position": 12,
+            "bestLapSeconds": 78.553
+          },
+          {
+            "code": "LEC",
+            "position": 13,
+            "bestLapSeconds": 78.691
+          },
+          {
+            "code": "PIA",
+            "position": 14,
+            "bestLapSeconds": 78.713
+          },
+          {
+            "code": "BOT",
+            "position": 15,
+            "bestLapSeconds": 78.809
+          },
+          {
+            "code": "TSU",
+            "position": 16,
+            "bestLapSeconds": 78.901
+          },
+          {
+            "code": "SAR",
+            "position": 17,
+            "bestLapSeconds": 78.947
+          },
+          {
+            "code": "MAG",
+            "position": 18,
+            "bestLapSeconds": 79.056
+          },
+          {
+            "code": "DEV",
+            "position": 19,
+            "bestLapSeconds": 79.092
+          },
+          {
+            "code": "NOR",
+            "position": 20,
+            "bestLapSeconds": 79.146
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 4,
+      "meetingKey": 1207,
+      "lockTime": "2023-04-28T13:00:00.000Z",
+      "isSprint": true,
+      "practice": {
+        "sessionKey": 9063,
+        "sessionName": "Practice 1",
+        "startedAt": "2023-04-28T09:30:00+00:00",
+        "endedAt": "2023-04-28T10:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 102.315
+          },
+          {
+            "code": "LEC",
+            "position": 2,
+            "bestLapSeconds": 102.352
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 102.454
+          },
+          {
+            "code": "SAI",
+            "position": 4,
+            "bestLapSeconds": 102.899
+          },
+          {
+            "code": "NOR",
+            "position": 5,
+            "bestLapSeconds": 103.125
+          },
+          {
+            "code": "DEV",
+            "position": 6,
+            "bestLapSeconds": 103.414
+          },
+          {
+            "code": "STR",
+            "position": 7,
+            "bestLapSeconds": 103.455
+          },
+          {
+            "code": "ALO",
+            "position": 8,
+            "bestLapSeconds": 103.56
+          },
+          {
+            "code": "ALB",
+            "position": 9,
+            "bestLapSeconds": 103.628
+          },
+          {
+            "code": "ZHO",
+            "position": 10,
+            "bestLapSeconds": 103.748
+          },
+          {
+            "code": "HAM",
+            "position": 11,
+            "bestLapSeconds": 103.798
+          },
+          {
+            "code": "PIA",
+            "position": 12,
+            "bestLapSeconds": 103.98
+          },
+          {
+            "code": "BOT",
+            "position": 13,
+            "bestLapSeconds": 104.01
+          },
+          {
+            "code": "TSU",
+            "position": 14,
+            "bestLapSeconds": 104.137
+          },
+          {
+            "code": "HUL",
+            "position": 15,
+            "bestLapSeconds": 104.323
+          },
+          {
+            "code": "SAR",
+            "position": 16,
+            "bestLapSeconds": 104.9
+          },
+          {
+            "code": "RUS",
+            "position": 17,
+            "bestLapSeconds": 105.082
+          },
+          {
+            "code": "OCO",
+            "position": 18,
+            "bestLapSeconds": 105.955
+          },
+          {
+            "code": "GAS",
+            "position": 19,
+            "bestLapSeconds": 106.321
+          },
+          {
+            "code": "MAG",
+            "position": 20,
+            "bestLapSeconds": 107.498
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 5,
+      "meetingKey": 1208,
+      "lockTime": "2023-05-06T20:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9073,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-05-06T16:30:00+00:00",
+        "endedAt": "2023-05-06T17:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 87.535
+          },
+          {
+            "code": "LEC",
+            "position": 2,
+            "bestLapSeconds": 87.941
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 88.05
+          },
+          {
+            "code": "SAI",
+            "position": 4,
+            "bestLapSeconds": 88.125
+          },
+          {
+            "code": "OCO",
+            "position": 5,
+            "bestLapSeconds": 88.407
+          },
+          {
+            "code": "GAS",
+            "position": 6,
+            "bestLapSeconds": 88.428
+          },
+          {
+            "code": "BOT",
+            "position": 7,
+            "bestLapSeconds": 88.456
+          },
+          {
+            "code": "HUL",
+            "position": 8,
+            "bestLapSeconds": 88.497
+          },
+          {
+            "code": "ALB",
+            "position": 9,
+            "bestLapSeconds": 88.561
+          },
+          {
+            "code": "RUS",
+            "position": 10,
+            "bestLapSeconds": 88.606
+          },
+          {
+            "code": "MAG",
+            "position": 11,
+            "bestLapSeconds": 88.607
+          },
+          {
+            "code": "ALO",
+            "position": 12,
+            "bestLapSeconds": 88.618
+          },
+          {
+            "code": "HAM",
+            "position": 13,
+            "bestLapSeconds": 88.718
+          },
+          {
+            "code": "STR",
+            "position": 14,
+            "bestLapSeconds": 88.723
+          },
+          {
+            "code": "ZHO",
+            "position": 15,
+            "bestLapSeconds": 89.074
+          },
+          {
+            "code": "TSU",
+            "position": 16,
+            "bestLapSeconds": 89.179
+          },
+          {
+            "code": "SAR",
+            "position": 17,
+            "bestLapSeconds": 89.264
+          },
+          {
+            "code": "PIA",
+            "position": 18,
+            "bestLapSeconds": 89.375
+          },
+          {
+            "code": "NOR",
+            "position": 19,
+            "bestLapSeconds": 89.401
+          },
+          {
+            "code": "DEV",
+            "position": 20,
+            "bestLapSeconds": 89.447
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 7,
+      "meetingKey": 1210,
+      "lockTime": "2023-05-27T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9089,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-05-27T10:30:00+00:00",
+        "endedAt": "2023-05-27T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 72.776
+          },
+          {
+            "code": "PER",
+            "position": 2,
+            "bestLapSeconds": 72.849
+          },
+          {
+            "code": "STR",
+            "position": 3,
+            "bestLapSeconds": 72.942
+          },
+          {
+            "code": "SAI",
+            "position": 4,
+            "bestLapSeconds": 73.261
+          },
+          {
+            "code": "NOR",
+            "position": 5,
+            "bestLapSeconds": 73.396
+          },
+          {
+            "code": "GAS",
+            "position": 6,
+            "bestLapSeconds": 73.453
+          },
+          {
+            "code": "LEC",
+            "position": 7,
+            "bestLapSeconds": 73.475
+          },
+          {
+            "code": "HAM",
+            "position": 8,
+            "bestLapSeconds": 73.486
+          },
+          {
+            "code": "OCO",
+            "position": 9,
+            "bestLapSeconds": 73.496
+          },
+          {
+            "code": "BOT",
+            "position": 10,
+            "bestLapSeconds": 73.521
+          },
+          {
+            "code": "RUS",
+            "position": 11,
+            "bestLapSeconds": 73.59
+          },
+          {
+            "code": "MAG",
+            "position": 12,
+            "bestLapSeconds": 73.624
+          },
+          {
+            "code": "HUL",
+            "position": 13,
+            "bestLapSeconds": 73.65
+          },
+          {
+            "code": "ALO",
+            "position": 14,
+            "bestLapSeconds": 73.697
+          },
+          {
+            "code": "TSU",
+            "position": 15,
+            "bestLapSeconds": 73.738
+          },
+          {
+            "code": "ZHO",
+            "position": 16,
+            "bestLapSeconds": 73.772
+          },
+          {
+            "code": "SAR",
+            "position": 17,
+            "bestLapSeconds": 73.851
+          },
+          {
+            "code": "ALB",
+            "position": 18,
+            "bestLapSeconds": 73.93
+          },
+          {
+            "code": "PIA",
+            "position": 19,
+            "bestLapSeconds": 73.998
+          },
+          {
+            "code": "DEV",
+            "position": 20,
+            "bestLapSeconds": 74.187
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 8,
+      "meetingKey": 1211,
+      "lockTime": "2023-06-03T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9097,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-06-03T10:30:00+00:00",
+        "endedAt": "2023-06-03T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 73.664
+          },
+          {
+            "code": "PER",
+            "position": 2,
+            "bestLapSeconds": 73.914
+          },
+          {
+            "code": "HAM",
+            "position": 3,
+            "bestLapSeconds": 74.072
+          },
+          {
+            "code": "SAI",
+            "position": 4,
+            "bestLapSeconds": 74.24
+          },
+          {
+            "code": "ALO",
+            "position": 5,
+            "bestLapSeconds": 74.264
+          },
+          {
+            "code": "RUS",
+            "position": 6,
+            "bestLapSeconds": 74.278
+          },
+          {
+            "code": "LEC",
+            "position": 7,
+            "bestLapSeconds": 74.353
+          },
+          {
+            "code": "BOT",
+            "position": 8,
+            "bestLapSeconds": 74.36
+          },
+          {
+            "code": "TSU",
+            "position": 9,
+            "bestLapSeconds": 74.659
+          },
+          {
+            "code": "NOR",
+            "position": 10,
+            "bestLapSeconds": 74.681
+          },
+          {
+            "code": "ZHO",
+            "position": 11,
+            "bestLapSeconds": 74.681
+          },
+          {
+            "code": "DEV",
+            "position": 12,
+            "bestLapSeconds": 74.693
+          },
+          {
+            "code": "STR",
+            "position": 13,
+            "bestLapSeconds": 74.756
+          },
+          {
+            "code": "HUL",
+            "position": 14,
+            "bestLapSeconds": 74.988
+          },
+          {
+            "code": "PIA",
+            "position": 15,
+            "bestLapSeconds": 75.105
+          },
+          {
+            "code": "OCO",
+            "position": 16,
+            "bestLapSeconds": 75.266
+          },
+          {
+            "code": "MAG",
+            "position": 17,
+            "bestLapSeconds": 75.534
+          },
+          {
+            "code": "GAS",
+            "position": 18,
+            "bestLapSeconds": 75.841
+          },
+          {
+            "code": "ALB",
+            "position": 19,
+            "bestLapSeconds": 75.851
+          },
+          {
+            "code": "SAR",
+            "position": 20,
+            "bestLapSeconds": 76.529
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 9,
+      "meetingKey": 1212,
+      "lockTime": "2023-06-17T20:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9105,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-06-17T16:30:00+00:00",
+        "endedAt": "2023-06-17T17:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 83.106
+          },
+          {
+            "code": "LEC",
+            "position": 2,
+            "bestLapSeconds": 83.397
+          },
+          {
+            "code": "ALO",
+            "position": 3,
+            "bestLapSeconds": 84.483
+          },
+          {
+            "code": "MAG",
+            "position": 4,
+            "bestLapSeconds": 84.715
+          },
+          {
+            "code": "SAI",
+            "position": 5,
+            "bestLapSeconds": 84.765
+          },
+          {
+            "code": "GAS",
+            "position": 6,
+            "bestLapSeconds": 84.825
+          },
+          {
+            "code": "STR",
+            "position": 7,
+            "bestLapSeconds": 84.944
+          },
+          {
+            "code": "TSU",
+            "position": 8,
+            "bestLapSeconds": 84.955
+          },
+          {
+            "code": "BOT",
+            "position": 9,
+            "bestLapSeconds": 84.988
+          },
+          {
+            "code": "HAM",
+            "position": 10,
+            "bestLapSeconds": 85.087
+          },
+          {
+            "code": "HUL",
+            "position": 11,
+            "bestLapSeconds": 85.14
+          },
+          {
+            "code": "PIA",
+            "position": 12,
+            "bestLapSeconds": 85.191
+          },
+          {
+            "code": "NOR",
+            "position": 13,
+            "bestLapSeconds": 85.198
+          },
+          {
+            "code": "ALB",
+            "position": 14,
+            "bestLapSeconds": 85.379
+          },
+          {
+            "code": "RUS",
+            "position": 15,
+            "bestLapSeconds": 85.435
+          },
+          {
+            "code": "DEV",
+            "position": 16,
+            "bestLapSeconds": 85.725
+          },
+          {
+            "code": "PER",
+            "position": 17,
+            "bestLapSeconds": 85.857
+          },
+          {
+            "code": "ZHO",
+            "position": 18,
+            "bestLapSeconds": 86.75
+          },
+          {
+            "code": "OCO",
+            "position": 19,
+            "bestLapSeconds": 86.84
+          },
+          {
+            "code": "SAR",
+            "position": 20,
+            "bestLapSeconds": 87.279
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 10,
+      "meetingKey": 1213,
+      "lockTime": "2023-06-30T15:00:00.000Z",
+      "isSprint": true,
+      "practice": {
+        "sessionKey": 9111,
+        "sessionName": "Practice 1",
+        "startedAt": "2023-06-30T11:30:00+00:00",
+        "endedAt": "2023-06-30T12:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 65.742
+          },
+          {
+            "code": "SAI",
+            "position": 2,
+            "bestLapSeconds": 65.983
+          },
+          {
+            "code": "LEC",
+            "position": 3,
+            "bestLapSeconds": 66.012
+          },
+          {
+            "code": "HAM",
+            "position": 4,
+            "bestLapSeconds": 66.251
+          },
+          {
+            "code": "PER",
+            "position": 5,
+            "bestLapSeconds": 66.262
+          },
+          {
+            "code": "STR",
+            "position": 6,
+            "bestLapSeconds": 66.34
+          },
+          {
+            "code": "MAG",
+            "position": 7,
+            "bestLapSeconds": 66.497
+          },
+          {
+            "code": "ALO",
+            "position": 8,
+            "bestLapSeconds": 66.656
+          },
+          {
+            "code": "RUS",
+            "position": 9,
+            "bestLapSeconds": 66.696
+          },
+          {
+            "code": "ZHO",
+            "position": 10,
+            "bestLapSeconds": 66.78
+          },
+          {
+            "code": "ALB",
+            "position": 11,
+            "bestLapSeconds": 66.794
+          },
+          {
+            "code": "PIA",
+            "position": 12,
+            "bestLapSeconds": 66.809
+          },
+          {
+            "code": "HUL",
+            "position": 13,
+            "bestLapSeconds": 66.846
+          },
+          {
+            "code": "BOT",
+            "position": 14,
+            "bestLapSeconds": 66.847
+          },
+          {
+            "code": "TSU",
+            "position": 15,
+            "bestLapSeconds": 66.985
+          },
+          {
+            "code": "DEV",
+            "position": 16,
+            "bestLapSeconds": 67.017
+          },
+          {
+            "code": "SAR",
+            "position": 17,
+            "bestLapSeconds": 67.018
+          },
+          {
+            "code": "OCO",
+            "position": 18,
+            "bestLapSeconds": 67.202
+          },
+          {
+            "code": "GAS",
+            "position": 19,
+            "bestLapSeconds": 67.287
+          },
+          {
+            "code": "NOR",
+            "position": 20,
+            "bestLapSeconds": 67.368
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 11,
+      "meetingKey": 1214,
+      "lockTime": "2023-07-08T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9121,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-07-08T10:30:00+00:00",
+        "endedAt": "2023-07-08T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "LEC",
+            "position": 1,
+            "bestLapSeconds": 87.419
+          },
+          {
+            "code": "ALB",
+            "position": 2,
+            "bestLapSeconds": 87.592
+          },
+          {
+            "code": "ALO",
+            "position": 3,
+            "bestLapSeconds": 87.784
+          },
+          {
+            "code": "GAS",
+            "position": 4,
+            "bestLapSeconds": 87.893
+          },
+          {
+            "code": "HAM",
+            "position": 5,
+            "bestLapSeconds": 87.948
+          },
+          {
+            "code": "SAI",
+            "position": 6,
+            "bestLapSeconds": 87.964
+          },
+          {
+            "code": "SAR",
+            "position": 7,
+            "bestLapSeconds": 88.151
+          },
+          {
+            "code": "VER",
+            "position": 8,
+            "bestLapSeconds": 88.266
+          },
+          {
+            "code": "RUS",
+            "position": 9,
+            "bestLapSeconds": 88.284
+          },
+          {
+            "code": "TSU",
+            "position": 10,
+            "bestLapSeconds": 88.337
+          },
+          {
+            "code": "DEV",
+            "position": 11,
+            "bestLapSeconds": 88.504
+          },
+          {
+            "code": "NOR",
+            "position": 12,
+            "bestLapSeconds": 88.563
+          },
+          {
+            "code": "STR",
+            "position": 13,
+            "bestLapSeconds": 88.62
+          },
+          {
+            "code": "PER",
+            "position": 14,
+            "bestLapSeconds": 88.904
+          },
+          {
+            "code": "MAG",
+            "position": 15,
+            "bestLapSeconds": 89.207
+          },
+          {
+            "code": "OCO",
+            "position": 16,
+            "bestLapSeconds": 89.233
+          },
+          {
+            "code": "PIA",
+            "position": 17,
+            "bestLapSeconds": 89.437
+          },
+          {
+            "code": "BOT",
+            "position": 18,
+            "bestLapSeconds": 89.586
+          },
+          {
+            "code": "HUL",
+            "position": 19,
+            "bestLapSeconds": 93.59
+          },
+          {
+            "code": "ZHO",
+            "position": 20,
+            "bestLapSeconds": null
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 12,
+      "meetingKey": 1215,
+      "lockTime": "2023-07-22T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9128,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-07-22T10:30:00+00:00",
+        "endedAt": "2023-07-22T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "HAM",
+            "position": 1,
+            "bestLapSeconds": 77.811
+          },
+          {
+            "code": "VER",
+            "position": 2,
+            "bestLapSeconds": 78.061
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 78.067
+          },
+          {
+            "code": "HUL",
+            "position": 4,
+            "bestLapSeconds": 78.077
+          },
+          {
+            "code": "NOR",
+            "position": 5,
+            "bestLapSeconds": 78.082
+          },
+          {
+            "code": "RUS",
+            "position": 6,
+            "bestLapSeconds": 78.119
+          },
+          {
+            "code": "LEC",
+            "position": 7,
+            "bestLapSeconds": 78.19
+          },
+          {
+            "code": "SAI",
+            "position": 8,
+            "bestLapSeconds": 78.234
+          },
+          {
+            "code": "ALO",
+            "position": 9,
+            "bestLapSeconds": 78.35
+          },
+          {
+            "code": "BOT",
+            "position": 10,
+            "bestLapSeconds": 78.489
+          },
+          {
+            "code": "STR",
+            "position": 11,
+            "bestLapSeconds": 78.536
+          },
+          {
+            "code": "ZHO",
+            "position": 12,
+            "bestLapSeconds": 78.544
+          },
+          {
+            "code": "ALB",
+            "position": 13,
+            "bestLapSeconds": 78.592
+          },
+          {
+            "code": "PIA",
+            "position": 14,
+            "bestLapSeconds": 78.598
+          },
+          {
+            "code": "MAG",
+            "position": 15,
+            "bestLapSeconds": 78.649
+          },
+          {
+            "code": "GAS",
+            "position": 16,
+            "bestLapSeconds": 78.776
+          },
+          {
+            "code": "SAR",
+            "position": 17,
+            "bestLapSeconds": 78.814
+          },
+          {
+            "code": "RIC",
+            "position": 18,
+            "bestLapSeconds": 78.828
+          },
+          {
+            "code": "OCO",
+            "position": 19,
+            "bestLapSeconds": 78.979
+          },
+          {
+            "code": "TSU",
+            "position": 20,
+            "bestLapSeconds": 79.156
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 13,
+      "meetingKey": 1216,
+      "lockTime": "2023-07-28T15:00:00.000Z",
+      "isSprint": true,
+      "practice": {
+        "sessionKey": 9134,
+        "sessionName": "Practice 1",
+        "startedAt": "2023-07-28T11:30:00+00:00",
+        "endedAt": "2023-07-28T12:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "SAI",
+            "position": 1,
+            "bestLapSeconds": 123.207
+          },
+          {
+            "code": "PIA",
+            "position": 2,
+            "bestLapSeconds": 123.792
+          },
+          {
+            "code": "NOR",
+            "position": 3,
+            "bestLapSeconds": 124.484
+          },
+          {
+            "code": "LEC",
+            "position": 4,
+            "bestLapSeconds": 128.148
+          },
+          {
+            "code": "PER",
+            "position": 5,
+            "bestLapSeconds": 128.24
+          },
+          {
+            "code": "ALB",
+            "position": 6,
+            "bestLapSeconds": 128.394
+          },
+          {
+            "code": "TSU",
+            "position": 7,
+            "bestLapSeconds": 129.067
+          },
+          {
+            "code": "MAG",
+            "position": 8,
+            "bestLapSeconds": 129.229
+          },
+          {
+            "code": "RIC",
+            "position": 9,
+            "bestLapSeconds": 129.319
+          },
+          {
+            "code": "HUL",
+            "position": 10,
+            "bestLapSeconds": 130.042
+          },
+          {
+            "code": "ALO",
+            "position": 11,
+            "bestLapSeconds": 130.283
+          },
+          {
+            "code": "HAM",
+            "position": 12,
+            "bestLapSeconds": 130.299
+          },
+          {
+            "code": "RUS",
+            "position": 13,
+            "bestLapSeconds": 130.475
+          },
+          {
+            "code": "BOT",
+            "position": 14,
+            "bestLapSeconds": 132.085
+          },
+          {
+            "code": "ZHO",
+            "position": 15,
+            "bestLapSeconds": 134.002
+          },
+          {
+            "code": "SAR",
+            "position": 16,
+            "bestLapSeconds": null
+          },
+          {
+            "code": "STR",
+            "position": 17,
+            "bestLapSeconds": null
+          },
+          {
+            "code": "GAS",
+            "position": 18,
+            "bestLapSeconds": null
+          },
+          {
+            "code": "OCO",
+            "position": 19,
+            "bestLapSeconds": null
+          },
+          {
+            "code": "VER",
+            "position": 20,
+            "bestLapSeconds": null
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 14,
+      "meetingKey": 1217,
+      "lockTime": "2023-08-26T13:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9144,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-08-26T09:30:00+00:00",
+        "endedAt": "2023-08-26T10:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 81.631
+          },
+          {
+            "code": "RUS",
+            "position": 2,
+            "bestLapSeconds": 82.01
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 82.631
+          },
+          {
+            "code": "ALO",
+            "position": 4,
+            "bestLapSeconds": 82.634
+          },
+          {
+            "code": "HAM",
+            "position": 5,
+            "bestLapSeconds": 82.723
+          },
+          {
+            "code": "ALB",
+            "position": 6,
+            "bestLapSeconds": 82.75
+          },
+          {
+            "code": "PIA",
+            "position": 7,
+            "bestLapSeconds": 82.892
+          },
+          {
+            "code": "BOT",
+            "position": 8,
+            "bestLapSeconds": 82.965
+          },
+          {
+            "code": "LEC",
+            "position": 9,
+            "bestLapSeconds": 83.093
+          },
+          {
+            "code": "NOR",
+            "position": 10,
+            "bestLapSeconds": 83.158
+          },
+          {
+            "code": "GAS",
+            "position": 11,
+            "bestLapSeconds": 83.21
+          },
+          {
+            "code": "SAI",
+            "position": 12,
+            "bestLapSeconds": 83.438
+          },
+          {
+            "code": "TSU",
+            "position": 13,
+            "bestLapSeconds": 83.544
+          },
+          {
+            "code": "SAR",
+            "position": 14,
+            "bestLapSeconds": 83.57
+          },
+          {
+            "code": "HUL",
+            "position": 15,
+            "bestLapSeconds": 83.64
+          },
+          {
+            "code": "OCO",
+            "position": 16,
+            "bestLapSeconds": 83.806
+          },
+          {
+            "code": "STR",
+            "position": 17,
+            "bestLapSeconds": 84.058
+          },
+          {
+            "code": "LAW",
+            "position": 18,
+            "bestLapSeconds": 86.343
+          },
+          {
+            "code": "ZHO",
+            "position": 19,
+            "bestLapSeconds": 88.482
+          },
+          {
+            "code": "MAG",
+            "position": 20,
+            "bestLapSeconds": null
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 15,
+      "meetingKey": 1218,
+      "lockTime": "2023-09-02T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9152,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-09-02T10:30:00+00:00",
+        "endedAt": "2023-09-02T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "SAI",
+            "position": 1,
+            "bestLapSeconds": 80.912
+          },
+          {
+            "code": "VER",
+            "position": 2,
+            "bestLapSeconds": 80.998
+          },
+          {
+            "code": "HAM",
+            "position": 3,
+            "bestLapSeconds": 81.453
+          },
+          {
+            "code": "LEC",
+            "position": 4,
+            "bestLapSeconds": 81.486
+          },
+          {
+            "code": "ALO",
+            "position": 5,
+            "bestLapSeconds": 81.711
+          },
+          {
+            "code": "RUS",
+            "position": 6,
+            "bestLapSeconds": 81.73
+          },
+          {
+            "code": "MAG",
+            "position": 7,
+            "bestLapSeconds": 81.884
+          },
+          {
+            "code": "HUL",
+            "position": 8,
+            "bestLapSeconds": 81.985
+          },
+          {
+            "code": "ALB",
+            "position": 9,
+            "bestLapSeconds": 82.054
+          },
+          {
+            "code": "PER",
+            "position": 10,
+            "bestLapSeconds": 82.192
+          },
+          {
+            "code": "STR",
+            "position": 11,
+            "bestLapSeconds": 82.245
+          },
+          {
+            "code": "LAW",
+            "position": 12,
+            "bestLapSeconds": 82.296
+          },
+          {
+            "code": "TSU",
+            "position": 13,
+            "bestLapSeconds": 82.297
+          },
+          {
+            "code": "PIA",
+            "position": 14,
+            "bestLapSeconds": 82.302
+          },
+          {
+            "code": "SAR",
+            "position": 15,
+            "bestLapSeconds": 82.38
+          },
+          {
+            "code": "BOT",
+            "position": 16,
+            "bestLapSeconds": 82.511
+          },
+          {
+            "code": "NOR",
+            "position": 17,
+            "bestLapSeconds": 82.515
+          },
+          {
+            "code": "OCO",
+            "position": 18,
+            "bestLapSeconds": 82.739
+          },
+          {
+            "code": "ZHO",
+            "position": 19,
+            "bestLapSeconds": 82.742
+          },
+          {
+            "code": "GAS",
+            "position": 20,
+            "bestLapSeconds": 82.852
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 16,
+      "meetingKey": 1219,
+      "lockTime": "2023-09-16T13:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9160,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-09-16T09:30:00+00:00",
+        "endedAt": "2023-09-16T10:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "SAI",
+            "position": 1,
+            "bestLapSeconds": 92.065
+          },
+          {
+            "code": "RUS",
+            "position": 2,
+            "bestLapSeconds": 92.134
+          },
+          {
+            "code": "NOR",
+            "position": 3,
+            "bestLapSeconds": 92.303
+          },
+          {
+            "code": "VER",
+            "position": 4,
+            "bestLapSeconds": 92.378
+          },
+          {
+            "code": "LEC",
+            "position": 5,
+            "bestLapSeconds": 92.381
+          },
+          {
+            "code": "HAM",
+            "position": 6,
+            "bestLapSeconds": 92.535
+          },
+          {
+            "code": "PIA",
+            "position": 7,
+            "bestLapSeconds": 92.73
+          },
+          {
+            "code": "PER",
+            "position": 8,
+            "bestLapSeconds": 92.784
+          },
+          {
+            "code": "HUL",
+            "position": 9,
+            "bestLapSeconds": 92.896
+          },
+          {
+            "code": "TSU",
+            "position": 10,
+            "bestLapSeconds": 92.945
+          },
+          {
+            "code": "MAG",
+            "position": 11,
+            "bestLapSeconds": 92.97
+          },
+          {
+            "code": "OCO",
+            "position": 12,
+            "bestLapSeconds": 92.979
+          },
+          {
+            "code": "ALO",
+            "position": 13,
+            "bestLapSeconds": 93.051
+          },
+          {
+            "code": "STR",
+            "position": 14,
+            "bestLapSeconds": 93.126
+          },
+          {
+            "code": "GAS",
+            "position": 15,
+            "bestLapSeconds": 93.351
+          },
+          {
+            "code": "LAW",
+            "position": 16,
+            "bestLapSeconds": 93.357
+          },
+          {
+            "code": "ALB",
+            "position": 17,
+            "bestLapSeconds": 93.37
+          },
+          {
+            "code": "BOT",
+            "position": 18,
+            "bestLapSeconds": 93.54
+          },
+          {
+            "code": "ZHO",
+            "position": 19,
+            "bestLapSeconds": 93.637
+          },
+          {
+            "code": "SAR",
+            "position": 20,
+            "bestLapSeconds": 93.708
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 17,
+      "meetingKey": 1220,
+      "lockTime": "2023-09-23T06:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9168,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-09-23T02:30:00+00:00",
+        "endedAt": "2023-09-23T03:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 90.267
+          },
+          {
+            "code": "NOR",
+            "position": 2,
+            "bestLapSeconds": 90.507
+          },
+          {
+            "code": "PIA",
+            "position": 3,
+            "bestLapSeconds": 90.555
+          },
+          {
+            "code": "PER",
+            "position": 4,
+            "bestLapSeconds": 91.004
+          },
+          {
+            "code": "LEC",
+            "position": 5,
+            "bestLapSeconds": 91.022
+          },
+          {
+            "code": "SAI",
+            "position": 6,
+            "bestLapSeconds": 91.137
+          },
+          {
+            "code": "HAM",
+            "position": 7,
+            "bestLapSeconds": 91.159
+          },
+          {
+            "code": "RUS",
+            "position": 8,
+            "bestLapSeconds": 91.505
+          },
+          {
+            "code": "ALO",
+            "position": 9,
+            "bestLapSeconds": 91.549
+          },
+          {
+            "code": "ZHO",
+            "position": 10,
+            "bestLapSeconds": 91.668
+          },
+          {
+            "code": "BOT",
+            "position": 11,
+            "bestLapSeconds": 91.699
+          },
+          {
+            "code": "MAG",
+            "position": 12,
+            "bestLapSeconds": 91.88
+          },
+          {
+            "code": "OCO",
+            "position": 13,
+            "bestLapSeconds": 91.924
+          },
+          {
+            "code": "TSU",
+            "position": 14,
+            "bestLapSeconds": 91.951
+          },
+          {
+            "code": "HUL",
+            "position": 15,
+            "bestLapSeconds": 91.979
+          },
+          {
+            "code": "SAR",
+            "position": 16,
+            "bestLapSeconds": 92.002
+          },
+          {
+            "code": "LAW",
+            "position": 17,
+            "bestLapSeconds": 92.048
+          },
+          {
+            "code": "ALB",
+            "position": 18,
+            "bestLapSeconds": 92.113
+          },
+          {
+            "code": "STR",
+            "position": 19,
+            "bestLapSeconds": 92.154
+          },
+          {
+            "code": "GAS",
+            "position": 20,
+            "bestLapSeconds": 92.199
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 18,
+      "meetingKey": 1221,
+      "lockTime": "2023-10-06T14:00:00.000Z",
+      "isSprint": true,
+      "practice": null,
+      "sprintQualifying": null
+    },
+    {
+      "round": 19,
+      "meetingKey": 1222,
+      "lockTime": "2023-10-20T21:00:00.000Z",
+      "isSprint": true,
+      "practice": {
+        "sessionKey": 9206,
+        "sessionName": "Practice 1",
+        "startedAt": "2023-10-20T17:30:00+00:00",
+        "endedAt": "2023-10-20T18:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 95.912
+          },
+          {
+            "code": "LEC",
+            "position": 2,
+            "bestLapSeconds": 96.068
+          },
+          {
+            "code": "HAM",
+            "position": 3,
+            "bestLapSeconds": 96.193
+          },
+          {
+            "code": "PER",
+            "position": 4,
+            "bestLapSeconds": 96.212
+          },
+          {
+            "code": "MAG",
+            "position": 5,
+            "bestLapSeconds": 96.472
+          },
+          {
+            "code": "RUS",
+            "position": 6,
+            "bestLapSeconds": 96.474
+          },
+          {
+            "code": "ALB",
+            "position": 7,
+            "bestLapSeconds": 96.492
+          },
+          {
+            "code": "SAI",
+            "position": 8,
+            "bestLapSeconds": 96.533
+          },
+          {
+            "code": "HUL",
+            "position": 9,
+            "bestLapSeconds": 96.702
+          },
+          {
+            "code": "GAS",
+            "position": 10,
+            "bestLapSeconds": 96.705
+          },
+          {
+            "code": "SAR",
+            "position": 11,
+            "bestLapSeconds": 96.987
+          },
+          {
+            "code": "OCO",
+            "position": 12,
+            "bestLapSeconds": 97.066
+          },
+          {
+            "code": "TSU",
+            "position": 13,
+            "bestLapSeconds": 97.104
+          },
+          {
+            "code": "RIC",
+            "position": 14,
+            "bestLapSeconds": 97.152
+          },
+          {
+            "code": "NOR",
+            "position": 15,
+            "bestLapSeconds": 97.256
+          },
+          {
+            "code": "ZHO",
+            "position": 16,
+            "bestLapSeconds": 97.418
+          },
+          {
+            "code": "BOT",
+            "position": 17,
+            "bestLapSeconds": 97.517
+          },
+          {
+            "code": "ALO",
+            "position": 18,
+            "bestLapSeconds": 97.84
+          },
+          {
+            "code": "PIA",
+            "position": 19,
+            "bestLapSeconds": 98.42
+          },
+          {
+            "code": "STR",
+            "position": 20,
+            "bestLapSeconds": 99.94
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 20,
+      "meetingKey": 1223,
+      "lockTime": "2023-10-28T21:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9176,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-10-28T17:30:00+00:00",
+        "endedAt": "2023-10-28T18:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1,
+            "bestLapSeconds": 77.887
+          },
+          {
+            "code": "ALB",
+            "position": 2,
+            "bestLapSeconds": 77.957
+          },
+          {
+            "code": "PER",
+            "position": 3,
+            "bestLapSeconds": 78.026
+          },
+          {
+            "code": "RUS",
+            "position": 4,
+            "bestLapSeconds": 78.248
+          },
+          {
+            "code": "PIA",
+            "position": 5,
+            "bestLapSeconds": 78.392
+          },
+          {
+            "code": "BOT",
+            "position": 6,
+            "bestLapSeconds": 78.437
+          },
+          {
+            "code": "TSU",
+            "position": 7,
+            "bestLapSeconds": 78.45
+          },
+          {
+            "code": "NOR",
+            "position": 8,
+            "bestLapSeconds": 78.48
+          },
+          {
+            "code": "RIC",
+            "position": 9,
+            "bestLapSeconds": 78.499
+          },
+          {
+            "code": "HAM",
+            "position": 10,
+            "bestLapSeconds": 78.522
+          },
+          {
+            "code": "SAR",
+            "position": 11,
+            "bestLapSeconds": 78.718
+          },
+          {
+            "code": "ZHO",
+            "position": 12,
+            "bestLapSeconds": 78.917
+          },
+          {
+            "code": "LEC",
+            "position": 13,
+            "bestLapSeconds": 78.97
+          },
+          {
+            "code": "STR",
+            "position": 14,
+            "bestLapSeconds": 79.094
+          },
+          {
+            "code": "SAI",
+            "position": 15,
+            "bestLapSeconds": 79.293
+          },
+          {
+            "code": "HUL",
+            "position": 16,
+            "bestLapSeconds": 79.32
+          },
+          {
+            "code": "ALO",
+            "position": 17,
+            "bestLapSeconds": 79.471
+          },
+          {
+            "code": "GAS",
+            "position": 18,
+            "bestLapSeconds": 79.509
+          },
+          {
+            "code": "MAG",
+            "position": 19,
+            "bestLapSeconds": 79.573
+          },
+          {
+            "code": "OCO",
+            "position": 20,
+            "bestLapSeconds": 79.839
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 21,
+      "meetingKey": 1224,
+      "lockTime": "2023-11-03T18:00:00.000Z",
+      "isSprint": true,
+      "practice": {
+        "sessionKey": 9198,
+        "sessionName": "Practice 1",
+        "startedAt": "2023-11-03T14:30:00+00:00",
+        "endedAt": "2023-11-03T15:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "SAI",
+            "position": 1,
+            "bestLapSeconds": 71.732
+          },
+          {
+            "code": "LEC",
+            "position": 2,
+            "bestLapSeconds": 71.84
+          },
+          {
+            "code": "RUS",
+            "position": 3,
+            "bestLapSeconds": 71.865
+          },
+          {
+            "code": "HUL",
+            "position": 4,
+            "bestLapSeconds": 71.928
+          },
+          {
+            "code": "ALB",
+            "position": 5,
+            "bestLapSeconds": 72.044
+          },
+          {
+            "code": "STR",
+            "position": 6,
+            "bestLapSeconds": 72.136
+          },
+          {
+            "code": "GAS",
+            "position": 7,
+            "bestLapSeconds": 72.184
+          },
+          {
+            "code": "ZHO",
+            "position": 8,
+            "bestLapSeconds": 72.481
+          },
+          {
+            "code": "SAR",
+            "position": 9,
+            "bestLapSeconds": 72.579
+          },
+          {
+            "code": "MAG",
+            "position": 10,
+            "bestLapSeconds": 72.592
+          },
+          {
+            "code": "ALO",
+            "position": 11,
+            "bestLapSeconds": 72.615
+          },
+          {
+            "code": "HAM",
+            "position": 12,
+            "bestLapSeconds": 72.638
+          },
+          {
+            "code": "TSU",
+            "position": 13,
+            "bestLapSeconds": 72.714
+          },
+          {
+            "code": "RIC",
+            "position": 14,
+            "bestLapSeconds": 72.778
+          },
+          {
+            "code": "OCO",
+            "position": 15,
+            "bestLapSeconds": 72.779
+          },
+          {
+            "code": "VER",
+            "position": 16,
+            "bestLapSeconds": 72.793
+          },
+          {
+            "code": "BOT",
+            "position": 17,
+            "bestLapSeconds": 73.012
+          },
+          {
+            "code": "PER",
+            "position": 18,
+            "bestLapSeconds": 73.056
+          },
+          {
+            "code": "NOR",
+            "position": 19,
+            "bestLapSeconds": 73.629
+          },
+          {
+            "code": "PIA",
+            "position": 20,
+            "bestLapSeconds": 73.838
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 22,
+      "meetingKey": 1225,
+      "lockTime": "2023-11-18T08:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9184,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-11-18T04:30:00+00:00",
+        "endedAt": "2023-11-18T05:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "RUS",
+            "position": 1,
+            "bestLapSeconds": 94.093
+          },
+          {
+            "code": "PIA",
+            "position": 2,
+            "bestLapSeconds": 94.491
+          },
+          {
+            "code": "SAR",
+            "position": 3,
+            "bestLapSeconds": 94.645
+          },
+          {
+            "code": "VER",
+            "position": 4,
+            "bestLapSeconds": 94.653
+          },
+          {
+            "code": "PER",
+            "position": 5,
+            "bestLapSeconds": 94.706
+          },
+          {
+            "code": "ALB",
+            "position": 6,
+            "bestLapSeconds": 94.726
+          },
+          {
+            "code": "ALO",
+            "position": 7,
+            "bestLapSeconds": 94.788
+          },
+          {
+            "code": "HAM",
+            "position": 8,
+            "bestLapSeconds": 94.853
+          },
+          {
+            "code": "BOT",
+            "position": 9,
+            "bestLapSeconds": 94.908
+          },
+          {
+            "code": "MAG",
+            "position": 10,
+            "bestLapSeconds": 95.067
+          },
+          {
+            "code": "NOR",
+            "position": 11,
+            "bestLapSeconds": 95.089
+          },
+          {
+            "code": "HUL",
+            "position": 12,
+            "bestLapSeconds": 95.112
+          },
+          {
+            "code": "STR",
+            "position": 13,
+            "bestLapSeconds": 95.253
+          },
+          {
+            "code": "OCO",
+            "position": 14,
+            "bestLapSeconds": 95.297
+          },
+          {
+            "code": "ZHO",
+            "position": 15,
+            "bestLapSeconds": 95.881
+          },
+          {
+            "code": "LEC",
+            "position": 16,
+            "bestLapSeconds": 95.908
+          },
+          {
+            "code": "SAI",
+            "position": 17,
+            "bestLapSeconds": 95.939
+          },
+          {
+            "code": "TSU",
+            "position": 18,
+            "bestLapSeconds": 96.087
+          },
+          {
+            "code": "GAS",
+            "position": 19,
+            "bestLapSeconds": 96.485
+          },
+          {
+            "code": "RIC",
+            "position": 20,
+            "bestLapSeconds": 97.778
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 23,
+      "meetingKey": 1226,
+      "lockTime": "2023-11-25T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 9192,
+        "sessionName": "Practice 3",
+        "startedAt": "2023-11-25T10:30:00+00:00",
+        "endedAt": "2023-11-25T11:30:00+00:00",
+        "kind": "PRACTICE",
+        "positions": [
+          {
+            "code": "RUS",
+            "position": 1,
+            "bestLapSeconds": 84.418
+          },
+          {
+            "code": "NOR",
+            "position": 2,
+            "bestLapSeconds": 84.513
+          },
+          {
+            "code": "PIA",
+            "position": 3,
+            "bestLapSeconds": 84.81
+          },
+          {
+            "code": "ALB",
+            "position": 4,
+            "bestLapSeconds": 84.929
+          },
+          {
+            "code": "LEC",
+            "position": 5,
+            "bestLapSeconds": 85.099
+          },
+          {
+            "code": "VER",
+            "position": 6,
+            "bestLapSeconds": 85.153
+          },
+          {
+            "code": "OCO",
+            "position": 7,
+            "bestLapSeconds": 85.194
+          },
+          {
+            "code": "SAR",
+            "position": 8,
+            "bestLapSeconds": 85.205
+          },
+          {
+            "code": "TSU",
+            "position": 9,
+            "bestLapSeconds": 85.222
+          },
+          {
+            "code": "ZHO",
+            "position": 10,
+            "bestLapSeconds": 85.258
+          },
+          {
+            "code": "PER",
+            "position": 11,
+            "bestLapSeconds": 85.259
+          },
+          {
+            "code": "HAM",
+            "position": 12,
+            "bestLapSeconds": 85.292
+          },
+          {
+            "code": "GAS",
+            "position": 13,
+            "bestLapSeconds": 85.303
+          },
+          {
+            "code": "ALO",
+            "position": 14,
+            "bestLapSeconds": 85.343
+          },
+          {
+            "code": "STR",
+            "position": 15,
+            "bestLapSeconds": 85.405
+          },
+          {
+            "code": "BOT",
+            "position": 16,
+            "bestLapSeconds": 85.42
+          },
+          {
+            "code": "HUL",
+            "position": 17,
+            "bestLapSeconds": 85.584
+          },
+          {
+            "code": "RIC",
+            "position": 18,
+            "bestLapSeconds": 85.597
+          },
+          {
+            "code": "MAG",
+            "position": 19,
+            "bestLapSeconds": 85.652
+          },
+          {
+            "code": "SAI",
+            "position": 20,
+            "bestLapSeconds": 85.713
+          }
+        ]
+      },
+      "sprintQualifying": null
+    }
+  ],
+  "excluded": [],
+  "lockDisagreements": [
+    {
+      "round": 3,
+      "calendarLock": "2023-04-01T05:00:00.000Z",
+      "providerLock": "2023-04-01T06:00:00.000Z",
+      "selectedLock": "2023-04-01T05:00:00.000Z"
+    },
+    {
+      "round": 18,
+      "calendarLock": "2023-10-06T14:00:00.000Z",
+      "providerLock": "2023-10-06T17:00:00.000Z",
+      "selectedLock": "2023-10-06T14:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "observations": 528,
+  "changedQuotes": 471,
+  "unchangedScoresAndComponentsSHA256": "58d2f78039eea1f9d22be21a0070128ecb791281f25addde7f3b6f6617b030aa",
+  "sourceQuoteAudit": "docs/official-price-field-2026-audit.json",
+  "scope": "Historical research snapshot only; no user database or live API price writes"
+}

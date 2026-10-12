@@ -248,7 +248,7 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  useEffect(()=>{const profile=getRememberedProfile();if(profile){setEmail(profile.email);void load(profile.email)}},[]);
+  useEffect(()=>{fetch('/api/account').then(r=>r.json()).then(j=>{if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
 
   async function load(profileEmail=email,selectedTeamId?:string) {
     const generation=++loadGeneration.current;
@@ -259,7 +259,7 @@ export default function MyTeam() {
     try {
       const profile=getRememberedProfile();const sameProfile=profile?.email===profileEmail.trim().toLowerCase();
       const teamId=selectedTeamId??(sameProfile?profile?.teamId:undefined);
-      const response = await fetch('/api/team?email=' + encodeURIComponent(profileEmail)+(teamId?'&teamId='+encodeURIComponent(teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
+      const response = await fetch('/api/team?'+(teamId?'teamId='+encodeURIComponent(teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
       const json = await response.json();
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Load failed');
@@ -274,7 +274,7 @@ export default function MyTeam() {
   async function removeTeam(){
     if(!data||editingTeam||deletingTeam||!window.confirm('Delete "'+data.team.name+'" and its saved history from Paddock IQ?'))return;
     const ownerEmail=data.user.email,season=data.team.season;setDeletingTeam(true);++loadGeneration.current;setStatus('Deleting team…');
-    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:ownerEmail,teamId:data.team.id})});const json=await response.json();if(!response.ok)throw Error(json.error||'Delete failed.');
+    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({teamId:data.team.id})});const json=await response.json();if(!response.ok)throw Error(json.error||'Delete failed.');
       setData(null);setRecs([]);setLocked([]);setCurrentTeamView(null);const next=json.teams[0];rememberProfile({email:ownerEmail,season,teamId:next?.id});
       if(next)await load(ownerEmail,next.id);else setStatus('Team deleted. No teams left for this profile.');
     }catch(error){setStatus(error instanceof Error?error.message:'Delete failed.')}finally{setDeletingTeam(false)}
@@ -387,8 +387,8 @@ export default function MyTeam() {
         <p>Actual F1 Fantasy history + Paddock IQ projections.</p>
       </header>
       <section>
-        <div className="inputs"><label>Paddock IQ email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label></div>
-        <button disabled={editingTeam||deletingTeam} onClick={()=>void load()}>Load my team</button>{' '}<a href="/team/import">Create / update team</a>
+        <p>Your saved teams</p>
+        <button disabled={editingTeam||deletingTeam} onClick={()=>void load()}>Refresh teams</button>{' '}<a href="/team/import">Create / update team</a>
         <p className="notice">{status}</p>
       </section>
       {data && <>

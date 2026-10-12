@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {forecastPrelockResidual,type PrelockResidualFrame} from '../src/lib/prelock-residual-model';
+const frame=(round:number,i:number):PrelockResidualFrame=>({season:2025,round,code:'D'+i,type:'DRIVER',baseline:10+i,features:[10+i,7+i,i%2,i/10],actualPoints:15+i});
+const history=[2,3,4,5].flatMap(round=>Array.from({length:20},(_,i)=>frame(round,i))),target=Array.from({length:20},(_,i)=>frame(6,i)),options={season:2025,round:6,ridge:50,weight:.5};
+test('a learned historical bias correction changes the full forecast',()=>{const rows=forecastPrelockResidual(history,target,options);assert.equal(rows[0].prediction,12.5);assert.equal(rows[0].trainingRows,80)});
+test('target/future outcomes and other seasons cannot influence fitting',()=>{const reference=forecastPrelockResidual(history,target,options);assert.deepEqual(forecastPrelockResidual([...history,...target.map(r=>({...r,actualPoints:99999})),...history.map(r=>({...r,season:2026,actualPoints:99999}))],target.map(r=>({...r,actualPoints:99999})),options),reference)});
+test('too little historical evidence falls back to the incumbent',()=>assert.equal(forecastPrelockResidual(history.filter(r=>r.round===2),target,options)[0].prediction,10));
+test('invalid options, features and duplicate target identities are rejected',()=>{assert.throws(()=>forecastPrelockResidual(history,target,{...options,weight:2}));assert.throws(()=>forecastPrelockResidual(history,[{...target[0],features:[NaN]}],options));assert.throws(()=>forecastPrelockResidual(history,[target[0],target[0]],options))});
+test('zero correction weight exactly retains the incumbent',()=>assert.equal(forecastPrelockResidual(history,target,{...options,weight:0})[0].prediction,10));

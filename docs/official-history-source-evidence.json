@@ -1,0 +1,63 @@
+{
+  "scope": "Source replay of hypothetical legacy generated zeros; not a database audit or forecast accuracy measurement.",
+  "season": 2026,
+  "cutoffRound": 17,
+  "sourceHashes": {
+    "player-11032.json": "71729ae3a1b0d5b492bcea75e3ff8b87f6d866e8e578f0cd64a43039223cffc3",
+    "player-114.json": "9780cc1634f11a5e70802d7d49928cdaa0d95ab5a32b44d453eb35495cdcb48d",
+    "player-116.json": "9eec5518778df6a79a167813ec25853484b15960201aa356ae17f31709686063",
+    "round-12.json": "c8b860121d88cf91f845843836fac8bee1226a9ed3b3ea0edb0825ed968c0555",
+    "round-13.json": "ab91db47fb77e42df3345a28e6be1f21743ef68c9cebf4bd1983c3381fb87f7b",
+    "round-14.json": "06066c61fcbaf10ef337b186745b284865a8b0cea273ed8bc17b58e3ba6e4fd2"
+  },
+  "cases": [
+    {
+      "code": "HAD",
+      "round": 12,
+      "assumedLegacyPoints": 0,
+      "action": "exclude",
+      "points": 0,
+      "source": "Official F1 Fantasy round feed: verified inactive/unplayed"
+    },
+    {
+      "code": "LAW",
+      "round": 12,
+      "assumedLegacyPoints": 0,
+      "action": "correct",
+      "points": 12,
+      "source": "Official F1 Fantasy round feed"
+    },
+    {
+      "code": "HAD",
+      "round": 13,
+      "assumedLegacyPoints": 0,
+      "action": "exclude",
+      "points": 0,
+      "source": "Official F1 Fantasy round feed: verified inactive/unplayed"
+    },
+    {
+      "code": "LAW",
+      "round": 13,
+      "assumedLegacyPoints": 0,
+      "action": "correct",
+      "points": 25,
+      "source": "Official F1 Fantasy round feed"
+    },
+    {
+      "code": "HAD",
+      "round": 14,
+      "assumedLegacyPoints": 0,
+      "action": "exclude",
+      "points": 0,
+      "source": "Official F1 Fantasy round feed: verified inactive/unplayed"
+    },
+    {
+      "code": "LAW",
+      "round": 14,
+      "assumedLegacyPoints": 0,
+      "action": "correct",
+      "points": 16,
+      "source": "Official F1 Fantasy round feed"
+    }
+  ]
+}

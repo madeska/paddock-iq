@@ -1,0 +1,34 @@
+{
+  "sourceSHA256": "8f1603e517c0506e255ca1f274ce83297288fc24e870cd1e2dc56e37a73ff162",
+  "totalRows": 720,
+  "priorRows": 626,
+  "mismatches": [],
+  "recovered": [
+    {
+      "round": 16,
+      "code": "TSU",
+      "type": "DRIVER",
+      "actualPoints": 0
+    },
+    {
+      "round": 16,
+      "code": "LAW",
+      "type": "DRIVER",
+      "actualPoints": 6
+    },
+    {
+      "round": 19,
+      "code": "TSU",
+      "type": "DRIVER",
+      "actualPoints": 37
+    },
+    {
+      "round": 19,
+      "code": "LAW",
+      "type": "DRIVER",
+      "actualPoints": 15
+    }
+  ],
+  "remainingRounds": 90,
+  "note": "Source conservation audit only; no new forecast errors or parameter tuning."
+}

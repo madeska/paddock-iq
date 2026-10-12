@@ -1,11 +1,15 @@
+import {authorizeTeamRequest} from '../../../../lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import {saveTeamSnapshot,type TeamImport} from '../../../../lib/team-snapshot-import';
 import { prisma } from '../../../../lib/prisma';
 
 export async function POST(request:NextRequest) {
+  const auth=await authorizeTeamRequest(request);if(auth.response)return auth.response;
+  const owner=auth.owner!;
   try {
     const body = await request.json() as TeamImport;
-    const email = body.user?.email?.trim().toLowerCase();
+    const email = owner.email!;
+    body.user={email,name:owner.name??undefined};
     const teamName = body.team?.name?.trim();
     const season = Number(body.team?.season);
     const round = Number(body.round);
@@ -25,7 +29,7 @@ export async function POST(request:NextRequest) {
       return NextResponse.json({error:'Duplicate team assets'}, {status:400});
     }
 
-    const result=await prisma.$transaction(tx=>saveTeamSnapshot(tx,body));
+    const result=await prisma.$transaction(tx=>saveTeamSnapshot(tx,body,undefined,undefined,owner.id));
 
     return NextResponse.json({ok:true,...result});
   } catch (error) {

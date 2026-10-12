@@ -1,5 +1,6 @@
 import { AssetType, PrismaClient } from '@prisma/client';
 import { loadEnvConfig } from '@next/env';
+import {usableOfficialRow,officialFantasyPoints,officialDriverTeams,type FeedRow} from '../src/lib/fantasy-official-sync';
 
 loadEnvConfig(process.cwd());
 
@@ -7,17 +8,6 @@ const prisma=new PrismaClient();
 const SEASON=2026;
 const BASE='https://fantasy.formula1.com/feeds/drivers';
 
-type FeedRow={
- PlayerId?:string|number;
- PositionName?:string;
- DriverTLA?:string;
- TeamId?:string|number;
- TeamName?:string;
- FUllName?:string;
- DisplayName?:string;
- GamedayPoints?:string|number|null;
- Value?:string|number|null;
-};
 
 const CONSTRUCTOR_CODES:Record<string,string>={
  'MCLAREN':'MCL',
@@ -64,16 +54,19 @@ async function main(){
  for(let round=1;round<=30;round++){
   const rows=await fetchRound(round);
   if(!rows)break;
+  officialDriverTeams(rows);
 
   const points=rows
-   .map(row=>Number(row.GamedayPoints))
-   .filter(Number.isFinite);
+   .filter(usableOfficialRow)
+   .map(row=>officialFantasyPoints(row.GamedayPoints))
+   .filter((value):value is number=>value!==null);
 
   const completed=points.some(value=>value!==0);
   if(!completed){
    console.log('Round '+round+': all GamedayPoints are 0 -> upcoming/not completed; syncing current prices');
    const teamIdToCode=new Map<string,string>();
    for(const row of rows){
+    if(!usableOfficialRow(row))continue;
     if(row.PositionName!=='DRIVER')continue;
     const code=constructorCode(row.TeamName);
     if(code&&row.TeamId!=null)teamIdToCode.set(String(row.TeamId),code);
@@ -84,6 +77,7 @@ async function main(){
 
    let pricesSaved=0;
    for(const row of rows){
+    if(!usableOfficialRow(row))continue;
     const price=Number((row as any).Value);
     if(!Number.isFinite(price)||price<=0)continue;
 
@@ -114,6 +108,7 @@ async function main(){
 
   const teamIdToCode=new Map<string,string>();
   for(const row of rows){
+    if(!usableOfficialRow(row))continue;
    if(row.PositionName!=='DRIVER')continue;
    const code=constructorCode(row.TeamName);
    if(code&&row.TeamId!=null)teamIdToCode.set(String(row.TeamId),code);
@@ -126,8 +121,9 @@ async function main(){
 
   let roundSaved=0;
   for(const row of rows){
-   const value=Number(row.GamedayPoints);
-   if(!Number.isFinite(value))continue;
+    if(!usableOfficialRow(row))continue;
+   const value=officialFantasyPoints(row.GamedayPoints);
+   if(value===null)continue;
 
    let type:AssetType;
    let code:string|null=null;
