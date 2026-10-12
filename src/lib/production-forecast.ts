@@ -1,6 +1,6 @@
 import {applyPracticePositionModifier} from './openf1-weekend';
 import {simulateComponentWeekend,type ComponentSimulationOptions} from './component-simulation';
-export type ProductionComponentOverrides=Pick<ComponentSimulationOptions,'calibration'|'calibrationMode'|'qualifyingPace'|'racePace'>;
+export type ProductionComponentOverrides=Pick<ComponentSimulationOptions,'calibration'|'calibrationMode'|'qualifyingPace'|'racePace'|'raceProgress'>;
 export const PRODUCTION_FORECAST_CONFIG=Object.freeze({ewmaAlpha:.25,ridgeLambda:50,driverRidgeWeight:.5,constructorEwmaWeight:.5,firstTrainingRound:6,componentWeight:.25,overtakeIntensity:1.2,simulations:3000});
 const EWMA_ALPHA=PRODUCTION_FORECAST_CONFIG.ewmaAlpha,RIDGE_LAMBDA=PRODUCTION_FORECAST_CONFIG.ridgeLambda,DRIVER_RIDGE_WEIGHT=PRODUCTION_FORECAST_CONFIG.driverRidgeWeight,CONSTRUCTOR_EWMA_WEIGHT=PRODUCTION_FORECAST_CONFIG.constructorEwmaWeight;
 export type ProductionForecastAsset={season:number;code:string;type:'DRIVER'|'CONSTRUCTOR';currentPrice:number|null;prices:{round:number;price:number}[];scores:{round:number;points:number}[]};

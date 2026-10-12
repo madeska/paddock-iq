@@ -1,9 +1,21 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {fitRaceProgress} from '../src/lib/race-progress-model';
+import {fitRaceProgress,fitClassifiedProgress} from '../src/lib/race-progress-model';
 import {simulateComponentWeekend} from '../src/lib/component-simulation';
 import {calibrateComponents,type ComponentObservation} from '../src/lib/component-calibration';
 const row:ComponentObservation={season:2026,round:1,code:'D0',type:'DRIVER',team:'T',race:{total:10,failed:false,finishPosition:6,positionChange:4,overtakes:2,fastestLap:false,dotd:false}};
+test('classified progress removes promotions from a retired rival instead of calling them pace',()=>{
+ const first={...row,code:'A',race:{...row.race!,finishPosition:1,positionChange:1}},second={...row,code:'B',race:{...row.race!,finishPosition:2,positionChange:1}};
+ const result=fitClassifiedProgress([first,second,{...row,code:'RETIRED',race:{...row.race!,failed:true,finishPosition:null}}],{season:2026,round:2,priorStrength:0});
+ assert.deepEqual(result.progress,{A:0,B:0});assert.equal(result.sessions,2);
+ const target={...first,round:2,race:{...first.race,positionChange:100}};
+ assert.deepEqual(fitClassifiedProgress([first,second,target,{...target,round:9}],{season:2026,round:2,priorStrength:0}),result);
+});
+test('classified progress rejects gaps and retains genuine passing among finishers',()=>{
+ const first={...row,code:'A',race:{...row.race!,finishPosition:1,positionChange:2}},second={...row,code:'B',race:{...row.race!,finishPosition:2,positionChange:0}};
+ assert.deepEqual(fitClassifiedProgress([first,second],{season:2026,round:2,priorStrength:0}).progress,{A:1,B:-1});
+ assert.equal(fitClassifiedProgress([{...first,race:{...first.race,finishPosition:3}},second],{season:2026,round:2}).sessions,0);
+});
 test('progress estimates shrink classified historical position changes',()=>{
  const model=fitRaceProgress([row,{...row,round:2,race:{...row.race!,failed:true,finishPosition:null,positionChange:-20}}],{season:2026,round:3,priorStrength:1});
  assert.equal(model.progress.D0,2);assert.equal(model.sessions,1);

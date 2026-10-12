@@ -6,11 +6,14 @@ import prices25 from '../src/data/fantasy-prices-2025.json';
 import practices25 from '../src/data/prelock-practice-2025.json';
 import practices26 from '../src/data/session-pace-practice-2026.json';
 import {fitSessionPace} from '../src/lib/session-pace';
+import {fitClassifiedProgress} from '../src/lib/race-progress-model';
 import type {ComponentObservation} from '../src/lib/component-calibration';
 import {replayProductionHistory,type ReplayScore} from '../src/lib/production-history-replay';
 import type {ArchivedFantasyPrice} from '../src/lib/fantasy-price-archive';
 type Row={season:number;round:number;code:string;type:string;model:string;error:number};
 const policies=['incumbent','classification-pace','classification-pace-practice'] as const;
+const gridRelative=process.argv.includes('--grid-relative');
+const models:readonly string[]=gridRelative?['incumbent','classification-pace-practice','classified-grid-progress','driver-only-progress']:policies;
 const without2026Practice=process.argv.includes('--without-2026-practice');
 const mean=(xs:number[])=>xs.length?xs.reduce((s,x)=>s+x,0)/xs.length:null;
 async function main(){
@@ -27,9 +30,12 @@ async function main(){
    const drivers=quotes.filter(r=>r.round===round&&r.type==='DRIVER').map(r=>r.code);
    const historical=fitSessionPace(components,{season,round,drivers}),withPractice=fitSessionPace(components,{season,round,drivers,practice:practice?.positions});
    contexts.push({season,round,practiceApplied:withPractice.practiceApplied,sourceRounds:historical.sourceRounds});
-   for(const model of policies){
+   const progress=gridRelative?fitClassifiedProgress(components,{season,round,priorStrength:5}):null;
+   const incumbent=gridRelative?replayProductionHistory(history,quotes,{season,round,sprint:false,practice}):null;
+   for(const model of models){
     const pace=model===policies[1]?historical:withPractice;
-    const forecasts=replayProductionHistory(history,quotes,{season,round,sprint:false,practice,...(model===policies[0]?{}:{componentOverrides:{qualifyingPace:pace.qualifying,racePace:pace.race}})});
+    let forecasts=replayProductionHistory(history,quotes,{season,round,sprint:false,practice,...(model===policies[0]?{}:{componentOverrides:{qualifyingPace:pace.qualifying,...(['classified-grid-progress','driver-only-progress'].includes(model)?{raceProgress:progress!.progress}:{racePace:pace.race})}})});
+    if(model==='driver-only-progress')forecasts=forecasts.map(r=>r.type==='CONSTRUCTOR'?incumbent!.find(i=>i.code===r.code&&i.type===r.type)!:r);
     for(const actual of history.filter(r=>r.season===season&&r.round===round)){
      const forecast=forecasts.find(r=>r.code===actual.code&&r.type===actual.type)?.prediction;
      if(forecast==null){if(model===policies[0])missing.push({season,round,code:actual.code,type:actual.type});continue}
@@ -38,11 +44,11 @@ async function main(){
    }
   }
  }
- const summary=[2025,2026].flatMap(season=>policies.flatMap(model=>['ALL','DRIVER','CONSTRUCTOR'].map(type=>{
+ const summary=[2025,2026].flatMap(season=>models.flatMap(model=>['ALL','DRIVER','CONSTRUCTOR'].map(type=>{
   const cohort=rows.filter(r=>r.season===season&&r.model===model&&(type==='ALL'||r.type===type));const e=cohort.map(r=>r.error);
   return {season,model,type,n:e.length,MAE:mean(e.map(Math.abs)),RMSE:e.length?Math.sqrt(mean(e.map(x=>x*x))!):null,Bias:mean(e)};
  })));
- const intervals=[2025,2026].flatMap(season=>policies.slice(1).flatMap(model=>['ALL','DRIVER','CONSTRUCTOR'].map(type=>{
+ const intervals=[2025,2026].flatMap(season=>models.slice(1).flatMap(model=>['ALL','DRIVER','CONSTRUCTOR'].map(type=>{
   const original=rows.filter(r=>r.season===season&&r.model===policies[0]&&(type==='ALL'||r.type===type)),candidate=rows.filter(r=>r.season===season&&r.model===model&&(type==='ALL'||r.type===type));
   if(candidate.length!==original.length||original.some(r=>!candidate.some(c=>c.round===r.round&&c.code===r.code&&c.type===r.type)))throw Error('Unpaired pace cohort');
   const blocks=[...new Set(original.map(r=>r.round))].map(round=>{const a=original.filter(r=>r.round===round),b=candidate.filter(r=>r.round===round);return {n:a.length,delta:b.reduce((s,r)=>s+Math.abs(r.error),0)-a.reduce((s,r)=>s+Math.abs(r.error),0)}});
@@ -52,6 +58,6 @@ async function main(){
  })));
  const report={capturedAt:new Date().toISOString(),scope:'Normal weekends only. Exploratory previously consumed 2025 R6–14 and 2026 R6–16. No R15–21 2025 errors evaluated by this experiment; that window was already consumed by earlier half-blend research. 2025 uses tracked completed practice; 2026 '+(without2026Practice?'has no practice in all policies.':'uses the derived normal-weekend practice archive in all policies.'),policy:'Component ranking uses earlier normalized classification ranks with half-life4 and neutral prior5. Complete practice contributes a fixed25% strength signal; no tuning/search. Incumbent baseline practice modifier is retained identically in all policies. Reliability/overtakes/awards/pits/noise/blend unchanged. No production activation.',summary,pairedRaceBootstrap:intervals,contexts,missing};
  console.table(summary);console.table(intervals);
- await writeFile(without2026Practice?'docs/session-pace-results.json':'docs/session-pace-with-practice-results.json',JSON.stringify(report,null,2)+'\n');
+ await writeFile(gridRelative?'docs/classified-grid-progress-results.json':without2026Practice?'docs/session-pace-results.json':'docs/session-pace-with-practice-results.json',JSON.stringify({...report,...(gridRelative?{policy:'Classified grid-relative progress uses only prior-round classified driver start/finish ranks and prior5. Qualifying signal uses the preceding fixed pace+practice policy. Race noise, blend, reliability, overtakes and bonuses retain production defaults. Driver-only variant copies incumbent constructor forecasts after observed constructor deterioration; this is a post-hoc exploratory composition, not independent confirmation. No parameter search or activation.'}:{})},null,2)+'\n');
 }
 main().catch(error=>{console.error(error);process.exitCode=1});
