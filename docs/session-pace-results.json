@@ -1,0 +1,556 @@
+{
+  "capturedAt": "2026-10-12T10:10:18.246Z",
+  "scope": "Normal weekends only. Exploratory previously consumed 2025 R6–14 and 2026 R6–16. No R15–21 2025 errors evaluated by this experiment; that window was already consumed by earlier half-blend research. 2025 uses tracked completed practice; 2026 has no practice in all policies.",
+  "policy": "Component ranking uses earlier normalized classification ranks with half-life4 and neutral prior5. Complete practice contributes a fixed25% strength signal; no tuning/search. Incumbent baseline practice modifier is retained identically in all policies. Reliability/overtakes/awards/pits/noise/blend unchanged. No production activation.",
+  "summary": [
+    {
+      "season": 2025,
+      "model": "incumbent",
+      "type": "ALL",
+      "n": 209,
+      "MAE": 13.207177033492824,
+      "RMSE": 17.500776469445373,
+      "Bias": 0.9966507177033489
+    },
+    {
+      "season": 2025,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 139,
+      "MAE": 10.584172661870513,
+      "RMSE": 14.237371028843409,
+      "Bias": 1.3381294964028776
+    },
+    {
+      "season": 2025,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 70,
+      "MAE": 18.415714285714287,
+      "RMSE": 22.62623319448972,
+      "Bias": 0.318571428571429
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "ALL",
+      "n": 209,
+      "MAE": 13.239712918660294,
+      "RMSE": 17.544904793430092,
+      "Bias": 1.0004784688995219
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "DRIVER",
+      "n": 139,
+      "MAE": 10.60287769784173,
+      "RMSE": 14.208974770502516,
+      "Bias": 1.3424460431654672
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "CONSTRUCTOR",
+      "n": 70,
+      "MAE": 18.475714285714282,
+      "RMSE": 22.76330066450946,
+      "Bias": 0.3214285714285712
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "ALL",
+      "n": 209,
+      "MAE": 13.192344497607664,
+      "RMSE": 17.481881255997706,
+      "Bias": 1.0114832535885157
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "DRIVER",
+      "n": 139,
+      "MAE": 10.57194244604316,
+      "RMSE": 14.193414725947168,
+      "Bias": 1.3503597122302153
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "CONSTRUCTOR",
+      "n": 70,
+      "MAE": 18.395714285714288,
+      "RMSE": 22.637456318487473,
+      "Bias": 0.33857142857142847
+    },
+    {
+      "season": 2026,
+      "model": "incumbent",
+      "type": "ALL",
+      "n": 297,
+      "MAE": 13.506734006734005,
+      "RMSE": 18.065825206838475,
+      "Bias": 1.0124579124579116
+    },
+    {
+      "season": 2026,
+      "model": "incumbent",
+      "type": "DRIVER",
+      "n": 198,
+      "MAE": 11.19040404040404,
+      "RMSE": 15.263320064584223,
+      "Bias": 0.38131313131313116
+    },
+    {
+      "season": 2026,
+      "model": "incumbent",
+      "type": "CONSTRUCTOR",
+      "n": 99,
+      "MAE": 18.139393939393944,
+      "RMSE": 22.653570191566768,
+      "Bias": 2.2747474747474747
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "ALL",
+      "n": 297,
+      "MAE": 13.428956228956231,
+      "RMSE": 17.962821687111493,
+      "Bias": 1.004713804713805
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "DRIVER",
+      "n": 198,
+      "MAE": 11.178282828282825,
+      "RMSE": 15.230221484425181,
+      "Bias": 0.37828282828282817
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "CONSTRUCTOR",
+      "n": 99,
+      "MAE": 17.930303030303033,
+      "RMSE": 22.451494292353814,
+      "Bias": 2.2575757575757582
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "ALL",
+      "n": 297,
+      "MAE": 13.428956228956231,
+      "RMSE": 17.962821687111493,
+      "Bias": 1.004713804713805
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "DRIVER",
+      "n": 198,
+      "MAE": 11.178282828282825,
+      "RMSE": 15.230221484425181,
+      "Bias": 0.37828282828282817
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "CONSTRUCTOR",
+      "n": 99,
+      "MAE": 17.930303030303033,
+      "RMSE": 22.451494292353814,
+      "Bias": 2.2575757575757582
+    }
+  ],
+  "pairedRaceBootstrap": [
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "ALL",
+      "rounds": 7,
+      "deltaMAE": 0.03253588516746526,
+      "low": -0.06778846153845947,
+      "high": 0.1261904761904762
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "DRIVER",
+      "rounds": 7,
+      "deltaMAE": 0.018705035971223184,
+      "low": -0.0510791366906454,
+      "high": 0.08428571428571274
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace",
+      "type": "CONSTRUCTOR",
+      "rounds": 7,
+      "deltaMAE": 0.06000000000000105,
+      "low": -0.1414285714285719,
+      "high": 0.25142857142857294
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "ALL",
+      "rounds": 7,
+      "deltaMAE": -0.014832535885167572,
+      "low": -0.11435406698564556,
+      "high": 0.08086124401913675
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "DRIVER",
+      "rounds": 7,
+      "deltaMAE": -0.012230215827338048,
+      "low": -0.07536231884057934,
+      "high": 0.048571428571428245
+    },
+    {
+      "season": 2025,
+      "model": "classification-pace-practice",
+      "type": "CONSTRUCTOR",
+      "rounds": 7,
+      "deltaMAE": -0.019999999999998457,
+      "low": -0.20857142857142769,
+      "high": 0.15571428571428864
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "ALL",
+      "rounds": 9,
+      "deltaMAE": -0.07777777777777652,
+      "low": -0.17441077441077255,
+      "high": 0.007070707070708678
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "DRIVER",
+      "rounds": 9,
+      "deltaMAE": -0.012121212121211576,
+      "low": -0.07979797979797827,
+      "high": 0.04898989898989965
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace",
+      "type": "CONSTRUCTOR",
+      "rounds": 9,
+      "deltaMAE": -0.20909090909090697,
+      "low": -0.42323232323232013,
+      "high": 0.014141414141415922
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "ALL",
+      "rounds": 9,
+      "deltaMAE": -0.07777777777777652,
+      "low": -0.17441077441077255,
+      "high": 0.007070707070708678
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "DRIVER",
+      "rounds": 9,
+      "deltaMAE": -0.012121212121211576,
+      "low": -0.07979797979797827,
+      "high": 0.04898989898989965
+    },
+    {
+      "season": 2026,
+      "model": "classification-pace-practice",
+      "type": "CONSTRUCTOR",
+      "rounds": 9,
+      "deltaMAE": -0.20909090909090697,
+      "low": -0.42323232323232013,
+      "high": 0.014141414141415922
+    }
+  ],
+  "contexts": [
+    {
+      "season": 2025,
+      "round": 7,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 8,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 9,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 10,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 11,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 12,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "season": 2025,
+      "round": 14,
+      "practiceApplied": true,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 6,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 7,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 8,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 10,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 11,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 13,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 14,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 15,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "season": 2026,
+      "round": 16,
+      "practiceApplied": false,
+      "sourceRounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
+  "missing": [
+    {
+      "season": 2025,
+      "round": 7,
+      "code": "COL",
+      "type": "DRIVER"
+    }
+  ]
+}

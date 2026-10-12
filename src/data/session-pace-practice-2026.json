@@ -1,0 +1,962 @@
+{
+  "season": 2026,
+  "note": "Derived normal R6-16 classification inputs; session end does not certify source publication.",
+  "sourceArchiveSHA256": "32948ff8e0091468c02705c044504ca7e22e0cecb7890ce8566e2d1fbd9a9407",
+  "source": "https://openf1.org/docs/",
+  "calendarSource": "https://f1fantasytools.com/api/statistics/2026",
+  "calendarSHA256": "c558b1f27cc9c24f6d7865a501d148ddf5faf3fb1143c4cf7b26bafeaaabfc7d",
+  "sourceHashes": {
+    "all-sessions": "90de4b666943896560ed21cc182baf2674fea9dc5a4e635fd05c6eba2eb192d9",
+    "prelock-result-11229": "43e996c86ca6c74e65df08702f35b9a694ab3e289beb01138c6b57e848703ef6",
+    "drivers-11229": "c015f179e24c01a8fca0e1a41bb26faf38e8be800fa2f5e27af185782f05b2e6",
+    "prelock-result-11248": "c1419f4cf866237e1e0a5e2048c93dcd1e1ad32c552ebda9c6f080a69c7c64f2",
+    "drivers-11248": "47245e171563819d628416366eeeb7db2a66f5746c3a1c9f74c0115caf042d6d",
+    "prelock-result-11294": "9791a6cb238ff4bfee3769425203a1ea973e3d06f249b7d450057d6b4dd90157",
+    "drivers-11294": "68a7a9d7d9a3e0f29e281aa9f515e199fb0b04f9fc5f93fc535532b683c36614",
+    "prelock-result-11302": "2ff44d0787a02e4553da73f022034ba73baffdc2f9299b5de1c3c01bee6146a2",
+    "drivers-11302": "1ebc83c98e9f43a80545075cda569eb1528a5536f5db7029de45a250b8aa6bbd",
+    "prelock-result-11310": "5959192c52512d777dbc1cb0112fc9162451cc68025c381f22059c7c4f65b107",
+    "drivers-11310": "70f5da117882e54c9e927147686e3454ff3a1363b4f689427121c2105fc86dca",
+    "prelock-result-11329": "76aba84f9e82d890d37be98435b3821c38bd1ae507b1b87d922c14ed02cd175d",
+    "drivers-11329": "cb36343a076118001d5635192911aa96c9517505015224a47a96babd0546a6a7",
+    "prelock-result-11337": "d17c705b828bf3b305eb5e59651fbd44862e1782bfc31afbd96e21c28584dff7",
+    "drivers-11337": "c7a50152c541acedd8348114f18993fa67e201a2bfe3c4be4d15c50a359e336d",
+    "prelock-result-11356": "ea2fee6fbdb5faf446df6e075a80cff4fae1b2b93815e1f6cb711742f867d725",
+    "drivers-11356": "d0995433cd8d92e07c0eca54225065d83210a8bc42b4c677dd1884880d817751",
+    "prelock-result-11364": "e5cf8e985eb0657d393f2fd8d37bc38a948a0b5d2a78b86fbf73eee49fc0fa92",
+    "drivers-11364": "c5f6fde7dbce8fa7f747efc4a5bb8be3a141600212eee9380340d9bdc85cac1c",
+    "prelock-result-11372": "82014344bd545554b43f446a69f0005c48c8fafeaf38933579ef3cd9070d01c7",
+    "drivers-11372": "5f534a3ae1c915537c0ad8be5d39c548fb2f75e230c328a8fd2d7eca0d9e781a",
+    "prelock-result-11729": "c0ebfed1774701057d73f3c38c708f079b06b95a0cc199904f0f8aad745ab2e1",
+    "drivers-11729": "07ba98d246be34c6aed1cfc7604d51259cd328b7e3028a516b170225c15d4621"
+  },
+  "weekends": [
+    {
+      "round": 6,
+      "meetingKey": 1286,
+      "lockTime": "2026-06-06T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11294,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-06-06T10:30:00+00:00",
+        "endedAt": "2026-06-06T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "ANT",
+            "position": 1
+          },
+          {
+            "code": "LEC",
+            "position": 2
+          },
+          {
+            "code": "HAM",
+            "position": 3
+          },
+          {
+            "code": "RUS",
+            "position": 4
+          },
+          {
+            "code": "VER",
+            "position": 5
+          },
+          {
+            "code": "PIA",
+            "position": 6
+          },
+          {
+            "code": "BOR",
+            "position": 7
+          },
+          {
+            "code": "HAD",
+            "position": 8
+          },
+          {
+            "code": "NOR",
+            "position": 9
+          },
+          {
+            "code": "HUL",
+            "position": 10
+          },
+          {
+            "code": "OCO",
+            "position": 11
+          },
+          {
+            "code": "SAI",
+            "position": 12
+          },
+          {
+            "code": "GAS",
+            "position": 13
+          },
+          {
+            "code": "BEA",
+            "position": 14
+          },
+          {
+            "code": "LAW",
+            "position": 15
+          },
+          {
+            "code": "ALB",
+            "position": 16
+          },
+          {
+            "code": "LIN",
+            "position": 17
+          },
+          {
+            "code": "PER",
+            "position": 18
+          },
+          {
+            "code": "COL",
+            "position": 19
+          },
+          {
+            "code": "BOT",
+            "position": 20
+          },
+          {
+            "code": "ALO",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 7,
+      "meetingKey": 1287,
+      "lockTime": "2026-06-13T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11302,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-06-13T10:30:00+00:00",
+        "endedAt": "2026-06-13T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "RUS",
+            "position": 1
+          },
+          {
+            "code": "PIA",
+            "position": 2
+          },
+          {
+            "code": "LEC",
+            "position": 3
+          },
+          {
+            "code": "NOR",
+            "position": 4
+          },
+          {
+            "code": "HAM",
+            "position": 5
+          },
+          {
+            "code": "VER",
+            "position": 6
+          },
+          {
+            "code": "ANT",
+            "position": 7
+          },
+          {
+            "code": "HAD",
+            "position": 8
+          },
+          {
+            "code": "HUL",
+            "position": 9
+          },
+          {
+            "code": "LIN",
+            "position": 10
+          },
+          {
+            "code": "BOR",
+            "position": 11
+          },
+          {
+            "code": "LAW",
+            "position": 12
+          },
+          {
+            "code": "GAS",
+            "position": 13
+          },
+          {
+            "code": "COL",
+            "position": 14
+          },
+          {
+            "code": "SAI",
+            "position": 15
+          },
+          {
+            "code": "OCO",
+            "position": 16
+          },
+          {
+            "code": "BEA",
+            "position": 17
+          },
+          {
+            "code": "ALB",
+            "position": 18
+          },
+          {
+            "code": "PER",
+            "position": 19
+          },
+          {
+            "code": "ALO",
+            "position": 20
+          },
+          {
+            "code": "BOT",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 8,
+      "meetingKey": 1288,
+      "lockTime": "2026-06-27T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11310,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-06-27T10:30:00+00:00",
+        "endedAt": "2026-06-27T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "RUS",
+            "position": 1
+          },
+          {
+            "code": "ANT",
+            "position": 2
+          },
+          {
+            "code": "HAM",
+            "position": 3
+          },
+          {
+            "code": "PIA",
+            "position": 4
+          },
+          {
+            "code": "NOR",
+            "position": 5
+          },
+          {
+            "code": "VER",
+            "position": 6
+          },
+          {
+            "code": "LEC",
+            "position": 7
+          },
+          {
+            "code": "HAD",
+            "position": 8
+          },
+          {
+            "code": "LAW",
+            "position": 9
+          },
+          {
+            "code": "LIN",
+            "position": 10
+          },
+          {
+            "code": "GAS",
+            "position": 11
+          },
+          {
+            "code": "HUL",
+            "position": 12
+          },
+          {
+            "code": "BOR",
+            "position": 13
+          },
+          {
+            "code": "COL",
+            "position": 14
+          },
+          {
+            "code": "BEA",
+            "position": 15
+          },
+          {
+            "code": "OCO",
+            "position": 16
+          },
+          {
+            "code": "SAI",
+            "position": 17
+          },
+          {
+            "code": "ALB",
+            "position": 18
+          },
+          {
+            "code": "PER",
+            "position": 19
+          },
+          {
+            "code": "BOT",
+            "position": 20
+          },
+          {
+            "code": "ALO",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 10,
+      "meetingKey": 1290,
+      "lockTime": "2026-07-18T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11329,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-07-18T10:30:00+00:00",
+        "endedAt": "2026-07-18T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "ANT",
+            "position": 1
+          },
+          {
+            "code": "NOR",
+            "position": 2
+          },
+          {
+            "code": "VER",
+            "position": 3
+          },
+          {
+            "code": "RUS",
+            "position": 4
+          },
+          {
+            "code": "HAM",
+            "position": 5
+          },
+          {
+            "code": "LEC",
+            "position": 6
+          },
+          {
+            "code": "PIA",
+            "position": 7
+          },
+          {
+            "code": "HUL",
+            "position": 8
+          },
+          {
+            "code": "BOR",
+            "position": 9
+          },
+          {
+            "code": "HAD",
+            "position": 10
+          },
+          {
+            "code": "LIN",
+            "position": 11
+          },
+          {
+            "code": "LAW",
+            "position": 12
+          },
+          {
+            "code": "COL",
+            "position": 13
+          },
+          {
+            "code": "BEA",
+            "position": 14
+          },
+          {
+            "code": "GAS",
+            "position": 15
+          },
+          {
+            "code": "ALB",
+            "position": 16
+          },
+          {
+            "code": "BOT",
+            "position": 17
+          },
+          {
+            "code": "SAI",
+            "position": 18
+          },
+          {
+            "code": "OCO",
+            "position": 19
+          },
+          {
+            "code": "PER",
+            "position": 20
+          },
+          {
+            "code": "ALO",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 11,
+      "meetingKey": 1291,
+      "lockTime": "2026-07-25T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11337,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-07-25T10:30:00+00:00",
+        "endedAt": "2026-07-25T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "NOR",
+            "position": 1
+          },
+          {
+            "code": "HAM",
+            "position": 2
+          },
+          {
+            "code": "ANT",
+            "position": 3
+          },
+          {
+            "code": "LEC",
+            "position": 4
+          },
+          {
+            "code": "PIA",
+            "position": 5
+          },
+          {
+            "code": "RUS",
+            "position": 6
+          },
+          {
+            "code": "VER",
+            "position": 7
+          },
+          {
+            "code": "HAD",
+            "position": 8
+          },
+          {
+            "code": "LAW",
+            "position": 9
+          },
+          {
+            "code": "HUL",
+            "position": 10
+          },
+          {
+            "code": "BOR",
+            "position": 11
+          },
+          {
+            "code": "GAS",
+            "position": 12
+          },
+          {
+            "code": "LIN",
+            "position": 13
+          },
+          {
+            "code": "COL",
+            "position": 14
+          },
+          {
+            "code": "OCO",
+            "position": 15
+          },
+          {
+            "code": "BEA",
+            "position": 16
+          },
+          {
+            "code": "ALO",
+            "position": 17
+          },
+          {
+            "code": "STR",
+            "position": 18
+          },
+          {
+            "code": "BOT",
+            "position": 19
+          },
+          {
+            "code": "SAI",
+            "position": 20
+          },
+          {
+            "code": "ALB",
+            "position": 21
+          },
+          {
+            "code": "PER",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 13,
+      "meetingKey": 1293,
+      "lockTime": "2026-09-05T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11356,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-09-05T10:30:00+00:00",
+        "endedAt": "2026-09-05T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "RUS",
+            "position": 1
+          },
+          {
+            "code": "HAM",
+            "position": 2
+          },
+          {
+            "code": "VER",
+            "position": 3
+          },
+          {
+            "code": "ANT",
+            "position": 4
+          },
+          {
+            "code": "NOR",
+            "position": 5
+          },
+          {
+            "code": "LEC",
+            "position": 6
+          },
+          {
+            "code": "LIN",
+            "position": 7
+          },
+          {
+            "code": "PIA",
+            "position": 8
+          },
+          {
+            "code": "GAS",
+            "position": 9
+          },
+          {
+            "code": "COL",
+            "position": 10
+          },
+          {
+            "code": "HUL",
+            "position": 11
+          },
+          {
+            "code": "LAW",
+            "position": 12
+          },
+          {
+            "code": "BOR",
+            "position": 13
+          },
+          {
+            "code": "BEA",
+            "position": 14
+          },
+          {
+            "code": "TSU",
+            "position": 15
+          },
+          {
+            "code": "SAI",
+            "position": 16
+          },
+          {
+            "code": "OCO",
+            "position": 17
+          },
+          {
+            "code": "ALB",
+            "position": 18
+          },
+          {
+            "code": "ALO",
+            "position": 19
+          },
+          {
+            "code": "BOT",
+            "position": 20
+          },
+          {
+            "code": "PER",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 14,
+      "meetingKey": 1294,
+      "lockTime": "2026-09-12T14:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11364,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-09-12T10:30:00+00:00",
+        "endedAt": "2026-09-12T11:30:00+00:00",
+        "positions": [
+          {
+            "code": "ANT",
+            "position": 1
+          },
+          {
+            "code": "LEC",
+            "position": 2
+          },
+          {
+            "code": "PIA",
+            "position": 3
+          },
+          {
+            "code": "NOR",
+            "position": 4
+          },
+          {
+            "code": "VER",
+            "position": 5
+          },
+          {
+            "code": "RUS",
+            "position": 6
+          },
+          {
+            "code": "LAW",
+            "position": 7
+          },
+          {
+            "code": "HUL",
+            "position": 8
+          },
+          {
+            "code": "HAM",
+            "position": 9
+          },
+          {
+            "code": "BOR",
+            "position": 10
+          },
+          {
+            "code": "COL",
+            "position": 11
+          },
+          {
+            "code": "OCO",
+            "position": 12
+          },
+          {
+            "code": "BEA",
+            "position": 13
+          },
+          {
+            "code": "LIN",
+            "position": 14
+          },
+          {
+            "code": "TSU",
+            "position": 15
+          },
+          {
+            "code": "GAS",
+            "position": 16
+          },
+          {
+            "code": "ALO",
+            "position": 17
+          },
+          {
+            "code": "SAI",
+            "position": 18
+          },
+          {
+            "code": "STR",
+            "position": 19
+          },
+          {
+            "code": "PER",
+            "position": 20
+          },
+          {
+            "code": "BOT",
+            "position": 21
+          },
+          {
+            "code": "ALB",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 15,
+      "meetingKey": 1295,
+      "lockTime": "2026-09-25T12:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11372,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-09-25T08:30:00+00:00",
+        "endedAt": "2026-09-25T09:30:00+00:00",
+        "positions": [
+          {
+            "code": "VER",
+            "position": 1
+          },
+          {
+            "code": "RUS",
+            "position": 2
+          },
+          {
+            "code": "HAM",
+            "position": 3
+          },
+          {
+            "code": "ANT",
+            "position": 4
+          },
+          {
+            "code": "LEC",
+            "position": 5
+          },
+          {
+            "code": "GAS",
+            "position": 6
+          },
+          {
+            "code": "PIA",
+            "position": 7
+          },
+          {
+            "code": "NOR",
+            "position": 8
+          },
+          {
+            "code": "HAD",
+            "position": 9
+          },
+          {
+            "code": "COL",
+            "position": 10
+          },
+          {
+            "code": "SAI",
+            "position": 11
+          },
+          {
+            "code": "BEA",
+            "position": 12
+          },
+          {
+            "code": "BOR",
+            "position": 13
+          },
+          {
+            "code": "OCO",
+            "position": 14
+          },
+          {
+            "code": "HUL",
+            "position": 15
+          },
+          {
+            "code": "PER",
+            "position": 16
+          },
+          {
+            "code": "ALB",
+            "position": 17
+          },
+          {
+            "code": "LAW",
+            "position": 18
+          },
+          {
+            "code": "LIN",
+            "position": 19
+          },
+          {
+            "code": "ALO",
+            "position": 20
+          },
+          {
+            "code": "BOT",
+            "position": 21
+          },
+          {
+            "code": "STR",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    },
+    {
+      "round": 16,
+      "meetingKey": 1308,
+      "lockTime": "2026-10-03T08:00:00.000Z",
+      "isSprint": false,
+      "practice": {
+        "sessionKey": 11729,
+        "sessionName": "Practice 3",
+        "startedAt": "2026-10-03T04:30:00+00:00",
+        "endedAt": "2026-10-03T05:30:00+00:00",
+        "positions": [
+          {
+            "code": "ANT",
+            "position": 1
+          },
+          {
+            "code": "VER",
+            "position": 2
+          },
+          {
+            "code": "HAD",
+            "position": 3
+          },
+          {
+            "code": "RUS",
+            "position": 4
+          },
+          {
+            "code": "LEC",
+            "position": 5
+          },
+          {
+            "code": "HAM",
+            "position": 6
+          },
+          {
+            "code": "NOR",
+            "position": 7
+          },
+          {
+            "code": "PIA",
+            "position": 8
+          },
+          {
+            "code": "COL",
+            "position": 9
+          },
+          {
+            "code": "LIN",
+            "position": 10
+          },
+          {
+            "code": "BOR",
+            "position": 11
+          },
+          {
+            "code": "ALO",
+            "position": 12
+          },
+          {
+            "code": "GAS",
+            "position": 13
+          },
+          {
+            "code": "OCO",
+            "position": 14
+          },
+          {
+            "code": "LAW",
+            "position": 15
+          },
+          {
+            "code": "HUL",
+            "position": 16
+          },
+          {
+            "code": "BEA",
+            "position": 17
+          },
+          {
+            "code": "SAI",
+            "position": 18
+          },
+          {
+            "code": "STR",
+            "position": 19
+          },
+          {
+            "code": "ALB",
+            "position": 20
+          },
+          {
+            "code": "BOT",
+            "position": 21
+          },
+          {
+            "code": "PER",
+            "position": 22
+          }
+        ]
+      },
+      "sprintQualifying": null
+    }
+  ]
+}
