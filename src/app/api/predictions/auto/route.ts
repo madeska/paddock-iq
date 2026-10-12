@@ -1,5 +1,6 @@
 import {forecastSeasonState} from '../../../../lib/forecast-season-state';
 import {compareWeekendImpact} from '../../../../lib/weekend-impact';
+import {COMPLETED_SCORE_SOURCE} from '../../../../lib/completed-fantasy-scores';
 import {CURRENT_DRIVER_MODEL,CURRENT_CONSTRUCTOR_MODEL} from '../../../../lib/current-prediction-models';
 import {getGridPenaltyNews} from '../../../../lib/grid-penalty-news';
 import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from '../../../../lib/official-history-reconciliation';
@@ -21,6 +22,9 @@ export async function POST(request:NextRequest){
   const state=await forecastSeasonState(prisma,season);
   const round=Number(body.round??state.round);
   if(state.completed&&round===state.round)return NextResponse.json({error:'Season completed; no next race to forecast'},{status:409});
+  if(round<state.round)return NextResponse.json({error:'Past round completed; saved forecasts retained. Refresh the current forecast round.',round:state.round},{status:409});
+  const completed=await prisma.fantasyRoundScore.findFirst({where:{source:COMPLETED_SCORE_SOURCE,grandPrix:{season,round}},select:{id:true}});
+  if(completed)return NextResponse.json({error:'Race completed; saved forecasts retained. Update official points to prepare the next round.'},{status:409});
   const officialSync=await syncOfficialFantasyMarket(prisma,season,round);
   const historyReconciliation=await reconcileOfficialHistory(prisma,season,round);
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});

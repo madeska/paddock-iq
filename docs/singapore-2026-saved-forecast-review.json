@@ -1,0 +1,509 @@
+{
+  "season": 2026,
+  "round": 17,
+  "event": "Singapore GP",
+  "capturedAt": "2026-10-12T07:58:59.847Z",
+  "interpretation": "Descriptive review of currently saved forecasts. No immutable pre-lock capture receipt is asserted; a single race cannot establish model improvement.",
+  "coverage": {
+    "evaluated": 33,
+    "total": 33,
+    "missing": []
+  },
+  "metrics": {
+    "all": {
+      "count": 33,
+      "mae": 13.890909090909092,
+      "rmse": 17.868272202850267,
+      "bias": 4.866666666666667
+    },
+    "drivers": {
+      "count": 22,
+      "mae": 12.209090909090913,
+      "rmse": 15.055744901712918,
+      "bias": 3.6818181818181817
+    },
+    "constructors": {
+      "count": 11,
+      "mae": 17.254545454545454,
+      "rmse": 22.460510801282894,
+      "bias": 7.2363636363636346
+    }
+  },
+  "largestErrors": [
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "forecast": 51,
+      "actual": 91,
+      "error": -40,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "forecast": 17.4,
+      "actual": -20,
+      "error": 37.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "AUD",
+      "type": "CONSTRUCTOR",
+      "forecast": 26.9,
+      "actual": -9,
+      "error": 35.9,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "BOR",
+      "type": "DRIVER",
+      "forecast": 6.2,
+      "actual": -29,
+      "error": 35.2,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "COL",
+      "type": "DRIVER",
+      "forecast": 4.6,
+      "actual": -28,
+      "error": 32.6,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "CAD",
+      "type": "CONSTRUCTOR",
+      "forecast": 4.6,
+      "actual": -21,
+      "error": 25.6,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "STR",
+      "type": "DRIVER",
+      "forecast": -4.6,
+      "actual": -28,
+      "error": 23.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "VER",
+      "type": "DRIVER",
+      "forecast": 31.2,
+      "actual": 53,
+      "error": -21.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "LEC",
+      "type": "DRIVER",
+      "forecast": 24.6,
+      "actual": 43,
+      "error": -18.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "AST",
+      "type": "CONSTRUCTOR",
+      "forecast": 3.8,
+      "actual": -13,
+      "error": 16.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    }
+  ],
+  "assets": [
+    {
+      "code": "ALB",
+      "type": "DRIVER",
+      "forecast": 0.7,
+      "actual": -10,
+      "error": 10.7,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "LIN",
+      "type": "DRIVER",
+      "forecast": 13.4,
+      "actual": 1,
+      "error": 12.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "SAI",
+      "type": "DRIVER",
+      "forecast": 7.6,
+      "actual": 13,
+      "error": -5.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "LEC",
+      "type": "DRIVER",
+      "forecast": 24.6,
+      "actual": 43,
+      "error": -18.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "OCO",
+      "type": "DRIVER",
+      "forecast": 9.2,
+      "actual": 12,
+      "error": -2.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "ALO",
+      "type": "DRIVER",
+      "forecast": 4.5,
+      "actual": 11,
+      "error": -6.5,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "COL",
+      "type": "DRIVER",
+      "forecast": 4.6,
+      "actual": -28,
+      "error": 32.6,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "BOR",
+      "type": "DRIVER",
+      "forecast": 6.2,
+      "actual": -29,
+      "error": 35.2,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "RUS",
+      "type": "DRIVER",
+      "forecast": 25.3,
+      "actual": 17,
+      "error": 8.3,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "HAD",
+      "type": "DRIVER",
+      "forecast": 19.4,
+      "actual": 8,
+      "error": 11.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "ANT",
+      "type": "DRIVER",
+      "forecast": 34.1,
+      "actual": 33,
+      "error": 1.1,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "STR",
+      "type": "DRIVER",
+      "forecast": -4.6,
+      "actual": -28,
+      "error": 23.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "NOR",
+      "type": "DRIVER",
+      "forecast": 22.9,
+      "actual": 18,
+      "error": 4.9,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "HAM",
+      "type": "DRIVER",
+      "forecast": 23.1,
+      "actual": 33,
+      "error": -9.9,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "LAW",
+      "type": "DRIVER",
+      "forecast": 12.1,
+      "actual": 18,
+      "error": -5.9,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "VER",
+      "type": "DRIVER",
+      "forecast": 31.2,
+      "actual": 53,
+      "error": -21.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "HUL",
+      "type": "DRIVER",
+      "forecast": 5.7,
+      "actual": 17,
+      "error": -11.3,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "BEA",
+      "type": "DRIVER",
+      "forecast": 6.2,
+      "actual": 18,
+      "error": -11.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "PIA",
+      "type": "DRIVER",
+      "forecast": 19.1,
+      "actual": 6,
+      "error": 13.1,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "GAS",
+      "type": "DRIVER",
+      "forecast": 6.8,
+      "actual": 3,
+      "error": 3.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "PER",
+      "type": "DRIVER",
+      "forecast": 1.7,
+      "actual": -9,
+      "error": 10.7,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "BOT",
+      "type": "DRIVER",
+      "forecast": -3.8,
+      "actual": -11,
+      "error": 7.2,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-driver-baseline75-component25-prelock-v3 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "ALP",
+      "type": "CONSTRUCTOR",
+      "forecast": 17.4,
+      "actual": -20,
+      "error": 37.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "AST",
+      "type": "CONSTRUCTOR",
+      "forecast": 3.8,
+      "actual": -13,
+      "error": 16.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "AUD",
+      "type": "CONSTRUCTOR",
+      "forecast": 26.9,
+      "actual": -9,
+      "error": 35.9,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "CAD",
+      "type": "CONSTRUCTOR",
+      "forecast": 4.6,
+      "actual": -21,
+      "error": 25.6,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "FER",
+      "type": "CONSTRUCTOR",
+      "forecast": 51,
+      "actual": 91,
+      "error": -40,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "HAS",
+      "type": "CONSTRUCTOR",
+      "forecast": 20.3,
+      "actual": 35,
+      "error": -14.7,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "MCL",
+      "type": "CONSTRUCTOR",
+      "forecast": 41.4,
+      "actual": 36,
+      "error": 5.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "MER",
+      "type": "CONSTRUCTOR",
+      "forecast": 70.8,
+      "actual": 65,
+      "error": 5.8,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "RB",
+      "type": "CONSTRUCTOR",
+      "forecast": 33.6,
+      "actual": 34,
+      "error": -0.4,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "RBR",
+      "type": "CONSTRUCTOR",
+      "forecast": 67.2,
+      "actual": 66,
+      "error": 1.2,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    },
+    {
+      "code": "WIL",
+      "type": "CONSTRUCTOR",
+      "forecast": 12.6,
+      "actual": 6,
+      "error": 6.6,
+      "forecastCreatedAt": null,
+      "forecastSource": null,
+      "actualUpdatedAt": "2026-10-12T07:25:19.288Z",
+      "modelVersion": "xpts-constructor-baseline75-component25-prelock-v5 + price-probability-v0.4-bounded"
+    }
+  ]
+}

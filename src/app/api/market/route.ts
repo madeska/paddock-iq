@@ -51,6 +51,8 @@ export async function GET(request:NextRequest) {
       actualPointsUpdatedAt:a.fantasyScores.find(s=>s.grandPrix.round===round&&s.source===COMPLETED_SCORE_SOURCE)?.recordedAt??null,
       actualPoints:a.fantasyScores.find(s=>s.grandPrix.round===round&&s.source===COMPLETED_SCORE_SOURCE)?.points??null,
       expectedPoints:main?.expectedPoints ?? null,
+      forecastCreatedAt:main?.createdAt??null,
+      forecastSource:main?.source??null,
       boostExpectedPoints:boost?.expectedPoints ?? main?.expectedPoints ?? null,
       expectedDelta:main?.expectedPriceDelta ?? null,
       probabilityRise:main?.probabilityRise ?? null,
