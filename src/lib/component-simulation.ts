@@ -45,7 +45,7 @@ export type ComponentSimulationOptions={
   /** Gaussian-copula dependence; each session retains its Gumbel ranking marginal. */
   rankingCorrelation?:number;
   /** Research ablation: retain legacy overtakes and fastest-lap estimates. */
-  calibrationMode?:'all'|'reliability-dotd-pits';
+  calibrationMode?:'all'|'reliability-dotd-pits'|'reliability-only';
 };
 
 export type DriverComponentExpectation={
@@ -126,6 +126,9 @@ export function simulateComponentWeekend(
   constructorInputs:ComponentConstructorInput[],
   options:ComponentSimulationOptions
 ){
+  // Research ablation: isolate race/sprint failure probabilities from all other calibrated components.
+  const reliabilityCalibration=options.calibrationMode==='reliability-only'?options.calibration:undefined;
+  if(reliabilityCalibration)options={...options,calibration:undefined};
   if([2023,2024].includes(options.scoringSeason??2026)&&constructorInputs.length!==0&&(constructorInputs.length!==10||new Set(constructorInputs.map(c=>c.code)).size!==10))throw Error('2024 pit adapter requires a complete ten-constructor field');
   const correlation=options.rankingCorrelation??0;
   if(!Number.isFinite(correlation)||correlation<0||correlation>1)throw Error('Invalid ranking correlation');
@@ -149,7 +152,9 @@ export function simulateComponentWeekend(
   const driverState=driverInputs.map(d=>{
     const negRate=d.recentScores.length?d.recentScores.filter(x=>x<0).length/d.recentScores.length:0;
     const events=options.calibration&&options.calibration.driverSessions>0?(options.calibration.drivers[d.code]??options.calibration.globalDriverRates):undefined;
-    return {...d,events,strength:(d.baselineXPts-baselineMean)/baselineSd,dnfProb:events?.dnfProbability??clamp(.045+.14*negRate,.035,.18)};
+    const reliability=reliabilityCalibration&&reliabilityCalibration.driverSessions>0?(reliabilityCalibration.drivers[d.code]??reliabilityCalibration.globalDriverRates):events;
+    const dnfProb=reliability?.dnfProbability??clamp(.045+.14*negRate,.035,.18);
+    return {...d,events,strength:(d.baselineXPts-baselineMean)/baselineSd,dnfProb,sprintDnfProb:reliability?.sprintDnfProbability??Math.min(.07,dnfProb*.55)};
   });
 
   const constructorMean=mean(constructorInputs.map(c=>c.baselineXPts));
@@ -197,7 +202,7 @@ export function simulateComponentWeekend(
       const sampledSprintGrid=rank(sprintState,1.15);
       const sprintGrid=options.sprintStartingGrid?[...sprintState].sort((a,b)=>options.sprintStartingGrid![a.code]-options.sprintStartingGrid![b.code]):sampledSprintGrid;
       const sgPos=options.gridDrops?.sprint?applyGridDrops(sprintGrid.map(d=>d.code),options.gridDrops.sprint):new Map(sprintGrid.map((d,i)=>[d.code,i+1]));
-      const sprintClassified=sprintState.filter(d=>r()>=(d.events?.sprintDnfProbability??Math.min(.07,d.dnfProb*.55)));
+      const sprintClassified=sprintState.filter(d=>r()>=d.sprintDnfProb);
       const sprintFinish=rank(options.gridDrops?.sprint?sprintClassified.map(d=>({...d,strength:d.strength+.1*((sprintGrid.findIndex(x=>x.code===d.code)+1)-(sgPos.get(d.code)??1))})):sprintClassified,1.2);
       const sfPos=new Map(sprintFinish.map((d,i)=>[d.code,i+1]));
       const sprintFastest=chooseWeighted(sprintClassified,d=>(options.calibrationMode==='reliability-dotd-pits'?undefined:d.events?.sprintFastestLapWeight)??Math.exp(d.strength*.8),r);
