@@ -252,6 +252,8 @@ function generateBudgetTeams(
  return teams.sort((x,y)=>y.score-x.score||y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta).slice(0,limit);
 }
 export default function Home(){
+ const [maintenance,setMaintenance]=useState(false);
+ const maintenanceRef=useRef(false);
  const [building,setBuilding]=useState(false);
  const builderBusy=useRef(false);
  const [showProbabilities,setShowProbabilities]=useState(false);
@@ -298,7 +300,7 @@ export default function Home(){
  }
 
  async function refresh(targetRound=roundRef.current){
-  if(completedRef.current||refreshBusy.current)return;
+  if(!maintenanceRef.current||completedRef.current||refreshBusy.current)return;
   refreshBusy.current=true;setRefreshing(true);
   setBuilderTeams([]);setBuilderStatus('');
   setStatus('Refreshing xPts + price probabilities…');
@@ -312,7 +314,7 @@ export default function Home(){
  }
 
  async function updateOfficialScores(){
-  if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
+  if(!maintenanceRef.current||scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
   try{if(preparationPending.current){preparationPending.current=!(await prepareForecast(load,refresh));if(preparationPending.current)return;}const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await readApiJson(response);if(!response.ok)throw Error(result.error||'Official results unavailable');
    setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
    if(result.forecast?.completed){completedRef.current=true;await load()}
@@ -324,7 +326,7 @@ export default function Home(){
    }else if(result.saved>0)await load();
   }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
  }
- useEffect(()=>{let mounted=true;void load().then(async market=>{if(!mounted)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
+ useEffect(()=>{let mounted=true;void Promise.all([load(),fetch('/api/account').then(readApiJson).catch(()=>({maintenance:false}))]).then(async([market,account])=>{if(!mounted)return;maintenanceRef.current=Boolean(account.maintenance);setMaintenance(maintenanceRef.current);if(!maintenanceRef.current)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
@@ -397,7 +399,7 @@ export default function Home(){
  return <main className={`${styles.page} ${home.page}`}>
   <nav className={styles.topbar} aria-label="Main navigation">
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team" className={home.primaryLink}>My teams</a><a href="/team/import">Import team</a><button onClick={()=>refresh()} disabled={building||refreshing||Boolean(data?.seasonCompleted)} aria-busy={refreshing}>{refreshing?'Refreshing…':'Refresh projections'}</button></div>
+   <div className={styles.navlinks}><a href="/my-team" className={home.primaryLink}>My teams</a><a href="/team/import">Import team</a>{maintenance?<button onClick={()=>refresh()} disabled={building||refreshing||Boolean(data?.seasonCompleted)} aria-busy={refreshing}>{refreshing?'Refreshing…':'Refresh projections'}</button>:<button onClick={()=>void load()}>Refresh market</button>}</div>
   </nav>
 
   <header className={styles.hero}>
@@ -415,11 +417,11 @@ export default function Home(){
 
   <div className={home.readiness} role="status"><span className={data?.complete&&!status?home.readyDot:home.pendingDot}/>{status||<>Forecasts ready · {drivers.length} drivers · {constructors.length} constructors</>}</div>
 
-  <details className={home.sourceDetails}><summary>Data & updates</summary><p>xPts are predicted points. xΔ$ is the expected price change in $M. Predictions are estimates.</p><p>Forecast blend: 75% calibrated baseline + 25% component simulation.</p>{scoresStatus&&<p role="status">{scoresStatus}</p>}<button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></details>
+  <details className={home.sourceDetails}><summary>Data & updates</summary><p>xPts are predicted points. xΔ$ is the expected price change in $M. Predictions are estimates.</p><p>Forecast blend: 75% calibrated baseline + 25% component simulation.</p>{scoresStatus&&<p role="status">{scoresStatus}</p>}{maintenance&&<button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button>}</details>
 
   <section className={home.weekend} aria-label="Weekend information">
    <h2>Weekend signals</h2>
-   <p>{!weekendContext?'Refresh projections to check practice results and grid penalties.':weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers'+(weekendContext.practiceSnapshot.sprintQualifyingDrivers?' · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':''):'No completed practice data available'}</p>
+   <p>{!weekendContext?(maintenance?'Refresh projections to check practice results and grid penalties.':'Practice and grid-penalty details are shown after a forecast update.') :weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers'+(weekendContext.practiceSnapshot.sprintQualifyingDrivers?' · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':''):'No completed practice data available'}</p>
    {weekendContext&&<>
    {Boolean(weekendContext.weekendImpact?.length)&&<details>
     <summary>Practice / Sprint Qualifying impact on xPts</summary>

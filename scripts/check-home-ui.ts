@@ -6,6 +6,7 @@ async function main(){
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  const assets=[...['VER','ANT','LEC','HAM','RUS','NOR'].map((code,i)=>({code,name:['Max Verstappen','Kimi Antonelli','Charles Leclerc','Lewis Hamilton','George Russell','Lando Norris'][i],type:'DRIVER',price:i<2?25:6,expectedPoints:30-i,boostExpectedPoints:35-i,expectedDelta:.2})),...['MER','FER','RBR'].map(code=>({code,name:code,type:'CONSTRUCTOR',price:20,expectedPoints:50,expectedDelta:.3}))].map(a=>({...a,probabilityMaxRise:.6,probabilitySmallRise:.2,probabilitySmallFall:.1,probabilityMaxFall:.1,recentFantasyScores:[{round:16,points:20},{round:17,points:25}]}));
  const market={season:2026,round:18,grandPrix:'United States Grand Prix',deadline:'2026-10-24T21:00:00Z',complete:true,incomplete:[],assets};
+ await page.route('**/api/account',route=>route.fulfill({json:{maintenance:true,user:{email:'admin@example.test'}}}));
  await page.route('**/api/market?*',route=>route.fulfill({json:market}));
  let rollover=false;
  await page.route('**/api/fantasy-scores/sync',route=>route.fulfill({json:{errors:[],status:'WAITING',verified:0,total:9,saved:0,corrected:0,...(rollover?{forecast:{round:19}}:{})}}));
@@ -87,7 +88,16 @@ async function main(){
  assert.equal(await page.getByRole('region',{name:'Generated lineups',exact:true}).count(),0);
  await page.route('**/api/market?*',route=>route.fulfill({status:500,body:''}));
  await page.reload();await page.getByText('Server error (HTTP 500).',{exact:false}).waitFor();
- console.log('Home: compact/detail tables, filters, generation, refresh and mobile switching passed.');
+ await page.unroute('**/api/market?*');
+ await page.route('**/api/market?*',route=>route.fulfill({json:market}));
+ await page.route('**/api/account',route=>route.fulfill({json:{user:null,maintenance:false}}));
+ let publicWrites=0;
+ page.on('request',request=>{if(request.method()==='POST')publicWrites++});
+ await page.reload();await page.getByRole('heading',{name:'Mexico Grand Prix',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Refresh market',exact:true}).click();
+ assert.equal(await page.getByRole('button',{name:'Refresh projections',exact:true}).count(),0);
+ assert.equal(publicWrites,0);
+ console.log('Home: compact/detail tables, filters, generation, refresh, public read-only access and mobile switching passed.');
  }finally{await browser.close()}
 }
 main().catch(e=>{console.error(e);process.exitCode=1});

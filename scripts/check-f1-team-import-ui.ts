@@ -18,7 +18,7 @@ async function main(){
  const exported=JSON.parse(await readFile((await download.path())!,'utf8'));assert.ok(!JSON.stringify(exported).includes('private'));const normalized=normalizeF1TeamExport(exported,market,2026,18);assert.equal(normalized.teams[0].freeTransfers,2);
  if(!process.env.PADDOCK_TEST_STORAGE_STATE)throw Error('Set PADDOCK_TEST_STORAGE_STATE to a signed-in test-account Playwright storage state.');
  const page=await browser.newPage({storageState:process.env.PADDOCK_TEST_STORAGE_STATE});let saved:any;
- await page.route('**/api/account',route=>route.fulfill({json:{user:{id:'ui-owner',email:'other@example.test'}}}));
+ await page.route('**/api/account',route=>route.fulfill({json:{maintenance:true,user:{id:'ui-owner',email:'other@example.test'}}}));
  await page.route('**/api/market?*',route=>route.fulfill({json:{assets:market}}));
  await page.route('**/api/team/f1/import',async route=>{const body=route.request().postDataJSON();if(body.action==='save'){saved=body;await route.fulfill({json:{ok:true,snapshotId:'ui-snapshot',teamId:'ui-team',teams:[{teamNo:1,teamId:'ui-team'},{teamNo:2,teamId:'ui-other'}]}})}else await route.fulfill({json:normalized})});
  await page.goto(process.env.PADDOCK_TEST_URL||'http://localhost:3100/team/import');

@@ -1,5 +1,6 @@
 import {forecastSeasonState} from '../../../lib/forecast-season-state';
 import {databaseConnectionUnavailable} from '../../../lib/database-availability';
+import {authorizeMaintenanceRequest} from '../../../lib/auth';
 import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
@@ -17,6 +18,8 @@ export async function GET(request:NextRequest) {
 
   let gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if (!gp) {
+    const denied=await authorizeMaintenanceRequest(request);
+    if(denied)return NextResponse.json({error:'This race market is not ready yet.'},{status:404});
     await syncOfficialFantasyMarket(prisma,season,round);
     gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   }

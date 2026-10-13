@@ -233,6 +233,7 @@ function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
 }
 
 export default function MyTeam() {
+  const [maintenance,setMaintenance]=useState(false);
   const [email, setEmail] = useState('');
   const loadGeneration=useRef(0);
   const optimizeBusy=useRef(false);
@@ -252,7 +253,7 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  useEffect(()=>{fetch('/api/account').then(r=>readApiJson(r)).then(j=>{if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
+  useEffect(()=>{fetch('/api/account').then(r=>readApiJson(r)).then(j=>{setMaintenance(Boolean(j.maintenance));if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
 
   async function load(profileEmail=email,selectedTeamId?:string) {
     const generation=++loadGeneration.current;
@@ -438,7 +439,7 @@ export default function MyTeam() {
         </section>
         <section>
           <h2>Find better transfers</h2>
-          <p><button disabled={editingTeam||deletingTeam||optimizing} onClick={generatePredictions}>Refresh forecasts</button></p>
+          {maintenance&&<p><button disabled={editingTeam||deletingTeam||optimizing} onClick={generatePredictions}>Refresh forecasts</button></p>}
           <div className="tabs">{(['points','balanced','budget','custom','horizon'] as const).map((value) => <button key={value} disabled={editingTeam||deletingTeam||optimizing} aria-pressed={mode===value} className={mode === value ? 'active' : ''} onClick={() => {setMode(value as Mode | 'horizon');setRecs([]);setCurrentTeamView(null);setStatus('')}}>{{points:'Most points',balanced:'Balanced',budget:'Price growth',custom:'Custom',horizon:'Next 3 races'}[value]}</button>)}</div>
           {mode === 'horizon' && <p><small>Projected R{data.snapshot.grandPrix.round}–R{data.snapshot.grandPrix.round+2} points if you make transfers now and hold the lineup. Future transfers are not included. Small forecast differences may not translate into better results.</small></p>}
           {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input disabled={optimizing} type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => {setCustomWeight(Number(event.target.value));setRecs([]);setCurrentTeamView(null);setStatus('')}} /></label></div>}
