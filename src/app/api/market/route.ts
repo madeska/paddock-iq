@@ -1,4 +1,6 @@
 import {forecastSeasonState} from '../../../lib/forecast-season-state';
+import {databaseConnectionUnavailable} from '../../../lib/database-availability';
+import {authorizeMaintenanceRequest} from '../../../lib/auth';
 import {EXCLUDED_SCORE_SOURCE} from '../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
@@ -8,6 +10,7 @@ import {COMPLETED_SCORE_SOURCE} from '../../../lib/completed-fantasy-scores';
 import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
 
 export async function GET(request:NextRequest) {
+ try{
   const season = Number(request.nextUrl.searchParams.get('season') ?? 2026);
   const requestedRound=request.nextUrl.searchParams.get('round');
   const state=requestedRound===null?await forecastSeasonState(prisma,season):null;
@@ -15,6 +18,8 @@ export async function GET(request:NextRequest) {
 
   let gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if (!gp) {
+    const denied=await authorizeMaintenanceRequest(request);
+    if(denied)return NextResponse.json({error:'This race market is not ready yet.'},{status:404});
     await syncOfficialFantasyMarket(prisma,season,round);
     gp = await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   }
@@ -79,9 +84,14 @@ export async function GET(request:NextRequest) {
     season,
     round,
     grandPrix:gp.name,
+    deadline:gp.deadline,
     currentModels:CURRENT_MODELS,
     complete:incomplete.length===0,
     incomplete,
     assets:rows,
   });
+ }catch(error){
+  const unavailable=databaseConnectionUnavailable(error);
+  return NextResponse.json({error:unavailable?'Database connection unavailable. Check connectivity and retry.':'Market unavailable. Please retry.'},{status:unavailable?503:500});
+ }
 }

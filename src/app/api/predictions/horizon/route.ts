@@ -54,7 +54,10 @@ export async function GET(request:NextRequest){
  try{
   const season=Number(request.nextUrl.searchParams.get('season')??2026);
   const startRound=Number(request.nextUrl.searchParams.get('round')??17);
-  const length=Math.max(1,Math.min(3,Number(request.nextUrl.searchParams.get('length')??3)));
+  const length=Number(request.nextUrl.searchParams.get('length')??3);
+  if(!Number.isInteger(season)||season!==2026||!Number.isInteger(startRound)||startRound<1||startRound>30||!Number.isInteger(length)||length<1||length>3){
+   return NextResponse.json({error:'Choose a valid 2026 round and a forecast length from 1 to 3.'},{status:400});
+  }
 
   const startGp=await prisma.grandPrix.findUnique({where:{season_round:{season,round:startRound}}});
   const lock=startGp?await getWeekendLock(season,startRound,startGp.name,startGp.deadline):null;
@@ -154,7 +157,7 @@ export async function GET(request:NextRequest){
    caveat:'Current normal GP can use the validated pre-lock Practice-position modifier when OpenF1 data is available. Sprint weekends stay on ridge3 for this modifier. Sprint-format correction is still applied to known Sprint rounds. Circuit, weather, upgrade, and news modifiers are not yet applied. Uncertainty compounds after the first projected round.',
    assets:result
   });
- }catch(error){
-  return NextResponse.json({error:error instanceof Error?error.message:'Horizon prediction failed'},{status:500});
+ }catch{
+  return NextResponse.json({error:'Forecast unavailable. Please try again later.'},{status:500});
  }
 }

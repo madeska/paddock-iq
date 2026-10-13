@@ -1,4 +1,6 @@
 import {forecastSeasonState} from '../../../../lib/forecast-season-state';
+import {authorizeMaintenanceRequest} from '../../../../lib/auth';
+export const maxDuration=300;
 import {compareWeekendImpact} from '../../../../lib/weekend-impact';
 import {COMPLETED_SCORE_SOURCE} from '../../../../lib/completed-fantasy-scores';
 import {CURRENT_DRIVER_MODEL,CURRENT_CONSTRUCTOR_MODEL} from '../../../../lib/current-prediction-models';
@@ -15,7 +17,11 @@ const DRIVER_REACTIVATION_ROUND_2026:Record<string,number>={LAW:15,HAD:15};
 const COMPONENT_WEIGHT=PRODUCTION_FORECAST_CONFIG.componentWeight;
 const COMPONENT_OVERTAKE_INTENSITY=PRODUCTION_FORECAST_CONFIG.overtakeIntensity;
 const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
+let updating=false;
 export async function POST(request:NextRequest){
+ const denied=await authorizeMaintenanceRequest(request);if(denied)return denied;
+ if(updating)return NextResponse.json({error:'A forecast update is already running. Please retry shortly.'},{status:409});
+ updating=true;
  try{
   const body=await request.json().catch(()=>({}));
   const season=Number(body.season??2026);
@@ -172,5 +178,5 @@ export async function POST(request:NextRequest){
   });
  }catch(error){
   return NextResponse.json({error:error instanceof Error?error.message:'Auto prediction failed'},{status:500});
- }
+ }finally{updating=false}
 }

@@ -1,0 +1,1 @@
+export default function NotFound(){return <main className="recovery"><h1>Page not found</h1><p>This link may have changed. Your teams are still available from My teams.</p><div><a className="button-link" href="/">Open market</a><a href="/my-team">My teams</a></div></main>}

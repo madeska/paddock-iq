@@ -1,9 +1,12 @@
 import {advanceForecastSeason} from '../../../../lib/forecast-season-state';
+import {authorizeMaintenanceRequest} from '../../../../lib/auth';
+export const maxDuration=300;
 import {NextRequest,NextResponse} from 'next/server';
 import {prisma} from '../../../../lib/prisma';
 import {syncCompletedFantasyScores} from '../../../../lib/completed-fantasy-scores';
 const pending=new Map<string,ReturnType<typeof syncCompletedFantasyScores>>();
 export async function POST(request:NextRequest){
+ const denied=await authorizeMaintenanceRequest(request);if(denied)return denied;
  const body=await request.json().catch(()=>null),season=Number(body?.season),round=Number(body?.round);
  if(season!==2026||!Number.isInteger(round)||round<1||round>30)return NextResponse.json({error:'Invalid season or round'},{status:400});
  const key=season+':'+round;
