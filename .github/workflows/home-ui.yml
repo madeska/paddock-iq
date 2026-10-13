@@ -9,6 +9,8 @@ on:
       - 'src/app/my-team/**'
       - 'scripts/check-home-ui.ts'
       - 'scripts/check-my-team-dashboard-ui.ts'
+      - 'src/lib/api-response.ts'
+      - 'scripts/check-api-response.ts'
       - '.github/workflows/home-ui.yml'
   workflow_dispatch:
 jobs:
@@ -23,15 +25,23 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsc -p tsconfig.ci.json --noEmit
+      - run: npx tsx --test scripts/check-api-response.ts
       - run: npx playwright install --with-deps chromium
       - name: Check desktop and mobile flows against public fixtures
         run: |
+          mkdir src/app/my-team-ui-test-preview
+          printf "export {default} from '../my-team/page';\n" > src/app/my-team-ui-test-preview/page.tsx
           npm run dev -- --port 3102 > /tmp/home-ui-server.log 2>&1 &
           server_pid=$!
-          trap 'kill "$server_pid" || true' EXIT
+          cleanup() {
+            kill "$server_pid" || true
+            rm -f src/app/my-team-ui-test-preview/page.tsx
+            rmdir src/app/my-team-ui-test-preview || true
+          }
+          trap cleanup EXIT
           node -e 'async function ready(){for(let i=0;i<60;i++){try{if((await fetch("http://localhost:3102")).ok)return}catch{}await new Promise(r=>setTimeout(r,1000))}throw Error("UI server not ready")}ready().catch(e=>{console.error(e);process.exitCode=1})'
           npx tsx scripts/check-home-ui.ts
-          npx tsx scripts/check-my-team-dashboard-ui.ts
+          PADDOCK_TEST_PREVIEW_READY=1 npx tsx scripts/check-my-team-dashboard-ui.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

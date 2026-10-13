@@ -3,15 +3,16 @@ import {useEffect,useRef,useState} from 'react';
 import {receiveF1Transfer} from '../../lib/f1-direct-transfer';
 import type {ImportedF1Team} from '../../lib/f1-team-import';
 import {rememberProfile} from '../../lib/remembered-profile';
+import {readApiJson} from '../../lib/api-response';
 export default function F1TeamImport(){
  const bookmark=useRef<HTMLAnchorElement>(null);
  const fileBookmark=useRef<HTMLAnchorElement>(null);
 
  const [helper,setHelper]=useState('');const [payload,setPayload]=useState<unknown>();const [teams,setTeams]=useState<ImportedF1Team[]>([]);
  const [teamNo,setTeamNo]=useState(1);const [email,setEmail]=useState('');const [season,setSeason]=useState(new Date().getFullYear());const [round,setRound]=useState(0);const [status,setStatus]=useState('');const [busy,setBusy]=useState(false);
- useEffect(()=>{fetch('/api/account').then(r=>r.json()).then(j=>{if(j.user)setEmail(j.user.email)}).catch(()=>setStatus('Unable to load your account.'));fetch('/api/team/f1/helper').then(async r=>{if(!r.ok)throw Error('Helper unavailable');const j=await r.json();setHelper(j.bookmarklet);bookmark.current?.setAttribute('href',j.bookmarklet);fileBookmark.current?.setAttribute('href',j.fileBookmarklet)}).catch(()=>setStatus('Browser helper unavailable. You can use manual setup below.'))},[]);
+ useEffect(()=>{fetch('/api/account').then(r=>readApiJson(r)).then(j=>{if(j.user)setEmail(j.user.email)}).catch(()=>setStatus('Unable to load your account.'));fetch('/api/team/f1/helper').then(async r=>{if(!r.ok)throw Error('Helper unavailable');const j=await readApiJson(r);setHelper(j.bookmarklet);bookmark.current?.setAttribute('href',j.bookmarklet);fileBookmark.current?.setAttribute('href',j.fileBookmarklet)}).catch(()=>setStatus('Browser helper unavailable. You can use manual setup below.'))},[]);
  useEffect(()=>receiveF1Transfer(window,data=>{setPayload(data);setSeason(Number(data.season));setRound(Number(data.round));void previewData(data,Number(data.season),Number(data.round))},setStatus),[]);
- async function call(body:object){const r=await fetch('/api/team/f1/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw Error(j.error||'Import failed');return j}
+ async function call(body:object){const r=await fetch('/api/team/f1/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await readApiJson(r);if(!r.ok)throw Error(j.error||'Import failed');return j}
  async function readFile(file?:File){setTeams([]);setPayload(undefined);setStatus('');if(!file)return;try{if(file.size>100000)throw Error('Export is too large');const data=JSON.parse(await file.text());setPayload(data);setSeason(Number(data.season)||0);setRound(Number(data.round)||0);setStatus('File loaded. Preview your current F1 team.')}catch(e){setStatus(e instanceof Error?e.message:'Invalid export')}}
  async function previewData(exported:unknown,exportSeason:number,exportRound:number){setBusy(true);setTeams([]);try{const j=await call({action:'preview',export:exported,season:exportSeason,round:exportRound});setTeams(j.teams);setTeamNo(j.teams[0].teamNo);setStatus('Check your lineup and available status before saving.')}catch(e){setStatus(e instanceof Error?e.message:'Preview failed')}finally{setBusy(false)}}
  async function save(){setBusy(true);try{const j=await call({action:'save',export:payload,season,round,teamNo});rememberProfile({email,teamId:j.teamId,season});setTeams([]);setPayload(undefined);setStatus(j.teams.length+' teams saved.')}catch(e){setStatus(e instanceof Error?e.message:'Import failed')}finally{setBusy(false)}}

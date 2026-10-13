@@ -6,6 +6,7 @@ import { type Mode } from '../../lib/optimizer';
 import styles from '../market-dashboard.module.css';
 import dashboard from './team-dashboard.module.css';
 import TeamEditor from './team-editor';
+import {readApiJson} from '../../lib/api-response';
 
 type Score = { round: number; name: string; points: number };
 type Asset = {
@@ -251,7 +252,7 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  useEffect(()=>{fetch('/api/account').then(r=>r.json()).then(j=>{if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
+  useEffect(()=>{fetch('/api/account').then(r=>readApiJson(r)).then(j=>{if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
 
   async function load(profileEmail=email,selectedTeamId?:string) {
     const generation=++loadGeneration.current;
@@ -263,7 +264,7 @@ export default function MyTeam() {
       const profile=getRememberedProfile();const sameProfile=profile?.email===profileEmail.trim().toLowerCase();
       const teamId=selectedTeamId??(sameProfile?profile?.teamId:undefined);
       const response = await fetch('/api/team?'+(teamId?'teamId='+encodeURIComponent(teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Load failed');
       rememberProfile({email:profileEmail,teamId:json.team.id,season:json.team.season});
@@ -277,7 +278,7 @@ export default function MyTeam() {
   async function removeTeam(){
     if(!data||editingTeam||deletingTeam||!window.confirm('Delete "'+data.team.name+'" and its saved history from Paddock IQ?'))return;
     const ownerEmail=data.user.email,season=data.team.season;setDeletingTeam(true);++loadGeneration.current;setStatus('Deleting team…');
-    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({teamId:data.team.id})});const json=await response.json();if(!response.ok)throw Error(json.error||'Delete failed.');
+    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({teamId:data.team.id})});const json=await readApiJson(response);if(!response.ok)throw Error(json.error||'Delete failed.');
       setData(null);setRecs([]);setLocked([]);setCurrentTeamView(null);const next=json.teams[0];rememberProfile({email:ownerEmail,season,teamId:next?.id});
       if(next)await load(ownerEmail,next.id);else setStatus('Team deleted. No teams left for this profile.');
     }catch(error){setStatus(error instanceof Error?error.message:'Delete failed.')}finally{setDeletingTeam(false)}
@@ -296,7 +297,7 @@ export default function MyTeam() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ season: data.team.season, round: data.snapshot.grandPrix.round }),
       });
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Prediction failed');
       setStatus('Generated ' + json.created + ' predictions. Reloading team…');
@@ -314,7 +315,7 @@ export default function MyTeam() {
     setStatus('Calculating…');
     try {
       const marketResponse = await fetch('/api/market?season=' + data.team.season + '&round=' + data.snapshot.grandPrix.round);
-      const marketJson = await marketResponse.json();
+      const marketJson = await readApiJson(marketResponse);
       if (!marketResponse.ok) throw Error(marketJson.error || 'Market unavailable');
       const current = data.snapshot.assets.map((asset) => ({
         code: asset.code, type: asset.type, price: asset.price,
@@ -329,7 +330,7 @@ export default function MyTeam() {
       let optimizeMarket=market;
       if(mode==='horizon'){
         const hr=await fetch('/api/predictions/horizon?season='+data.team.season+'&round='+data.snapshot.grandPrix.round+'&length=3');
-        const hj=await hr.json();
+        const hj=await readApiJson(hr);
         if(!hr.ok)throw Error(hj.error||'Horizon unavailable');
         const byCode=new Map(hj.assets.map((a:any)=>[a.code,{points:a.rounds.map((r:any)=>r.expectedPoints),valueDelta:a.totalExpectedPriceDelta}]));
         optimizeCurrent=current.map((a:any)=>{const h=byCode.get(a.code) as any;return {...a,horizonPoints:h?.points,expectedDelta:h?.valueDelta??a.expectedDelta}});
@@ -342,7 +343,7 @@ export default function MyTeam() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ current: optimizeCurrent, market: optimizeMarket, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode: mode==='horizon'?'points':mode, weight: customWeight, maxChanges: 3, locked }),
       });
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Optimization failed');
       const scenarios = Array.isArray(json.scenarios) ? json.scenarios : Array.isArray(json.proposals) ? json.proposals : Array.isArray(json) ? json : [];

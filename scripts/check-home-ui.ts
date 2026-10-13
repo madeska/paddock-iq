@@ -85,6 +85,8 @@ async function main(){
  await page.getByRole('button',{name:'Generate teams',exact:true}).waitFor();
  assert.equal(await page.getByText('Generating teams…',{exact:true}).count(),0);
  assert.equal(await page.getByRole('region',{name:'Generated lineups',exact:true}).count(),0);
+ await page.route('**/api/market?*',route=>route.fulfill({status:500,body:''}));
+ await page.reload();await page.getByText('Server error (HTTP 500).',{exact:false}).waitFor();
  console.log('Home: compact/detail tables, filters, generation, refresh and mobile switching passed.');
  }finally{await browser.close()}
 }

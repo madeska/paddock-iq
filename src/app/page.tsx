@@ -2,6 +2,7 @@
 
 import {useEffect,useMemo,useState,useRef} from 'react';
 import {prepareForecast} from '../lib/forecast-preparation';
+import {readApiJson} from '../lib/api-response';
 import type {WeekendImpact} from '../lib/weekend-impact';
 import styles from './market-dashboard.module.css';
 import home from './home-dashboard.module.css';
@@ -286,7 +287,7 @@ export default function Home(){
   setStatus('Loading market…');
   try{
    const r=await fetch('/api/market?season='+season,{cache:'no-store'});
-   const j=await r.json();
+   const j=await readApiJson(r);
    if(!r.ok)throw Error(j.error||'Market unavailable');
    if(roundRef.current!==j.round){setWeekendContext(null);setBuilderTeams([])}
    roundRef.current=j.round;completedRef.current=Boolean(j.seasonCompleted);
@@ -303,7 +304,7 @@ export default function Home(){
   setStatus('Refreshing xPts + price probabilities…');
   try{
    const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:targetRound})});
-   const j=await r.json();
+   const j=await readApiJson(r);
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
    setWeekendContext(j);
    return await load();
@@ -312,7 +313,7 @@ export default function Home(){
 
  async function updateOfficialScores(){
   if(scoresBusy.current)return;scoresBusy.current=true;setScoresLoading(true);
-  try{if(preparationPending.current){preparationPending.current=!(await prepareForecast(load,refresh));if(preparationPending.current)return;}const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await response.json();if(!response.ok)throw Error(result.error||'Official results unavailable');
+  try{if(preparationPending.current){preparationPending.current=!(await prepareForecast(load,refresh));if(preparationPending.current)return;}const response=await fetch('/api/fantasy-scores/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:roundRef.current})});const result=await readApiJson(response);if(!response.ok)throw Error(result.error||'Official results unavailable');
    setScoresStatus(result.errors.length&&result.verified===0?'Official points check failed: source breakdowns unavailable. Saved results retained.':result.status==='WAITING'?'Official points: waiting for the completed race and published totals.':'Official points verified: '+result.verified+'/'+result.total+' · Updated: '+result.saved+' · Corrections: '+result.corrected+(result.errors.length?' · Some official breakdowns are unavailable':''));
    if(result.forecast?.completed){completedRef.current=true;await load()}
    else if(result.forecast?.round!==undefined&&result.forecast.round!==roundRef.current){
@@ -360,7 +361,7 @@ export default function Home(){
   if(builderMode==='horizon'){
    try{
     const hr=await fetch('/api/predictions/horizon?season='+season+'&round='+round+'&length=3');
-    const hj=await hr.json();
+    const hj=await readApiJson(hr);
     if(!hr.ok)throw Error(hj.error||'Horizon unavailable');
     const byCode=new Map(hj.assets.map((a:any)=>[a.code,{points:a.rounds.map((r:any)=>r.expectedPoints),valueDelta:a.totalExpectedPriceDelta}]));
     const enrich=(asset:MarketAsset)=>{
