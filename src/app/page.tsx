@@ -251,6 +251,8 @@ function generateBudgetTeams(
  return teams.sort((x,y)=>y.score-x.score||y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta).slice(0,limit);
 }
 export default function Home(){
+ const [building,setBuilding]=useState(false);
+ const builderBusy=useRef(false);
  const [showProbabilities,setShowProbabilities]=useState(false);
  const [marketTab,setMarketTab]=useState<'drivers'|'constructors'>('drivers');
  const [refreshing,setRefreshing]=useState(false);
@@ -342,14 +344,16 @@ export default function Home(){
  },[builderTeams,builderSort,builderSortDir,builderDiversity,builderConfidenceFilter,builderMode]);
 
  async function buildTeams(){
-  if(!data)return;
+  if(!data||builderBusy.current||refreshBusy.current)return;
   if(!Number.isFinite(builderBudget)||builderBudget<=0){setBuilderStatus('Enter a valid budget.');setBuilderTeams([]);return}
   if(!data.complete){setBuilderStatus('Complete market prices and projections first.');setBuilderTeams([]);return}
   const includedDrivers=drivers.filter(a=>builderRules[a.code]==='include').length;
   const includedConstructors=constructors.filter(a=>builderRules[a.code]==='include').length;
   if(includedDrivers>5||includedConstructors>2){setBuilderStatus('Too many required assets: max 5 drivers and 2 constructors.');setBuilderTeams([]);return}
 
+  builderBusy.current=true;setBuilding(true);setBuilderTeams([]);
   setBuilderStatus('Generating teams…');
+  try{
   let builderDrivers=drivers;
   let builderConstructors=constructors;
 
@@ -373,12 +377,12 @@ export default function Home(){
    }
   }
 
-  setTimeout(()=>{
+  await new Promise(resolve=>setTimeout(resolve,30));
+  if(roundRef.current!==round){setBuilderStatus('');return}
    const teams=generateBudgetTeams(builderDrivers,builderConstructors,builderBudget,builderMode,builderWeight,builderRules,250);
    setBuilderTeams(teams);
-   const diversified=diversifyTeams(teams,builderDiversity,25);
-   setBuilderStatus(teams.length?('Generated '+teams.length+' valid top-ranked teams · showing '+diversified.length+' diversified options under '+String.fromCharCode(36)+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget and asset filters.');
-  },0);
+   setBuilderStatus(teams.length?('Found '+teams.length+' valid top-ranked lineups within '+String.fromCharCode(36)+builderBudget.toFixed(1)+'M'):'No valid teams fit this budget and asset filters.');
+  }finally{builderBusy.current=false;setBuilding(false)}
  }
  function changeBuilderSort(sort:'XPTS'|'DELTA'){
   if(sort===builderSort)setBuilderSortDir(prev=>prev==='DESC'?'ASC':'DESC');
@@ -392,7 +396,7 @@ export default function Home(){
  return <main className={`${styles.page} ${home.page}`}>
   <nav className={styles.topbar} aria-label="Main navigation">
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team" className={home.primaryLink}>My teams</a><a href="/team/import">Import team</a><button onClick={()=>refresh()} disabled={refreshing||Boolean(data?.seasonCompleted)} aria-busy={refreshing}>{refreshing?'Refreshing…':'Refresh projections'}</button></div>
+   <div className={styles.navlinks}><a href="/my-team" className={home.primaryLink}>My teams</a><a href="/team/import">Import team</a><button onClick={()=>refresh()} disabled={building||refreshing||Boolean(data?.seasonCompleted)} aria-busy={refreshing}>{refreshing?'Refreshing…':'Refresh projections'}</button></div>
   </nav>
 
   <header className={styles.hero}>
@@ -432,6 +436,7 @@ export default function Home(){
   </section>
 
   {data&&<section className={styles.teamBuilder}>
+   <fieldset className={home.builderFieldset} disabled={building||refreshing}>
    <div className={styles.teamBuilderHeader}>
     <div>
      <h2>Build a lineup</h2>
@@ -443,7 +448,7 @@ export default function Home(){
     </div>
         <div className={styles.teamBuilderControls}>
      <label>Budget, $M<input type="number" min="50" max="200" step="0.1" value={builderBudget} onChange={e=>{setBuilderBudget(Number(e.target.value));setBuilderTeams([]);setBuilderStatus('')}}/></label>
-     <button type="button" onClick={buildTeams}>Generate teams</button>
+     <button type="button" onClick={buildTeams} aria-busy={building}>{building?'Generating…':'Generate teams'}</button>
     </div>
    </div>
    <details className={home.advanced}><summary>Advanced filters <span>{Object.values(builderRules).filter(r=>r!=='neutral').length||''}</span></summary>
@@ -468,10 +473,13 @@ export default function Home(){
     <small>{builderMode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':builderMode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; pairs with gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus the lower-ranked displayed teams. It is not a win probability.'}</small>
    </div>
    </details>
+   </fieldset>
    {builderStatus&&<div className={styles.builderStatus} role="status">{builderStatus}</div>}
 
-   {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
-    <div className={styles.bestTeamsScroll}>
+   {builderTeams.length>0&&<div className={styles.bestTeamsBoard} role="region" aria-label="Generated lineups">
+    <div className={home.resultsHeading}><div><h3>{visibleBuilderTeams.length} lineup{visibleBuilderTeams.length===1?'':'s'}</h3><p>Forecast points include the 2× driver.</p></div><label>Sort by<select aria-label="Sort by" value={builderSort+'-'+builderSortDir} onChange={e=>{const [sort,direction]=e.target.value.split('-');setBuilderSort(sort as 'XPTS'|'DELTA');setBuilderSortDir(direction as 'ASC'|'DESC')}}><option value="XPTS-DESC">Points: high to low</option><option value="XPTS-ASC">Points: low to high</option><option value="DELTA-DESC">Price growth: high to low</option><option value="DELTA-ASC">Price growth: low to high</option></select></label></div>
+    {visibleBuilderTeams.length===0&&<p className={home.noResults}>No lineups match your confidence filter. Select All in Advanced filters to see the available options.</p>}
+    <div className={`${styles.bestTeamsScroll} ${home.desktopResults}`}>
      <table className={styles.bestTeamsTable}>
       <thead><tr>
        <th>#</th><th>CR</th><th>DR</th><th>$</th>
@@ -490,6 +498,13 @@ export default function Home(){
       </tr>)}</tbody>
      </table>
     </div>
+    <div className={home.lineupCards}>{visibleBuilderTeams.slice(0,25).map((team,index)=><article data-lineup-card key={team.constructors.map(a=>a.code).join('-')+'-'+team.drivers.map(a=>a.code).join('-')} className={home.lineupCard}>
+     <div className={home.cardHeading}><h4>Lineup {index+1}</h4><strong>{team.expectedPoints.toFixed(1)} <small>{builderMode==='horizon'?'3-race xPts':'xPts'}</small></strong></div>
+     <dl className={home.cardStats}><div><dt>Cost</dt><dd>${team.price.toFixed(1)}M</dd></div><div><dt>Remaining</dt><dd>${Math.max(0,builderBudget-team.price).toFixed(1)}M</dd></div><div><dt>Price change</dt><dd className={team.expectedDelta>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{delta(team.expectedDelta)}M</dd></div></dl>
+     <h5>Constructors</h5><div className={home.cardAssets}>{team.constructors.map(a=><div data-constructor key={a.code} className={home.cardAsset} style={{borderLeftColor:accents[a.code]??'#64748b'}}><strong>{a.code}</strong><span>{a.name}</span><small>${a.price?.toFixed(1)}M</small></div>)}</div>
+     <h5>Drivers</h5><div className={home.cardAssets}>{team.drivers.map(a=><div data-driver key={a.code} className={home.cardAsset} style={{borderLeftColor:accents[a.code]??'#64748b'}}><strong>{a.code}{a.code===team.boost&&<em className={home.cardBoost}>2×</em>}</strong><span>{a.name}</span><small>${a.price?.toFixed(1)}M</small></div>)}</div>
+     <p className={home.cardConfidence}>Ranking confidence: {team.confidenceLabel?team.confidenceLabel.toLowerCase():'not available'}. Not a win probability.</p>
+    </article>)}</div>
    </div>}
   </section>}
 
