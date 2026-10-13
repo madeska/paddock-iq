@@ -4,6 +4,7 @@ import {useEffect,useMemo,useState,useRef} from 'react';
 import {prepareForecast} from '../lib/forecast-preparation';
 import type {WeekendImpact} from '../lib/weekend-impact';
 import styles from './market-dashboard.module.css';
+import home from './home-dashboard.module.css';
 
 type Score={round:number;points:number;name:string};
 type MarketAsset={
@@ -17,7 +18,7 @@ type MarketAsset={
  confidence:number|null;modelVersion:string|null;recentFantasyScores:Score[];
 };
 type MarketResponse={
- season:number;round:number;seasonCompleted?:boolean;grandPrix:string;complete:boolean;incomplete:string[];
+ season:number;round:number;seasonCompleted?:boolean;grandPrix:string;deadline?:string|null;complete:boolean;incomplete:string[];
  currentModels:string[];assets:MarketAsset[];
 };
 type BuilderMode='points'|'balanced'|'budget'|'custom'|'horizon';
@@ -81,7 +82,7 @@ function thresholdText(asset:MarketAsset,bucket:number){
  return '';
 }
 
-function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets:MarketAsset[];round:number;query:string}){
+function Board({title,tier,assets,round,query,details}:{title:string;tier:'A'|'B';assets:MarketAsset[];round:number;query:string;details:boolean}){
  const filtered=assets
   .filter(a=>((a.price??0)>=18.5)===(tier==='A'))
   .filter(a=>!query||a.code.toLowerCase().includes(query)||a.name.toLowerCase().includes(query))
@@ -99,8 +100,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
       <th>R{round-2}<small>Pts</small></th>
       <th>R{round-1}<small>Pts</small></th>
       <th>R{round}<small>xPts</small></th>
-      <th>R{round}<small>Official pts</small></th>
-      {buckets.map(b=><th key={b} className={b<0?styles.negHead:b>0?styles.posHead:styles.flatHead}>{b>0?'+':''}{b.toFixed(1)}<small>Odds (pts)</small></th>)}
+      {details&&buckets.map(b=><th key={b} className={b<0?styles.negHead:b>0?styles.posHead:styles.flatHead}>{b>0?'+':''}{b.toFixed(1)}<small>Odds (pts)</small></th>)}
       <th>R{round}<small>xΔ$</small></th>
      </tr>
     </thead>
@@ -113,8 +113,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td>{scoreFor(asset,round-2)??'—'}</td>
        <td>{scoreFor(asset,round-1)??'—'}</td>
        <td className={styles.xpts}>{asset.expectedPoints==null?'—':asset.expectedPoints.toFixed(1)}</td>
-       <td title={asset.actualPointsUpdatedAt?'Official points saved '+new Date(asset.actualPointsUpdatedAt).toLocaleString():undefined}>{asset.actualPoints??'—'}</td>
-       {buckets.map(b=>{
+       {details&&buckets.map(b=>{
         const p=probs.get(b)??0;
         const t=thresholdText(asset,b);
         return <td key={b} className={p>=.7?styles.probStrong:p>=.3?styles.probMid:styles.probLow}><b>{pct(p)}</b>{t&&<small>({t})</small>}</td>
@@ -122,7 +121,7 @@ function Board({title,tier,assets,round,query}:{title:string;tier:'A'|'B';assets
        <td className={(asset.expectedDelta??0)>=0?styles.deltaPos:styles.deltaNeg}>{delta(asset.expectedDelta)}</td>
       </tr>
      })}
-     {!filtered.length&&<tr><td colSpan={buckets.length+7} className={styles.empty}>No matching assets</td></tr>}
+     {!filtered.length&&<tr><td colSpan={6+(details?buckets.length:0)} className={styles.empty}>No matching assets</td></tr>}
     </tbody>
    </table>
   </div>
@@ -252,6 +251,12 @@ function generateBudgetTeams(
  return teams.sort((x,y)=>y.score-x.score||y.expectedPoints-x.expectedPoints||y.expectedDelta-x.expectedDelta).slice(0,limit);
 }
 export default function Home(){
+ const [showProbabilities,setShowProbabilities]=useState(false);
+ const [marketTab,setMarketTab]=useState<'drivers'|'constructors'>('drivers');
+ const [refreshing,setRefreshing]=useState(false);
+ const refreshBusy=useRef(false);
+ const [now,setNow]=useState<number|null>(null);
+ useEffect(()=>{setNow(Date.now());const timer=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(timer)},[]);
  const [data,setData]=useState<MarketResponse|null>(null);
  const [status,setStatus]=useState('Loading market…');
  const [driverQuery,setDriverQuery]=useState('');
@@ -266,7 +271,7 @@ export default function Home(){
  const [builderRules,setBuilderRules]=useState<Record<string,AssetRule>>({});
  const [builderDiversity,setBuilderDiversity]=useState<0|1|2>(2);
  const [builderConfidenceFilter,setBuilderConfidenceFilter]=useState<'ALL'|'MEDIUM_PLUS'|'HIGH'>('ALL');
- const [weekendContext,setWeekendContext]=useState<{weekendImpact?:WeekendImpact[];forecastAt?:string;practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
+ const [weekendContext,setWeekendContext]=useState<{weekendLock?:{deadline:string;source:string}|null;weekendImpact?:WeekendImpact[];forecastAt?:string;practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
  const [scoresStatus,setScoresStatus]=useState('');
  const [scoresLoading,setScoresLoading]=useState(false);
  const scoresBusy=useRef(false);
@@ -290,7 +295,9 @@ export default function Home(){
  }
 
  async function refresh(targetRound=roundRef.current){
-  if(completedRef.current)return;
+  if(completedRef.current||refreshBusy.current)return;
+  refreshBusy.current=true;setRefreshing(true);
+  setBuilderTeams([]);setBuilderStatus('');
   setStatus('Refreshing xPts + price probabilities…');
   try{
    const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:targetRound})});
@@ -298,7 +305,7 @@ export default function Home(){
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
    setWeekendContext(j);
    return await load();
-  }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}
+  }catch(e){setStatus(e instanceof Error?e.message:'Prediction refresh failed')}finally{refreshBusy.current=false;setRefreshing(false)}
  }
 
  async function updateOfficialScores(){
@@ -378,32 +385,37 @@ export default function Home(){
   else{setBuilderSort(sort);setBuilderSortDir('DESC')}
  }
 
- return <main className={styles.page}>
-  <nav className={styles.topbar}>
+ const deadlineValue=weekendContext?.weekendLock?.deadline??data?.deadline;
+ const deadline=deadlineValue?Date.parse(deadlineValue):NaN;
+ const remaining=now!=null&&Number.isFinite(deadline)?Math.max(0,Math.ceil((deadline-now)/60000)):null;
+ const lockLabel=remaining==null?'Schedule unavailable':remaining===0?'Team lock reached':remaining>=1440?Math.floor(remaining/1440)+'d '+Math.floor((remaining%1440)/60)+'h to lock':Math.floor(remaining/60)+'h '+remaining%60+'m to lock';
+ return <main className={`${styles.page} ${home.page}`}>
+  <nav className={styles.topbar} aria-label="Main navigation">
    <div><span className={styles.brand}>PADDOCK IQ</span><span className={styles.round}>R{data?.round??round} · {season}</span></div>
-   <div className={styles.navlinks}><a href="/my-team">My Team</a><a href="/team/import">Team setup</a><button onClick={()=>refresh()} disabled={Boolean(data?.seasonCompleted)}>Refresh projections</button><button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></div>
+   <div className={styles.navlinks}><a href="/my-team" className={home.primaryLink}>My teams</a><a href="/team/import">Import team</a><button onClick={()=>refresh()} disabled={refreshing||Boolean(data?.seasonCompleted)} aria-busy={refreshing}>{refreshing?'Refreshing…':'Refresh projections'}</button></div>
   </nav>
 
   <header className={styles.hero}>
    <div>
-    <span className={styles.kicker}>F1 FANTASY MARKET BOARD</span>
-    <h1>R{round} Price & Points Outlook</h1>
-    <p>Official F1 Fantasy prices and R{round-2}/R{round-1} scores · Paddock IQ xPts and price probabilities.</p>
+    <span className={home.raceLabel}>Round {round} / {season}</span>
+    <h1>{data?.grandPrix||'Fantasy race outlook'}</h1>
+    <p>Compare the market. Build your next lineup.</p>
    </div>
-   <div className={styles.modelCard}>
-    <small>Current models</small>
-    <strong>75% calibrated baseline + 25% component simulation</strong>
-    <span>Quali · Sprint · race · positions · overtakes · FL · DOTD · pit stops · bounded price model</span>
+   <div className={home.lockPanel}>
+    <span>Scheduled team lock</span>
+    <strong>{data?.seasonCompleted?'Season completed':lockLabel}</strong>
+    {Number.isFinite(deadline)&&<time dateTime={deadlineValue!}>{new Date(deadline).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</time>}
    </div>
   </header>
 
-  <div className={styles.status}>{status||<>Market complete · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+  <div className={home.readiness} role="status"><span className={data?.complete&&!status?home.readyDot:home.pendingDot}/>{status||<>Forecasts ready · {drivers.length} drivers · {constructors.length} constructors</>}</div>
 
-  {scoresStatus&&<div className={styles.status} role="status">{scoresStatus}</div>}
+  <details className={home.sourceDetails}><summary>Data & updates</summary><p>xPts are predicted points. xΔ$ is the expected price change in $M. Predictions are estimates.</p><p>Forecast blend: 75% calibrated baseline + 25% component simulation.</p>{scoresStatus&&<p role="status">{scoresStatus}</p>}<button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button></details>
 
-  {weekendContext&&<section className={styles.teamBuilder} aria-label="Weekend information">
-   <h2>Before team lock</h2>
-   <p>{weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':'No completed practice data available'}</p>
+  <section className={home.weekend} aria-label="Weekend information">
+   <h2>Weekend signals</h2>
+   <p>{!weekendContext?'Refresh projections to check practice results and grid penalties.':weekendContext.practiceSnapshot?weekendContext.practiceSnapshot.sessionName+': '+weekendContext.practiceSnapshot.drivers+' drivers'+(weekendContext.practiceSnapshot.sprintQualifyingDrivers?' · Sprint Qualifying: '+weekendContext.practiceSnapshot.sprintQualifyingDrivers+' drivers':''):'No completed practice data available'}</p>
+   {weekendContext&&<>
    {Boolean(weekendContext.weekendImpact?.length)&&<details>
     <summary>Practice / Sprint Qualifying impact on xPts</summary>
     <p>Compared with the same forecast without practice or Sprint Qualifying. History, prices and applied penalties are identical.</p>
@@ -412,33 +424,46 @@ export default function Home(){
      {weekendContext.weekendImpact!.map(row=><tr key={row.code}><th>{row.code}</th><td>{row.before.toFixed(1)}</td><td>{row.after.toFixed(1)}</td><td>{row.change>0?'+':''}{row.change.toFixed(1)}</td></tr>)}
     </tbody></table></div>
    </details>}
-   <p>{weekendContext.weekendNews.coverage}</p>
-   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?'Applied: '+m.code+' · '+(m.reason??('+'+m.places+' grid places')):(m.reason??'Needs confirmation; not applied')}</p>)}
+   {weekendContext.weekendNews.mentions.map(m=><p key={m.sourceUrl}><span className={m.status==='CONFIRMED'?home.applied:home.pending}>{m.status==='CONFIRMED'?'Applied':'Not applied'}</span> <a href={m.sourceUrl} target="_blank" rel="noreferrer">{m.headline}</a> · {m.status==='CONFIRMED'?m.code+' · '+(m.reason??('+'+m.places+' grid places')):(m.reason??'Needs confirmation')}</p>)}
    {weekendContext.weekendNews.mentions.length===0&&<p>No applicable penalty found in the checked headlines.</p>}
    {weekendContext.weekendNews.errors.map(e=><p key={e}>{e}</p>)}
-  </section>}
-
-  <section className={styles.searchRow}>
-   <label>Find a driver…<input value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="e.g. VER or Norris"/></label>
-   <label>Find a constructor…<input value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="e.g. MER or Ferrari"/></label>
+   <details><summary>Source coverage</summary><p>{weekendContext.weekendNews.coverage}</p></details>
+   </>}
   </section>
+
+  {data&&<section className={home.market} aria-label="Fantasy market">
+   <div className={home.marketHeading}><div><h2>Market</h2><p>Prices, recent results and the next race forecast.</p></div><label className={home.detailToggle}><input type="checkbox" checked={showProbabilities} onChange={e=>setShowProbabilities(e.target.checked)}/>Show price probabilities</label></div>
+   <div className={home.mobileTabs} aria-label="Market categories">{(['drivers','constructors'] as const).map(tab=><button key={tab} type="button" aria-pressed={marketTab===tab} onClick={()=>setMarketTab(tab)}>{tab==='drivers'?'Drivers':'Constructors'}</button>)}</div>
+   <div className={home.marketGrid}>
+    <div data-market="drivers" className={marketTab==='drivers'?home.activeMarket:home.inactiveMarket}>
+     <div className={styles.sectionHeading}><h3>Drivers</h3><span>{drivers.length} active</span></div>
+     <label className={home.search}>Find a driver<input type="search" value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
+     <Board title="Drivers" tier="A" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/><Board title="Drivers" tier="B" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/>
+    </div>
+    <div data-market="constructors" className={marketTab==='constructors'?home.activeMarket:home.inactiveMarket}>
+     <div className={styles.sectionHeading}><h3>Constructors</h3><span>{constructors.length} active</span></div>
+     <label className={home.search}>Find a constructor<input type="search" value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
+     <Board title="Constructors" tier="A" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/><Board title="Constructors" tier="B" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/>
+    </div>
+   </div>
+  </section>}
 
   {data&&<section className={styles.teamBuilder}>
    <div className={styles.teamBuilderHeader}>
     <div>
-     <span className={styles.kicker}>TEAM BUILDER</span>
-     <h2>Generate teams by budget</h2>
-     <p>Build complete 5-driver + 2-constructor lineups using current Paddock IQ xPts and projected price change.</p>
+     <h2>Build a lineup</h2>
+     <p>5 drivers, 2 constructors and a 2× driver within your budget.</p>
     </div>
     <div className={styles.builderModeBlock}>
-     <div className={styles.builderTabs}>{(['points','balanced','budget','custom','horizon'] as const).map(value=><button type="button" key={value} className={builderMode===value?styles.builderTabActive:''} onClick={()=>{setBuilderMode(value);setBuilderTeams([])}}>{value==='horizon'?'3 GP hold':value}</button>)}</div>
-     {builderMode==='custom'&&<label className={styles.builderWeight}>Points weight: {Math.round(builderWeight*100)}% · Budget weight: {Math.round((1-builderWeight)*100)}%<input type="range" min="0" max="1" step="0.05" value={builderWeight} onChange={e=>setBuilderWeight(Number(e.target.value))}/></label>}
+     <div className={styles.builderTabs}>{(['points','balanced','budget','custom','horizon'] as const).map(value=><button type="button" key={value} aria-pressed={builderMode===value} className={builderMode===value?styles.builderTabActive:''} onClick={()=>{setBuilderMode(value);setBuilderTeams([])}}>{{points:'Most points',balanced:'Balanced',budget:'Price growth',custom:'Custom',horizon:'Next 3 races'}[value]}</button>)}</div>
+     {builderMode==='custom'&&<label className={styles.builderWeight}>Points weight: {Math.round(builderWeight*100)}% · Budget weight: {Math.round((1-builderWeight)*100)}%<input type="range" min="0" max="1" step="0.05" value={builderWeight} onChange={e=>{setBuilderWeight(Number(e.target.value));setBuilderTeams([]);setBuilderStatus('')}}/></label>}
     </div>
         <div className={styles.teamBuilderControls}>
-     <label>Budget, $M<input type="number" min="50" max="200" step="0.1" value={builderBudget} onChange={e=>setBuilderBudget(Number(e.target.value))}/></label>
+     <label>Budget, $M<input type="number" min="50" max="200" step="0.1" value={builderBudget} onChange={e=>{setBuilderBudget(Number(e.target.value));setBuilderTeams([]);setBuilderStatus('')}}/></label>
      <button type="button" onClick={buildTeams}>Generate teams</button>
     </div>
    </div>
+   <details className={home.advanced}><summary>Advanced filters <span>{Object.values(builderRules).filter(r=>r!=='neutral').length||''}</span></summary>
    <div className={styles.builderAssetFilters}>
     <div className={styles.builderRuleLegend}><span>Asset filters:</span><b className={styles.ruleInclude}>IN = must use</b><b className={styles.ruleExclude}>OUT = exclude</b><button type="button" onClick={()=>{setBuilderRules({});setBuilderTeams([])}}>Clear</button></div>
     <div className={styles.builderRuleGroup}><strong>Drivers</strong><div>{drivers.map(asset=>{
@@ -450,7 +475,6 @@ export default function Home(){
      return <button type="button" key={asset.code} className={rule==='include'?styles.ruleIncludeButton:rule==='exclude'?styles.ruleExcludeButton:styles.ruleNeutralButton} onClick={()=>{setBuilderRules(prev=>({...prev,[asset.code]:(prev[asset.code]??'neutral')==='neutral'?'include':prev[asset.code]==='include'?'exclude':'neutral'}));setBuilderTeams([])}}>{asset.code}{rule==='include'?' · IN':rule==='exclude'?' · OUT':''}</button>;
     })}</div></div>
    </div>
-   {builderStatus&&<div className={styles.builderStatus}>{builderStatus}</div>}
    <div className={styles.builderResultControls}>
     <div className={styles.builderControlGroup}><span>Diversity</span>{([0,1,2] as const).map(value=><button type="button" key={value} className={builderDiversity===value?styles.builderControlActive:''} onClick={()=>setBuilderDiversity(value)}>{value===0?'Off':value+' asset'+(value===1?'':'s')}</button>)}</div>
     {builderMode!=='custom'?<div className={styles.builderControlGroup}><span>Confidence</span>
@@ -460,6 +484,8 @@ export default function Home(){
     </div>:null}
     <small>{builderMode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':builderMode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; pairs with gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus the lower-ranked displayed teams. It is not a win probability.'}</small>
    </div>
+   </details>
+   {builderStatus&&<div className={styles.builderStatus} role="status">{builderStatus}</div>}
 
    {builderTeams.length>0&&<div className={styles.bestTeamsBoard}>
     <div className={styles.bestTeamsScroll}>
@@ -483,19 +509,6 @@ export default function Home(){
     </div>
    </div>}
   </section>}
-
-  {data&&<div className={styles.grid}>
-   <section>
-    <div className={styles.sectionHeading}><h2>Drivers</h2><span>{drivers.length} active</span></div>
-    <Board title="Drivers" tier="A" assets={drivers} round={round} query={driverQuery}/>
-    <Board title="Drivers" tier="B" assets={drivers} round={round} query={driverQuery}/>
-   </section>
-   <section>
-    <div className={styles.sectionHeading}><h2>Constructors</h2><span>{constructors.length} active</span></div>
-    <Board title="Constructors" tier="A" assets={constructors} round={round} query={constructorQuery}/>
-    <Board title="Constructors" tier="B" assets={constructors} round={round} query={constructorQuery}/>
-   </section>
-  </div>}
 
   <footer className={styles.footer}>
    <span>Historical scores & prices: official F1 Fantasy round feeds.</span>

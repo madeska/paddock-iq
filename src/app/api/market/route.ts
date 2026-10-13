@@ -79,6 +79,7 @@ export async function GET(request:NextRequest) {
     season,
     round,
     grandPrix:gp.name,
+    deadline:gp.deadline,
     currentModels:CURRENT_MODELS,
     complete:incomplete.length===0,
     incomplete,

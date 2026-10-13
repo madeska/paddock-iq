@@ -1,0 +1,37 @@
+name: Home UI
+on:
+  pull_request:
+    paths:
+      - 'src/app/page.tsx'
+      - 'src/app/*dashboard.module.css'
+      - 'src/app/style.css'
+      - 'src/app/api/market/route.ts'
+      - 'scripts/check-home-ui.ts'
+      - '.github/workflows/home-ui.yml'
+  workflow_dispatch:
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc -p tsconfig.ci.json --noEmit
+      - run: npx playwright install --with-deps chromium
+      - name: Check desktop and mobile flows against public fixtures
+        run: |
+          npm run dev -- --port 3102 > /tmp/home-ui-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          node -e 'async function ready(){for(let i=0;i<60;i++){try{if((await fetch("http://localhost:3102")).ok)return}catch{}await new Promise(r=>setTimeout(r,1000))}throw Error("UI server not ready")}ready().catch(e=>{console.error(e);process.exitCode=1})'
+          npx tsx scripts/check-home-ui.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: home-ui-preview
+          path: docs/home-*.png
+          if-no-files-found: ignore
