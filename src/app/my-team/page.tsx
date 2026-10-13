@@ -386,6 +386,8 @@ export default function MyTeam() {
   const doubled=data?.snapshot.assets.find(asset=>asset.isDoubled&&asset.type==='DRIVER');
   const lineupPoints=data&&data.snapshot.assets.every(asset=>asset.expectedPoints!=null)&&doubled
     ?data.snapshot.assets.reduce((sum,asset)=>sum+asset.expectedPoints!,0)+(doubled.boostExpectedPoints??doubled.expectedPoints!):null;
+  const lineupPriceChange=data&&data.snapshot.assets.length>0&&data.snapshot.assets.every(asset=>asset.expectedDelta!=null)
+    ?data.snapshot.assets.reduce((sum,asset)=>sum+asset.expectedDelta!,0):null;
 
   return (
     <main className={dashboard.page}>
@@ -417,7 +419,8 @@ export default function MyTeam() {
           </div>
         </section>
         <section>
-          <div className={styles.sectionHeading}><h2>Current lineup</h2><span>R{data.snapshot.grandPrix.round} forecast: {lineupPoints==null?'—':lineupPoints.toFixed(1)+' xPts'}</span></div>
+          <div className={styles.sectionHeading}><h2>Current lineup</h2><span>Round {data.snapshot.grandPrix.round}</span></div>
+          <dl className={dashboard.lineupTotals}><div><dt>Expected points · includes current 2×</dt><dd data-lineup-points>{lineupPoints==null?'—':lineupPoints.toFixed(1)+' xPts'}</dd></div><div><dt>Expected price change</dt><dd data-lineup-price-change className={lineupPriceChange==null?undefined:lineupPriceChange>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{fmtDelta(lineupPriceChange)}</dd></div></dl>
           <p className={dashboard.help}>Keep an asset to exclude it from suggested transfers. Your saved lineup stays unchanged.</p>
           {(['CONSTRUCTOR','DRIVER'] as const).map(type=><div key={type}><h3>{type==='DRIVER'?'Drivers':'Constructors'}</h3><div className={dashboard.assetGrid}>{data.snapshot.assets.filter(asset=>asset.type===type).map(asset=><article data-owned-asset key={asset.code} className={dashboard.assetCard} style={{borderTopColor:accents[asset.code]??'#64748b'}}>
            <div className={dashboard.assetTop}><strong>{asset.code}</strong>{asset.isDoubled&&<span data-boost className={dashboard.boost}>2×</span>}</div><span>{asset.name}</span>
@@ -452,17 +455,8 @@ export default function MyTeam() {
             </>}
             <span style={{marginLeft:'auto'}}>{mode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':mode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus lower-ranked displayed teams.'}</span>
           </div>
-          {currentTeamView&&<div className={dashboard.transferCards}>{possibleTeamRows.slice(0,5).map((scenario:any,index:number)=>{
-            const view=scenario.teamView as TeamView;const gain=view.expectedPoints-currentTeamView.expectedPoints;
-            return <article data-transfer-comparison key={scenarioKey(scenario)} className={dashboard.transferCard}>
-             <div className={dashboard.transferHeading}><h3>Option {index+1} · {scenario.transfers} transfer{scenario.transfers===1?'':'s'}</h3><strong className={gain>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{gain>0?'+':''}{gain.toFixed(1)} <small>{mode==='horizon'?'3-race pts':'pts'}</small></strong></div>
-             <div className={dashboard.swap}><div><span>Remove</span><strong>{scenario.out.join(', ')}</strong></div><div aria-hidden="true">→</div><div><span>Add</span><strong>{scenario.incoming.join(', ')}</strong></div></div>
-             <dl className={dashboard.transferStats}><div><dt>Forecast after transfers</dt><dd>{view.expectedPoints.toFixed(1)} xPts</dd></div><div><dt>Transfer penalty</dt><dd>{view.penalty} pts</dd></div><div><dt>2× driver</dt><dd>{view.boost??'—'}</dd></div><div><dt>Price growth change</dt><dd>{fmtDelta(view.expectedDelta-currentTeamView.expectedDelta)}</dd></div></dl>
-             <small>Points difference includes the transfer penalty and compares with keeping the lineup using its best projected 2× driver. Changes are suggestions; they are not saved.</small>
-            </article>
-          })}</div>}
           {currentTeamView&&possibleTeamRows.length===0&&<p className="notice">No transfer options match your filters. You can keep your lineup or choose All confidence levels.</p>}
-          <details className={dashboard.details}><summary>Compare all possible lineups</summary>
+          <details open className={dashboard.details}><summary>Compare all possible lineups</summary>
           {currentTeamView && <div className={styles.bestTeamsBoard}>
             <div className={styles.bestTeamsTitle}>
               <div><h3>Possible teams</h3><small>{mode === 'horizon' ? 'Ranked by 3 GP hold score' : 'Ranked by selected optimizer mode'}</small></div>
