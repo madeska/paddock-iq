@@ -431,23 +431,6 @@ export default function Home(){
    </>}
   </section>
 
-  {data&&<section className={home.market} aria-label="Fantasy market">
-   <div className={home.marketHeading}><div><h2>Market</h2><p>Prices, recent results and the next race forecast.</p></div><label className={home.detailToggle}><input type="checkbox" checked={showProbabilities} onChange={e=>setShowProbabilities(e.target.checked)}/>Show price probabilities</label></div>
-   <div className={home.mobileTabs} aria-label="Market categories">{(['drivers','constructors'] as const).map(tab=><button key={tab} type="button" aria-pressed={marketTab===tab} onClick={()=>setMarketTab(tab)}>{tab==='drivers'?'Drivers':'Constructors'}</button>)}</div>
-   <div className={home.marketGrid}>
-    <div data-market="drivers" className={marketTab==='drivers'?home.activeMarket:home.inactiveMarket}>
-     <div className={styles.sectionHeading}><h3>Drivers</h3><span>{drivers.length} active</span></div>
-     <label className={home.search}>Find a driver<input type="search" value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
-     <Board title="Drivers" tier="A" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/><Board title="Drivers" tier="B" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/>
-    </div>
-    <div data-market="constructors" className={marketTab==='constructors'?home.activeMarket:home.inactiveMarket}>
-     <div className={styles.sectionHeading}><h3>Constructors</h3><span>{constructors.length} active</span></div>
-     <label className={home.search}>Find a constructor<input type="search" value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
-     <Board title="Constructors" tier="A" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/><Board title="Constructors" tier="B" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/>
-    </div>
-   </div>
-  </section>}
-
   {data&&<section className={styles.teamBuilder}>
    <div className={styles.teamBuilderHeader}>
     <div>
@@ -508,6 +491,23 @@ export default function Home(){
      </table>
     </div>
    </div>}
+  </section>}
+
+  {data&&<section className={home.market} aria-label="Fantasy market">
+   <div className={home.marketHeading}><div><h2>Market</h2><p>Prices, recent results and the next race forecast.</p></div><label className={home.detailToggle}><input type="checkbox" checked={showProbabilities} onChange={e=>setShowProbabilities(e.target.checked)}/>Show price probabilities</label></div>
+   <div className={home.mobileTabs} aria-label="Market categories">{(['drivers','constructors'] as const).map(tab=><button key={tab} type="button" aria-pressed={marketTab===tab} onClick={()=>setMarketTab(tab)}>{tab==='drivers'?'Drivers':'Constructors'}</button>)}</div>
+   <div className={home.marketGrid}>
+    <div data-market="drivers" className={marketTab==='drivers'?home.activeMarket:home.inactiveMarket}>
+     <div className={styles.sectionHeading}><h3>Drivers</h3><span>{drivers.length} active</span></div>
+     <label className={home.search}>Find a driver<input type="search" value={driverQuery} onChange={e=>setDriverQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
+     <Board title="Drivers" tier="A" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/><Board title="Drivers" tier="B" assets={drivers} round={round} query={driverQuery} details={showProbabilities}/>
+    </div>
+    <div data-market="constructors" className={marketTab==='constructors'?home.activeMarket:home.inactiveMarket}>
+     <div className={styles.sectionHeading}><h3>Constructors</h3><span>{constructors.length} active</span></div>
+     <label className={home.search}>Find a constructor<input type="search" value={constructorQuery} onChange={e=>setConstructorQuery(e.target.value.toLowerCase())} placeholder="Name or code"/></label>
+     <Board title="Constructors" tier="A" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/><Board title="Constructors" tier="B" assets={constructors} round={round} query={constructorQuery} details={showProbabilities}/>
+    </div>
+   </div>
   </section>}
 
   <footer className={styles.footer}>
