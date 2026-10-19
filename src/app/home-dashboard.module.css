@@ -66,3 +66,5 @@
  .page nav{gap:12px;padding:12px}.page nav>div:last-child{width:100%;gap:6px}.page nav a,.page nav button{font-size:11px;padding:9px 8px}.page section{max-width:100%}.page table td{white-space:nowrap}
 }
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto;transition:none}}
+.freshness { display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin:0 0 20px;padding:14px 16px;border:1px solid #304254;border-radius:10px;font-size:13px;color:#a8bdd1;background:#101b27; }
+.freshness strong { color:#e1eaf2; }

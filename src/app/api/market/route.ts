@@ -8,6 +8,7 @@ import { syncOfficialFantasyMarket } from '../../../lib/fantasy-official-sync';
 
 import {COMPLETED_SCORE_SOURCE} from '../../../lib/completed-fantasy-scores';
 import {MAIN_MODELS,BOOST_MODELS,CURRENT_MODELS} from '../../../lib/current-prediction-models';
+import {forecastFreshness} from '../../../lib/maintenance-updates';
 
 export async function GET(request:NextRequest) {
  try{
@@ -78,6 +79,10 @@ export async function GET(request:NextRequest) {
   });
 
   const incomplete=rows.filter(a=>a.price==null||a.expectedPoints==null||a.expectedDelta==null).map(a=>a.code);
+  const maintenance=await prisma.maintenanceState.findUnique({where:{id:'fantasy:2026'},select:{status:true,leaseUntil:true,lastStartedAt:true,lastSucceededAt:true,lastFailedAt:true,forecastRound:true,forecastAt:true,forecastContext:true}});
+  const context=maintenance?.forecastRound===round?maintenance.forecastContext as {weekendLock?:{deadline?:string}}|null:null;
+  const lock=context?.weekendLock?.deadline?new Date(context.weekendLock.deadline):gp.deadline;
+  const freshness=forecastFreshness(rows,lock);
 
   return NextResponse.json({
     seasonCompleted:state?.completed??false,
@@ -89,6 +94,9 @@ export async function GET(request:NextRequest) {
     complete:incomplete.length===0,
     incomplete,
     assets:rows,
+    forecastFreshness:freshness,
+    forecastContext:context,
+    maintenance:maintenance?{status:maintenance.status==='RUNNING'&&+maintenance.leaseUntil<Date.now()?'INTERRUPTED':maintenance.status,lastStartedAt:maintenance.lastStartedAt,lastSucceededAt:maintenance.lastSucceededAt,lastFailedAt:maintenance.lastFailedAt}:null,
   });
  }catch(error){
   const unavailable=databaseConnectionUnavailable(error);

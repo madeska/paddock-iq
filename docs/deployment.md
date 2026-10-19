@@ -36,7 +36,7 @@ Existing owners should sign in with the same verified Google account used locall
 
 ## Existing Neon database
 
-The local database's migration status was checked on13 October2026: all six tracked migrations were applied. Repeat against the exact deployment database before launch:
+On 19 October 2026, the existing Neon database was reconciled against its already-applied historical migration (restored from the user's stash with an exact SHA-256 match). The additive MaintenanceState migration was then applied successfully; all eight tracked migrations are applied. Repeat against the exact deployment database before launch:
 
 ```
 npx prisma migrate status
@@ -58,7 +58,7 @@ The import helper destination is derived from `NEXTAUTH_URL`; replace any localh
 
 ## Operational limits and rollback
 
-Public users consume saved forecasts. Scores are checked every five minutes only while an administrator keeps the dashboard open; this release has no background cron. An authenticated admin refresh guard prevents overlap within one function instance, not across separate Vercel instances. Use one update at a time; distributed scheduling/locking needs a separate implementation before high-volume maintenance.
+Public users consume saved forecasts and check for newer market reads every five minutes while the dashboard is visible. A Neon lease coordinates manual and scheduled updates across Vercel instances. Forecasts and applied session/news context are committed atomically, with a final lease/deadline check. The daily Hobby-compatible cron requires a separate Production `CRON_SECRET` of at least 32 characters. For frequent practice/result checks, configure an external scheduler; see [background update setup](background-updates.md). No frequent external scheduler is enabled by adding this code alone.
 
 On an application regression, use Vercel's previous deployment rollback. This does not roll back database writes or migrations. Keep the same production secrets/origin. If a future migration changes schema, assess backward compatibility or restore the prepared Neon branch separately.
 

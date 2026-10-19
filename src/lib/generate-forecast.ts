@@ -1,0 +1,185 @@
+import {randomUUID} from 'node:crypto';
+import type {Prisma} from '@prisma/client';
+import {persistForecast} from './persist-forecast';
+import {forecastSeasonState} from './forecast-season-state';
+
+
+import {compareWeekendImpact} from './weekend-impact';
+import {COMPLETED_SCORE_SOURCE} from './completed-fantasy-scores';
+import {CURRENT_DRIVER_MODEL,CURRENT_CONSTRUCTOR_MODEL} from './current-prediction-models';
+import {getGridPenaltyNews} from './grid-penalty-news';
+import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from './official-history-reconciliation';
+import { NextResponse } from 'next/server';
+import { prisma } from './prisma';
+import { predictFantasyPrice } from './fantasy-price-model';
+import { getPracticeSnapshot, getWeekendLock } from './openf1-weekend';
+import { syncOfficialFantasyMarket } from './fantasy-official-sync';
+import {forecastProductionBaselines,simulateProductionForecast,productionSampleStdDev as sampleStdDev,PRODUCTION_FORECAST_CONFIG} from './production-forecast';
+
+const DRIVER_REACTIVATION_ROUND_2026:Record<string,number>={LAW:15,HAD:15};
+const COMPONENT_WEIGHT=PRODUCTION_FORECAST_CONFIG.componentWeight;
+const COMPONENT_OVERTAKE_INTENSITY=PRODUCTION_FORECAST_CONFIG.overtakeIntensity;
+const SPRINT_ROUNDS_2026=new Set([2,4,5,9,12,17]);
+export async function generateForecast(body:{season?:number;round?:number},leaseToken:string){
+ try{
+  const season=Number(body.season??2026);
+  const state=await forecastSeasonState(prisma,season);
+  const round=Number(body.round??state.round);
+  if(state.completed&&round===state.round)return NextResponse.json({error:'Season completed; no next race to forecast'},{status:409});
+  if(round<state.round)return NextResponse.json({error:'Past round completed; saved forecasts retained. Refresh the current forecast round.',round:state.round},{status:409});
+  const completed=await prisma.fantasyRoundScore.findFirst({where:{source:COMPLETED_SCORE_SOURCE,grandPrix:{season,round}},select:{id:true}});
+  if(completed)return NextResponse.json({error:'Race completed; saved forecasts retained. Update official points to prepare the next round.'},{status:409});
+  const officialSync=await syncOfficialFantasyMarket(prisma,season,round);
+  const historyReconciliation=await reconcileOfficialHistory(prisma,season,round);
+  const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
+  if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
+
+  const weekendLock=await getWeekendLock(season,round,gp.name,gp.deadline);
+  const deadline=weekendLock?.deadline??null;
+  if(!deadline||+deadline<=Date.now())return NextResponse.json({error:'Team lock passed or unavailable; saved forecasts retained.'},{status:409});
+  const isSprint=weekendLock?.isSprint??(season===2026&&SPRINT_ROUNDS_2026.has(round));
+  const forecastAt=new Date();
+  const practiceSnapshot=await getPracticeSnapshot(season,deadline,forecastAt);
+
+  const assets=await prisma.asset.findMany({
+   where:{season,active:true},
+   include:{
+    prices:{include:{grandPrix:true}},
+    fantasyScores:{where:{source:{not:EXCLUDED_SCORE_SOURCE},grandPrix:{round:{lt:round}}},include:{grandPrix:true}}
+   }
+  });
+
+  const news=deadline?await getGridPenaltyNews({season,round,eventName:gp.name,deadline,asOf:forecastAt,drivers:assets.filter(a=>a.type==='DRIVER').map(a=>({code:a.code,name:a.name}))}):{mentions:[],errors:['Fantasy lock unavailable; news not applied'],scanned:0};
+  const gridDrops:{race:Record<string,number>;sprint:Record<string,number>}={race:{},sprint:{}};
+  for(const mention of news.mentions)if(mention.status==='CONFIRMED'&&mention.code&&(mention.places!=null||mention.kind==='BACK_OF_GRID')&&mention.session)gridDrops[mention.session==='SPRINT'?'sprint':'race'][mention.code]=mention.kind==='BACK_OF_GRID'?100:mention.places!;
+  const forecastAssets=assets.map(asset=>{
+   const currentPriceRow=asset.prices.filter(p=>p.grandPrix.round===round).sort((a,b)=>+new Date(b.recordedAt)-+new Date(a.recordedAt))[0];
+   return {season:asset.season,code:asset.code,type:asset.type,currentPrice:currentPriceRow?Number(currentPriceRow.price):null,prices:asset.prices.map(p=>({round:p.grandPrix.round,price:Number(p.price)})),scores:asset.fantasyScores.map(s=>({round:s.grandPrix.round,points:s.points}))};
+  });
+  const production=forecastProductionBaselines(forecastAssets,{season,round,practice:practiceSnapshot});
+  const baselineByCode=new Map<string,{
+   asset:(typeof assets)[number];current:number;scoreRows:(typeof assets)[number]['fantasyScores'];chronological:number[];rawXPts:number;boostXPts:number|null;practicePosition:number|null;
+  }>();
+  for(const asset of assets){
+   const baseline=production.baselines.get(asset.code);if(!baseline)continue;
+   const scoreRows=asset.fantasyScores.slice().sort((a,b)=>a.grandPrix.round-b.grandPrix.round);
+   baselineByCode.set(asset.code,{...baseline,asset,scoreRows});
+  }
+
+  for(const session of ['race','sprint'] as const)for(const code of Object.keys(gridDrops[session]))if(!production.baselines.has(code)||!officialSync.driverTeams[code]||(session==='sprint'&&!isSprint)){delete gridDrops[session][code];const mention=news.mentions.find(m=>m.code===code&&m.session===(session==='race'?'RACE':'SPRINT'));if(mention){mention.status='PENDING';mention.places=null;mention.reason='No supported driver projection or session; penalty not applied'}}
+  const component=simulateProductionForecast(production.baselines,officialSync.driverTeams,{season,sprint:isSprint,round,practice:practiceSnapshot,gridDrops});
+  const withoutSessions=practiceSnapshot?forecastProductionBaselines(forecastAssets,{season,round}):null;
+  const weekendImpact=withoutSessions?compareWeekendImpact(withoutSessions.baselines,
+   simulateProductionForecast(withoutSessions.baselines,officialSync.driverTeams,{season,sprint:isSprint,round,gridDrops}),
+   production.baselines,component):[];
+  const sourceContext=(practiceSnapshot?.sprintQualifyingSessionKey?' · Sprint Qualifying session '+practiceSnapshot.sprintQualifyingSessionKey:'')+news.mentions.filter(m=>m.status==='CONFIRMED').map(m=>' · '+m.code+' '+m.session+' '+(m.kind==='BACK_OF_GRID'?'back of grid':'+'+m.places+' grid places')+': '+m.sourceUrl).join('');
+  const componentDriverByCode=new Map(component.drivers.map(x=>[x.code,x]));
+  const componentConstructorByCode=new Map(component.constructors.map(x=>[x.code,x]));
+
+  const predictions:Prisma.AssetPredictionCreateManyInput[]=[];
+  const created:{code:string;type:string;expectedPoints:number;expectedDelta:number|null;modelVersion:string;id:string}[]=[];
+  for(const asset of assets){
+   const baseline=baselineByCode.get(asset.code);
+   if(!baseline)continue;
+   const {current,scoreRows,chronological,rawXPts,boostXPts,practicePosition}=baseline;
+   const componentXPts=asset.type==='DRIVER'
+    ?componentDriverByCode.get(asset.code)?.total
+    :componentConstructorByCode.get(asset.code)?.total;
+   const blendedXPts=componentXPts==null
+    ?rawXPts
+    :(1-COMPONENT_WEIGHT)*rawXPts+COMPONENT_WEIGHT*componentXPts;
+   const pts=Math.round(blendedXPts*10)/10;
+
+   const newest=[...chronological].reverse();
+   const trailingConsecutive:number[]=[];
+   const activationRound=season===2026&&asset.type==='DRIVER'
+    ?(DRIVER_REACTIVATION_ROUND_2026[asset.code]??1)
+    :1;
+   for(let r=round-1;r>=Math.max(activationRound,round-2);r--){
+    const row=scoreRows.find(s=>s.grandPrix.round===r);
+    if(!row)break;
+    trailingConsecutive.unshift(row.points);
+   }
+   const sd=sampleStdDev(newest.slice(0,5));
+   const price=predictFantasyPrice({
+    currentPrice:current,
+    previousFantasyPoints:trailingConsecutive,
+    expectedPoints:pts,
+    pointsStdDev:sd
+   });
+
+   const rise=price?price.probabilities.smallRise+price.probabilities.maxRise:null;
+   const fall=price?
+    (price.effectiveDeltas.smallFall<0?price.probabilities.smallFall:0)+
+    (price.effectiveDeltas.maxFall<0?price.probabilities.maxFall:0):null;
+
+
+   const modelVersion=asset.type==='DRIVER'?CURRENT_DRIVER_MODEL:CURRENT_CONSTRUCTOR_MODEL;
+
+   const id=randomUUID();
+   predictions.push({id,
+    assetId:asset.id,grandPrixId:gp.id,expectedPoints:pts,
+    expectedPriceDelta:price?.expectedDelta??null,
+    probabilityRise:rise,probabilityFlat:price?.probabilityFlat??null,probabilityFall:fall,
+    probabilityMaxRise:price?.probabilities.maxRise??null,
+    probabilitySmallRise:price?.probabilities.smallRise??null,
+    probabilitySmallFall:price?.probabilities.smallFall??null,
+    probabilityMaxFall:price?.probabilities.maxFall??null,
+    requiredPointsMaxRise:price?.thresholds.maxRiseAt??null,
+    requiredPointsSmallRise:price?.thresholds.smallRiseAt??null,
+    requiredPointsAvoidMaxFall:price?.thresholds.maxFallBelow??null,
+    confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
+    source:(asset.type==='DRIVER'
+     ?(practicePosition!=null
+       ?'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + pre-lock practice modifier from '+practiceSnapshot?.sessionName+' + bounded rolling-3 PPM price model'
+       :'75% calibrated baseline + 25% component simulation (quali/sprint/race/positions/overtakes/FL/DOTD/DNF) + bounded rolling-3 PPM price model')
+     :componentXPts==null
+      ?'Constructor baseline; official driver lineup incomplete + bounded rolling-3 PPM price model'
+      :'75% constructor baseline + 25% component simulation (official driver lineup/quali teamwork/pit stops) + bounded rolling-3 PPM price model')+sourceContext,
+    modelVersion
+   });
+
+   created.push({code:asset.code,type:asset.type,expectedPoints:pts,expectedDelta:price?.expectedDelta??null,modelVersion,id});
+
+   if(asset.type==='DRIVER'&&boostXPts!=null){
+    const boostPts=Math.round(boostXPts*10)/10;
+    predictions.push({id:randomUUID(),
+     assetId:asset.id,
+     grandPrixId:gp.id,
+     expectedPoints:boostPts,
+     confidence:Math.min(.85,.4+Math.min(5,chronological.length)*.08),
+     source:practicePosition!=null
+      ?'Pure ridge(lambda=50) x2 selector + pre-lock practice position modifier from '+practiceSnapshot?.sessionName
+      :'Pure walk-forward ridge(lambda=50) x2 selector',
+     modelVersion:practicePosition!=null
+      ?'xpts-driver-ridge50-boost-practice-v1'
+      :'xpts-driver-ridge50-boost-v1'
+    });
+   }
+  }
+
+  const missing=assets.filter(a=>!created.some(p=>p.code===a.code)).map(a=>a.code);
+  const responseData={
+   ok:missing.length===0,created:created.length,totalAssets:assets.length,missing,
+   weekendImpact,forecastAt:forecastAt.toISOString(),season,round,
+   driverModel:'50% ridge(lambda=50: ewma025, seasonMean, currentPrice) + 50% EWMA(0.25); latest normal-GP practice or sprint FP1 modifier 0.5*(11.5-position); complete SQ grid and confirmed official news penalties when available',
+   practiceSnapshot:practiceSnapshot?{
+    sessionName:practiceSnapshot.sessionName,
+    isSprint:practiceSnapshot.isSprint,
+    drivers:practiceSnapshot.positions.size,
+    sprintQualifyingDrivers:practiceSnapshot.sprintQualifyingPositions?.size??0
+   }:null,
+   constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
+   driverTrainingRows:production.trainingRows,
+   componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
+   weekendLock:weekendLock?{deadline:weekendLock.deadline.toISOString(),source:weekendLock.source}:null,
+   weekendNews:{...news,coverage:'Official F1 headlines and available article text; not an exhaustive FIA decision feed'},gridDrops,
+   officialSync,historyReconciliation,
+   predictions:created
+  };
+  if(missing.length===0&&created.length>0)await persistForecast(prisma,{leaseToken,deadline,grandPrixId:gp.id,assetIds:assets.map(asset=>asset.id),predictions,result:responseData});
+  return NextResponse.json(responseData);
+ }catch(error){
+  return NextResponse.json({error:'Forecast update failed. Previous saved data may still be available; retry later.'},{status:500});
+ }
+}

@@ -95,6 +95,16 @@ async function main(){
  page.on('request',request=>{if(request.method()==='POST')publicWrites++});
  await page.reload();await page.getByRole('heading',{name:'Mexico Grand Prix',exact:true}).waitFor();
  await page.getByRole('button',{name:'Refresh market',exact:true}).click();
+ const persisted={weekendLock:{deadline:market.deadline,source:'Verified calendar'},forecastAt:'2026-10-19T12:00:00Z',practiceSnapshot:{sessionName:'Practice 3',drivers:22,sprintQualifyingDrivers:0},weekendNews:{coverage:'Official sources',mentions:[],errors:[]}};
+ await page.route('**/api/market?*',route=>route.fulfill({json:{...market,forecastContext:persisted,forecastFreshness:{status:'STALE',oldestAt:'2026-10-01T12:00:00Z',latestAt:'2026-10-01T12:00:00Z',checkedAt:new Date().toISOString()},maintenance:{status:'FAILED'}}}));
+ await page.clock.install();
+ await page.reload();await page.getByText('Practice 3: 22 drivers',{exact:false}).waitFor();
+ await page.getByText('Forecast needs an update',{exact:true}).waitFor();
+ await page.getByText('Last update did not complete. Showing saved values.',{exact:true}).waitFor();
+ await page.route('**/api/market?*',route=>route.fulfill({json:{...market,grandPrix:'Background update visible',forecastContext:{...persisted,practiceSnapshot:{sessionName:'Practice 2',drivers:22,sprintQualifyingDrivers:0}}}}));
+ await page.clock.fastForward(5*60*1000+1000);
+ await page.getByRole('heading',{name:'Background update visible',exact:true}).waitFor();
+ await page.getByText('Practice 2: 22 drivers',{exact:false}).waitFor();
  assert.equal(await page.getByRole('button',{name:'Refresh projections',exact:true}).count(),0);
  assert.equal(publicWrites,0);
  console.log('Home: compact/detail tables, filters, generation, refresh, public read-only access and mobile switching passed.');

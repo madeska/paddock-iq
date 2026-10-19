@@ -9,6 +9,7 @@ export function deploymentProblems(env){
  if(env.DATABASE_URL){try{const url=new URL(env.DATABASE_URL);if(!['postgres:','postgresql:'].includes(url.protocol)||!['require','verify-ca','verify-full'].includes(url.searchParams.get('sslmode')))problems.push('DATABASE_URL must be PostgreSQL with SSL configured')}catch{problems.push('DATABASE_URL must be a valid PostgreSQL URL')}}
  if(env.NEXTAUTH_SECRET&&env.NEXTAUTH_SECRET.length<32)problems.push('NEXTAUTH_SECRET must contain at least 32 characters');
  if(env.MARKET_ADMIN_KEY&&env.MARKET_ADMIN_KEY.length<32)problems.push('MARKET_ADMIN_KEY must be empty or contain at least 32 characters');
+ if(env.CRON_SECRET&&env.CRON_SECRET.length<32)problems.push('CRON_SECRET must be empty or contain at least 32 characters');
  if(env.ADMIN_EMAILS&&env.ADMIN_EMAILS.split(',').some(value=>!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())))problems.push('ADMIN_EMAILS must contain comma-separated email addresses');
  return problems;
 }

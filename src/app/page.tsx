@@ -21,6 +21,8 @@ type MarketAsset={
 type MarketResponse={
  season:number;round:number;seasonCompleted?:boolean;grandPrix:string;deadline?:string|null;complete:boolean;incomplete:string[];
  currentModels:string[];assets:MarketAsset[];
+ forecastFreshness?:{status:string;oldestAt:string|null;latestAt:string|null;checkedAt:string};
+ maintenance?:{status:string;lastStartedAt:string|null;lastSucceededAt:string|null;lastFailedAt:string|null}|null;
 };
 type BuilderMode='points'|'balanced'|'budget'|'custom'|'horizon';
 type AssetRule='neutral'|'include'|'exclude';
@@ -294,6 +296,7 @@ export default function Home(){
    if(roundRef.current!==j.round){setWeekendContext(null);setBuilderTeams([])}
    roundRef.current=j.round;completedRef.current=Boolean(j.seasonCompleted);
    setData(j);
+   if('forecastContext' in j)setWeekendContext(j.forecastContext??null);
    setStatus(j.seasonCompleted?'Season completed. Final official results are available.':j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
    return j as MarketResponse;
   }catch(e){setStatus(e instanceof Error?e.message:'Market unavailable')}
@@ -326,7 +329,7 @@ export default function Home(){
    }else if(result.saved>0)await load();
   }catch(error){setScoresStatus(error instanceof Error?error.message:'Official results unavailable')}finally{scoresBusy.current=false;setScoresLoading(false)}
  }
- useEffect(()=>{let mounted=true;void Promise.all([load(),fetch('/api/account').then(readApiJson).catch(()=>({maintenance:false}))]).then(async([market,account])=>{if(!mounted)return;maintenanceRef.current=Boolean(account.maintenance);setMaintenance(maintenanceRef.current);if(!maintenanceRef.current)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible')void updateOfficialScores()},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
+ useEffect(()=>{let mounted=true;void Promise.all([load(),fetch('/api/account').then(readApiJson).catch(()=>({maintenance:false}))]).then(async([market,account])=>{if(!mounted)return;maintenanceRef.current=Boolean(account.maintenance);setMaintenance(maintenanceRef.current);if(!maintenanceRef.current)return;if(!market){preparationPending.current=true;return}if(!market.complete&&market.round>17&&!market.seasonCompleted)preparationPending.current=!(await prepareForecast(async()=>market,refresh));if(mounted)void updateOfficialScores()});const timer=setInterval(()=>{if(document.visibilityState==='visible'){if(maintenanceRef.current)void updateOfficialScores();else void load()}},5*60*1000);return()=>{mounted=false;clearInterval(timer)}},[]);
 
  const drivers=useMemo(()=>data?.assets.filter(a=>a.type==='DRIVER')??[],[data]);
  const constructors=useMemo(()=>data?.assets.filter(a=>a.type==='CONSTRUCTOR')??[],[data]);
@@ -416,6 +419,12 @@ export default function Home(){
   </header>
 
   <div className={home.readiness} role="status"><span className={data?.complete&&!status?home.readyDot:home.pendingDot}/>{status||<>Forecasts ready · {drivers.length} drivers · {constructors.length} constructors</>}</div>
+  {data?.forecastFreshness&&<div className={home.freshness} aria-label="Forecast freshness">
+   <strong>{data.forecastFreshness.status==='MISSING'?'Forecast incomplete':(data.forecastFreshness.status==='LOCKED'||(Number.isFinite(deadline)&&deadline<=(now??Date.now())))?'Team locked · saved forecast':data.forecastFreshness.oldestAt&&(now??Date.parse(data.forecastFreshness.checkedAt))-Date.parse(data.forecastFreshness.oldestAt)>60*60*1000?'Forecast needs an update':'Forecast recently calculated'}</strong>
+   <span>{data.forecastFreshness.oldestAt?<>Calculated <time dateTime={data.forecastFreshness.oldestAt}>{new Date(data.forecastFreshness.oldestAt).toLocaleString()}</time></>:'No complete saved forecast yet.'}</span>
+   {data.maintenance?.status==='RUNNING'&&<span role="status">Data update in progress. Showing saved values.</span>}
+   {(data.maintenance?.status==='FAILED'||data.maintenance?.status==='INTERRUPTED')&&<span role="status">Last update did not complete. Showing saved values.</span>}
+  </div>}
 
   <details className={home.sourceDetails}><summary>Data & updates</summary><p>xPts are predicted points. xΔ$ is the expected price change in $M. Predictions are estimates.</p><p>Forecast blend: 75% calibrated baseline + 25% component simulation.</p>{scoresStatus&&<p role="status">{scoresStatus}</p>}{maintenance&&<button onClick={updateOfficialScores} disabled={scoresLoading}>{scoresLoading?'Checking official points…':'Update official points'}</button>}</details>
 

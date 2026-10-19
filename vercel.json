@@ -3,5 +3,6 @@
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
-  "regions": ["fra1"]
+  "regions": ["fra1"],
+  "crons": [{"path":"/api/cron/update","schedule":"17 5 * * *"}]
 }

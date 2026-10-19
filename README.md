@@ -29,7 +29,7 @@ Follow [docs/deployment.md](docs/deployment.md). The release branch is `feat/hom
 - Market browsing and client-side budget building are public.
 - Personal teams/import/edit/delete and server-side transfer optimization require Google sign-in; ownership is checked on the server.
 - Shared forecast/score mutations and diagnostics require a Google account listed in `ADMIN_EMAILS`, or a server-only `x-market-admin-key`.
-- Official score checks currently run every five minutes while an administrator has the dashboard open. There is no unattended cron job in this release.
+- Scheduled score/forecast updates use a shared Neon lease and a daily Hobby-compatible Vercel cron. Set Production `CRON_SECRET`; use an external scheduler for frequent checks. Public dashboards read newer saved data every five minutes. See [background updates](docs/background-updates.md).
 - F1 import currently uses the official-site browser helper with file/manual fallbacks. Google does not connect a private F1 account. League-code import and native F1 OAuth are not implemented.
 - Predictions are estimates. Experimental simulation candidates remain inactive.
 
