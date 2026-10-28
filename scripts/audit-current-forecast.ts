@@ -36,10 +36,12 @@ async function main(){
    if(asset.type==='CONSTRUCTOR'&&boosts.length!==0)issues.push('unexpected constructor x2 forecast');
    return {code:asset.code,type:asset.type,price,expectedPoints:row?.expectedPoints??null,expectedDelta:row?.expectedPriceDelta??null,boostExpectedPoints:asset.type==='DRIVER'?boosts[0]?.expectedPoints??null:null,mainCount:main.length,boostCount:boosts.length,createdAt:row?.createdAt??null,issues};
   });
-  const report={season:2026,round:state.round,checkedAt:new Date().toISOString(),drivers:rows.filter(r=>r.type==='DRIVER').length,constructors:rows.filter(r=>r.type==='CONSTRUCTOR').length,maintenance,complete:rows.length>0&&rows.every(row=>!row.issues.length)&&maintenance?.forecastRound===state.round,rows};
+  const {readForecastHealth}=await import('../src/lib/forecast-health');
+  const health=await readForecastHealth(prisma,2026,state.round);
+  const report={season:2026,round:state.round,checkedAt:new Date().toISOString(),drivers:rows.filter(r=>r.type==='DRIVER').length,constructors:rows.filter(r=>r.type==='CONSTRUCTOR').length,maintenance,health,complete:health.ok&&rows.length>0&&rows.every(row=>!row.issues.length)&&maintenance?.forecastRound===state.round,rows};
   const output=process.argv.find(arg=>arg.startsWith('--output='))?.slice(9);
   if(output)writeFileSync(output,JSON.stringify(report,null,2)+'\n');
-  console.log(JSON.stringify({round:report.round,drivers:report.drivers,constructors:report.constructors,complete:report.complete,maintenance,invalid:rows.filter(row=>row.issues.length)},null,2));
+  console.log(JSON.stringify({round:report.round,drivers:report.drivers,constructors:report.constructors,complete:report.complete,maintenance,health,invalid:rows.filter(row=>row.issues.length)},null,2));
   if(!report.complete)process.exitCode=1;
  }finally{await prisma.$disconnect()}
 }

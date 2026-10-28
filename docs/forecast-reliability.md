@@ -1,0 +1,13 @@
+# Forecast reliability controls
+
+Event names are defined once in `fantasy-race-calendar.ts`, including known legacy aliases and accent variants. The market importer, horizon labels and provider lock matching consume the same registry. Calendar round and independent OpenF1 race/session-time agreement are still mandatory; unknown or conflicting events are not silently accepted. Fixtures cover every remaining supported 2026 event, R19–R23. `npx tsx scripts/check-live-calendar.ts` checks those identities against current source responses without database writes; it is a live preflight, not an offline test or guaranteed source availability.
+
+Before replacing saved forecasts, the batch validator requires exactly one registered current main forecast for every active asset, exactly one driver boost, no constructor boost, correct round/asset identity, finite values, valid price-probability distributions and prices within the existing bounds. Malformed batches are rejected before the write transaction. The transaction verifies inserted row count and commits predictions with source metadata together. Existing data remains on rollback.
+
+Manual and scheduled updates independently read the registered predictions back after generation. A successful generator response alone cannot mark a scheduled update successful. Cron errors include safe fixed diagnostic codes such as `TEAM_LOCK_UNAVAILABLE`, `FORECAST_GENERATION_FAILED` and `FORECAST_READBACK_FAILED`, plus the affected round, without raw exception or credential details.
+
+`GET /api/forecast/health` is public and read-only. HTTP 200 means current active-asset forecast integrity is complete; HTTP 503 means the current market, predictions, metadata or database are unavailable/incomplete. It reports missing public asset codes and calculation time. It does not promise forecast accuracy or recent source data; the dashboard separately displays calculation age.
+
+For independent monitoring, a scheduler may check `https://paddock-iq-xi.vercel.app/api/forecast/health` and notify on non-200 responses. Enable failure/recovery notifications in the scheduler to receive alerts; this repository does not configure an external account or send email by itself. Existing authenticated update jobs also fail with non-200 on incomplete read-back. No additional secrets are required for this health endpoint.
+
+GitHub checks now run for production-branch pushes as well as matching pull requests, and include production builds and the calendar, batch, persistence, rollover and read-back regressions. Vercel builds and GitHub checks are independent; a green check is evidence, not a guarantee about future provider responses. No simulation scoring formulas were changed.

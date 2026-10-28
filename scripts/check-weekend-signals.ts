@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {test,mock} from 'node:test';
 import {getPracticeSnapshot,type OpenF1Session} from '../src/lib/openf1-weekend';
+import {fantasyRaceName} from '../src/lib/fantasy-race-calendar';
 const make=(key:number,name:string,start:string,end:string):OpenF1Session=>({year:2026,meeting_key:10,session_key:key,session_name:name,session_type:name,date_start:start,date_end:end});
 const sessions=[make(1,'Practice 1','2026-10-09T09:00:00Z','2026-10-09T10:00:00Z'),make(2,'Sprint Qualifying','2026-10-09T13:00:00Z','2026-10-09T14:00:00Z'),make(3,'Sprint','2026-10-10T09:00:00Z','2026-10-10T10:00:00Z')];
 async function snapshot(asOf:string){const requested:string[]=[];const m=mock.method(globalThis,'fetch',async(input:any)=>{const u=String(input);requested.push(u);const value=u.includes('/sessions?')?sessions:u.includes('/drivers?')?[{driver_number:1,name_acronym:'VER'},{driver_number:4,name_acronym:'NOR'}]:u.includes('session_key=1')?[{driver_number:1,position:2},{driver_number:4,position:1}]:u.includes('session_key=2')?[{driver_number:1,position:1},{driver_number:4,position:2}]:[];return new Response(JSON.stringify(value))});try{return {value:await getPracticeSnapshot(2026,new Date('2026-10-10T09:00:00Z'),new Date(asOf)),requested}}finally{m.mock.restore()}}
@@ -21,4 +22,16 @@ test('R19 legacy Mexico GP matches Mexico City calendar without accepting a diff
   assert.equal(await getWeekendLock(2026,18,'Mexico GP',null),null);
   assert.equal(await getWeekendLock(2026,19,'United States GP',null),null);
  }finally{m.mock.restore()}
+});
+test('every remaining 2026 imported round resolves to its independently named calendar/provider session',async()=>{
+ const fixtures=[
+  {round:19,name:'Mexico City Grand Prix',qualifying:'2026-10-31T21:00:00Z',race:'2026-11-01T20:00:00Z'},
+  {round:20,name:'São Paulo Grand Prix',qualifying:'2026-11-07T18:00:00Z',race:'2026-11-08T17:00:00Z'},
+  {round:21,name:'Las Vegas Grand Prix',qualifying:'2026-11-21T04:00:00Z',race:'2026-11-22T04:00:00Z'},
+  {round:22,name:'Qatar Grand Prix',qualifying:'2026-11-28T18:00:00Z',race:'2026-11-29T16:00:00Z'},
+  {round:23,name:'Abu Dhabi Grand Prix',qualifying:'2026-12-05T14:00:00Z',race:'2026-12-06T13:00:00Z'}
+ ];
+ const calendar={races:fixtures.map(row=>({roundNumber:row.round,name:row.name,sprint:false,start_times:{qualifying:row.qualifying,race:row.race}}))};
+ const provider=fixtures.flatMap(row=>['Race','Qualifying'].map((name,i)=>({...make(row.round*10+i,name,name==='Race'?row.race:row.qualifying,name==='Race'?row.race:row.qualifying),meeting_key:row.round})));
+ for(const race of fixtures){const lock=await getWeekendLock(2026,race.round,fantasyRaceName(2026,race.round),null,{calendar:async()=>calendar,sessions:async()=>provider});assert.equal(lock?.deadline.toISOString(),new Date(race.qualifying).toISOString())}
 });

@@ -1,6 +1,7 @@
 import {EXCLUDED_SCORE_SOURCE} from '../../../../lib/official-history-reconciliation';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
+import {fantasyRaceName} from '../../../../lib/fantasy-race-calendar';
 import { predictFantasyPrice } from '../../../../lib/fantasy-price-model';
 import { applyPracticePositionModifier, getPracticeSnapshot, getWeekendLock } from '../../../../lib/openf1-weekend';
 
@@ -48,7 +49,6 @@ function fitRidge(rows:{x:number[];y:number}[]){
  return {predict:(x:number[])=>beta[0]+x.reduce((s,v,j)=>s+beta[j+1]*(v-means[j])/sds[j],0)};
 }
 
-const gpName=(round:number)=>({16:'Bahrain GP in Malaysia',17:'Singapore GP',18:'United States GP'} as Record<number,string>)[round]??'Round '+round;
 
 export async function GET(request:NextRequest){
  try{
@@ -129,7 +129,7 @@ export async function GET(request:NextRequest){
 
     rounds.push({
      round,
-     grandPrix:gpName(round),
+     grandPrix:fantasyRaceName(season,round),
      expectedPoints,
      sprint:SPRINT_ROUNDS_2026.has(round),
      sprintCorrection,

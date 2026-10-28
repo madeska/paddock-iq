@@ -1,6 +1,7 @@
 import {NextResponse} from 'next/server';
 import {prisma} from './prisma';
 import {withMaintenanceLease} from './maintenance-updates';
+import {readForecastHealth} from './forecast-health';
 
 class FailedUpdate extends Error{constructor(readonly response:Response){super('Update unsuccessful')}}
 export async function maintenanceResponse(work:(token:string)=>Promise<Response>,forecast=false){
@@ -10,6 +11,7 @@ export async function maintenanceResponse(work:(token:string)=>Promise<Response>
    if(!response.ok)throw new FailedUpdate(response);
    const data=await response.clone().json();
    if(forecast&&(!data.ok||data.created===0))throw new FailedUpdate(NextResponse.json({error:'Forecast incomplete; retry the update.'},{status:502}));
+   if(forecast&&!(await readForecastHealth(prisma,2026,data.round)).ok)throw new FailedUpdate(NextResponse.json({error:'Saved forecast verification failed.',code:'FORECAST_READBACK_FAILED'},{status:502}));
    return {value:response};
   });
   return result.busy?NextResponse.json({error:'A data update is already running. Please retry shortly.'},{status:409}):result.value;

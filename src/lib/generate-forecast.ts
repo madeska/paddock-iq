@@ -177,7 +177,7 @@ export async function generateForecast(body:{season?:number;round?:number},lease
    officialSync,historyReconciliation,
    predictions:created
   };
-  if(missing.length===0&&created.length>0)await persistForecast(prisma,{leaseToken,deadline,grandPrixId:gp.id,assetIds:assets.map(asset=>asset.id),predictions,result:responseData});
+  if(missing.length===0&&created.length>0)await persistForecast(prisma,{leaseToken,deadline,grandPrixId:gp.id,assets:assets.map(asset=>({id:asset.id,type:asset.type,currentPrice:baselineByCode.get(asset.code)?.current??null})),predictions,result:responseData});
   return NextResponse.json(responseData);
  }catch(error){
   return NextResponse.json({error:'Forecast update failed. Previous saved data may still be available; retry later.'},{status:500});

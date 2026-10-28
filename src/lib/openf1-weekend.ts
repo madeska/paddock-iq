@@ -1,3 +1,4 @@
+import {normalizeFantasyRaceName} from './fantasy-race-calendar';
 export type OpenF1Session={
   year:number;
   is_cancelled?:boolean;
@@ -101,18 +102,17 @@ export function applyPracticePositionModifier(baseXPts:number,position:number|nu
 }
 
 /** Calendar identifies Fantasy round; OpenF1 verifies meeting and scored-session lock. Never guesses by ordinal race index. */
-export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null){
- const normalize=(name:string)=>{
-  const normalized=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+(?:grand prix|gp)\b.*$/,'').trim();
-  // The official Fantasy importer historically stored "Mexico GP" for Mexico City.
-  return normalized==='mexico'?'mexico city':normalized;
- };
- const calendar=await tryJson<{races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]}>('https://f1fantasytools.com/api/statistics/'+season);
+type WeekendCalendar={races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]};
+export type WeekendLockEvidence={calendar:(season:number)=>Promise<WeekendCalendar|null>;sessions:(season:number)=>Promise<OpenF1Session[]|null>};
+const liveLockEvidence:WeekendLockEvidence={calendar:season=>tryJson<WeekendCalendar>('https://f1fantasytools.com/api/statistics/'+season),sessions:season=>tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season)};
+export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null,evidence=liveLockEvidence){
+ const normalize=normalizeFantasyRaceName;
+ const calendar=await evidence.calendar(season);
  const candidates=Array.isArray(calendar?.races)?calendar.races.filter(r=>r&&r.roundNumber===round&&typeof r.name==='string'&&normalize(r.name)===normalize(eventName)):[];
  if(candidates?.length!==1)return storedDeadline&&Number.isFinite(+storedDeadline)?{deadline:storedDeadline,isSprint:null,source:'Stored Fantasy deadline'}:null;
  const entry=candidates[0];if(typeof entry.sprint!=='boolean')return null;const raceAt=Date.parse(entry.start_times?.race),calendarLock=Date.parse(entry.sprint?entry.start_times?.sprint??'':entry.start_times?.qualifying??'');
  if(!Number.isFinite(raceAt)||!Number.isFinite(calendarLock)||calendarLock>=raceAt)return null;
- const sessions=await tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season);
+ const sessions=await evidence.sessions(season);
  const races=Array.isArray(sessions)?sessions.filter(s=>s&&s.year===season&&!s.is_cancelled&&s.session_name==='Race'&&Math.abs(Date.parse(s.date_start)-raceAt)<12*3600000):[];
  if(races?.length!==1)return null;
  const locks=sessions!.filter(s=>s&&s.year===season&&s.meeting_key===races[0].meeting_key&&!s.is_cancelled&&s.session_name===(entry.sprint?'Sprint':'Qualifying'));
