@@ -23,6 +23,8 @@ on:
       - 'src/lib/*forecast*.ts'
       - 'src/lib/maintenance-*.ts'
       - 'src/lib/scheduled-update.ts'
+      - 'src/lib/openf1-weekend.ts'
+      - 'src/lib/fantasy-official-sync.ts'
       - 'src/app/api/cron/**'
       - 'prisma/**'
       - '.github/workflows/home-ui.yml'
@@ -40,6 +42,7 @@ jobs:
       - run: npm ci
       - run: npx tsc -p tsconfig.ci.json --noEmit
       - run: npx tsx --test scripts/check-api-response.ts
+      - run: npx tsx --test scripts/check-weekend-signals.ts scripts/check-current-model-registry.ts scripts/check-completed-forecast-guard.ts
       - run: npx tsx --test scripts/check-maintenance-auth.ts scripts/check-request-limits.ts scripts/check-team-auth.ts scripts/check-public-horizon.ts scripts/check-maintenance-updates.ts scripts/check-scheduled-update.ts scripts/check-persist-forecast.ts
       - run: node --test scripts/check-deployment-config.mjs
       - run: npx playwright install --with-deps chromium

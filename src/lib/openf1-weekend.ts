@@ -102,7 +102,11 @@ export function applyPracticePositionModifier(baseXPts:number,position:number|nu
 
 /** Calendar identifies Fantasy round; OpenF1 verifies meeting and scored-session lock. Never guesses by ordinal race index. */
 export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null){
- const normalize=(name:string)=>name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+(?:grand prix|gp)\b.*$/,'').trim();
+ const normalize=(name:string)=>{
+  const normalized=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+(?:grand prix|gp)\b.*$/,'').trim();
+  // The official Fantasy importer historically stored "Mexico GP" for Mexico City.
+  return normalized==='mexico'?'mexico city':normalized;
+ };
  const calendar=await tryJson<{races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]}>('https://f1fantasytools.com/api/statistics/'+season);
  const candidates=Array.isArray(calendar?.races)?calendar.races.filter(r=>r&&r.roundNumber===round&&typeof r.name==='string'&&normalize(r.name)===normalize(eventName)):[];
  if(candidates?.length!==1)return storedDeadline&&Number.isFinite(+storedDeadline)?{deadline:storedDeadline,isSprint:null,source:'Stored Fantasy deadline'}:null;

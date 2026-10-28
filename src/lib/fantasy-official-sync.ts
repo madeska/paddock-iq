@@ -38,7 +38,7 @@ const GP_NAMES_2026:Record<number,string>={
  16:'Bahrain GP in Malaysia',
  17:'Singapore GP',
  18:'United States GP',
- 19:'Mexico GP',
+ 19:'Mexico City GP',
  20:'São Paulo GP',
  21:'Las Vegas GP',
  22:'Qatar GP',
