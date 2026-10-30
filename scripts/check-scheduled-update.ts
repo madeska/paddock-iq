@@ -24,3 +24,6 @@ test('cron rejects anonymous and invalid bearer requests before database access'
 test('successful generator response cannot hide failed saved-forecast verification',async()=>{
  await assert.rejects(scheduledUpdate({state:async()=>({round:19,completed:false}),scores:async()=>({forecast:{round:19,completed:false},verified:0,errors:[]}),lock:async()=>new Date(Date.now()+60000),generate:async()=>Response.json({ok:true,created:33}),verify:async()=>({ok:false})}),error=>(error as any).code==='FORECAST_READBACK_FAILED');
 });
+test('temporary weekend source restriction remains distinct from a passed team lock',async()=>{
+ await assert.rejects(scheduledUpdate({state:async()=>({round:19,completed:false}),scores:async()=>({forecast:{round:19,completed:false},verified:0,errors:[]}),lock:async()=>new Date(Date.now()+60000),generate:async()=>Response.json({code:'WEEKEND_SOURCE_UNAVAILABLE'},{status:503}),verify:async()=>({ok:false})}),error=>(error as any).code==='WEEKEND_SOURCE_UNAVAILABLE');
+});

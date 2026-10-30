@@ -281,6 +281,8 @@ export default function Home(){
  const [weekendContext,setWeekendContext]=useState<{weekendLock?:{deadline:string;source:string}|null;weekendImpact?:WeekendImpact[];forecastAt?:string;practiceSnapshot:{sessionName:string;drivers:number;sprintQualifyingDrivers:number}|null;weekendNews:{mentions:{code:string|null;places:number|null;status:string;reason?:string;headline:string;sourceUrl:string}[];errors:string[];coverage:string}}|null>(null);
  const [scoresStatus,setScoresStatus]=useState('');
  const [scoresLoading,setScoresLoading]=useState(false);
+ const [weekendSourceUnavailable,setWeekendSourceUnavailable]=useState(false);
+ const weekendSourceFailureAt=useRef(0);
  const scoresBusy=useRef(false);
  const roundRef=useRef(17);
  const season=2026,round=data?.round??roundRef.current;
@@ -296,6 +298,7 @@ export default function Home(){
    if(roundRef.current!==j.round){setWeekendContext(null);setBuilderTeams([])}
    roundRef.current=j.round;completedRef.current=Boolean(j.seasonCompleted);
    setData(j);
+   if(Date.parse(j.forecastFreshness?.latestAt??'')>weekendSourceFailureAt.current)setWeekendSourceUnavailable(false);
    if('forecastContext' in j)setWeekendContext(j.forecastContext??null);
    setStatus(j.seasonCompleted?'Season completed. Final official results are available.':j.complete?'':('Missing current projections: '+j.incomplete.join(', ')));
    return j as MarketResponse;
@@ -310,6 +313,8 @@ export default function Home(){
   try{
    const r=await fetch('/api/predictions/auto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({season,round:targetRound})});
    const j=await readApiJson(r);
+   setWeekendSourceUnavailable(j.code==='WEEKEND_SOURCE_UNAVAILABLE');
+   if(j.code==='WEEKEND_SOURCE_UNAVAILABLE')weekendSourceFailureAt.current=Date.now();
    if(!r.ok)throw Error(j.error||'Prediction refresh failed');
    setWeekendContext(j);
    return await load();
@@ -420,7 +425,7 @@ export default function Home(){
 
   <div className={home.readiness} role="status"><span className={data?.complete&&!status?home.readyDot:home.pendingDot}/>{status||<>Forecasts ready · {drivers.length} drivers · {constructors.length} constructors</>}</div>
   {data?.forecastFreshness&&<div className={home.freshness} aria-label="Forecast freshness">
-   <strong>{data.forecastFreshness.status==='MISSING'?'Forecast incomplete':(data.forecastFreshness.status==='LOCKED'||(Number.isFinite(deadline)&&deadline<=(now??Date.now())))?'Team locked · saved forecast':data.forecastFreshness.oldestAt&&(now??Date.parse(data.forecastFreshness.checkedAt))-Date.parse(data.forecastFreshness.oldestAt)>60*60*1000?'Forecast needs an update':'Forecast recently calculated'}</strong>
+   <strong>{data.forecastFreshness.status==='MISSING'?'Forecast incomplete':(data.forecastFreshness.status==='LOCKED'||(Number.isFinite(deadline)&&deadline<=(now??Date.now())))?'Team locked · saved forecast':weekendSourceUnavailable?'Waiting for weekend data source':data.forecastFreshness.oldestAt&&(now??Date.parse(data.forecastFreshness.checkedAt))-Date.parse(data.forecastFreshness.oldestAt)>60*60*1000?'Forecast needs an update':'Forecast recently calculated'}</strong>
    <span>{data.forecastFreshness.oldestAt?<>Calculated <time dateTime={data.forecastFreshness.oldestAt}>{new Date(data.forecastFreshness.oldestAt).toLocaleString()}</time></>:'No complete saved forecast yet.'}</span>
    {data.maintenance?.status==='RUNNING'&&<span role="status">Data update in progress. Showing saved values.</span>}
    {(data.maintenance?.status==='FAILED'||data.maintenance?.status==='INTERRUPTED')&&<span role="status">Last update did not complete. Showing saved values.</span>}

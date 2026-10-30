@@ -19,7 +19,7 @@ export async function scheduledUpdate(deps:Dependencies,clock=()=>new Date()){
  if(!deadline||!Number.isFinite(+deadline))throw new UpdateFailure('TEAM_LOCK_UNAVAILABLE',next.round);
  if(+deadline<=+clock())return {status:'LOCKED',round:next.round};
  const response=await deps.generate(next.round),forecast=await response.json();
- if(!response.ok||!forecast.ok||forecast.created===0)throw new UpdateFailure('FORECAST_GENERATION_FAILED',next.round);
+ if(!response.ok||!forecast.ok||forecast.created===0)throw new UpdateFailure(forecast.code==='WEEKEND_SOURCE_UNAVAILABLE'?'WEEKEND_SOURCE_UNAVAILABLE':'FORECAST_GENERATION_FAILED',next.round);
  if(!(await deps.verify(next.round)).ok)throw new UpdateFailure('FORECAST_READBACK_FAILED',next.round);
  return {status:'UPDATED',round:next.round,forecast};
 }

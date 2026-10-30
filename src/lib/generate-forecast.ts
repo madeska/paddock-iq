@@ -12,7 +12,8 @@ import {EXCLUDED_SCORE_SOURCE,reconcileOfficialHistory} from './official-history
 import { NextResponse } from 'next/server';
 import { prisma } from './prisma';
 import { predictFantasyPrice } from './fantasy-price-model';
-import { getPracticeSnapshot, getWeekendLock } from './openf1-weekend';
+import { getPracticeSnapshot, getWeekendLock,WeekendSourceUnavailable } from './openf1-weekend';
+import {readVerifiedWeekendLock} from './verified-weekend-lock';
 import { syncOfficialFantasyMarket } from './fantasy-official-sync';
 import {forecastProductionBaselines,simulateProductionForecast,productionSampleStdDev as sampleStdDev,PRODUCTION_FORECAST_CONFIG} from './production-forecast';
 
@@ -34,9 +35,12 @@ export async function generateForecast(body:{season?:number;round?:number},lease
   const gp=await prisma.grandPrix.findUnique({where:{season_round:{season,round}}});
   if(!gp)return NextResponse.json({error:'Grand Prix not found'},{status:404});
 
-  const weekendLock=await getWeekendLock(season,round,gp.name,gp.deadline);
+  const cachedLock=await readVerifiedWeekendLock(prisma,season,round);
+  const weekendLock=await getWeekendLock(season,round,gp.name,gp.deadline,undefined,cachedLock);
   const deadline=weekendLock?.deadline??null;
-  if(!deadline||+deadline<=Date.now())return NextResponse.json({error:'Team lock passed or unavailable; saved forecasts retained.'},{status:409});
+  if(!deadline)return NextResponse.json({error:'Team lock could not be verified. Saved forecasts retained; retry later.',code:'TEAM_LOCK_UNAVAILABLE'},{status:503});
+  if(+deadline<=Date.now())return NextResponse.json({error:'Team lock has passed; saved forecasts retained.',code:'TEAM_LOCK_PASSED',deadline:deadline.toISOString()},{status:409});
+  if(weekendLock?.providerUnavailable)return NextResponse.json({error:'Weekend data source is temporarily unavailable. Saved forecasts retained; retry after the session.',code:'WEEKEND_SOURCE_UNAVAILABLE',deadline:deadline.toISOString()},{status:503});
   const isSprint=weekendLock?.isSprint??(season===2026&&SPRINT_ROUNDS_2026.has(round));
   const forecastAt=new Date();
   const practiceSnapshot=await getPracticeSnapshot(season,deadline,forecastAt);
@@ -172,7 +176,7 @@ export async function generateForecast(body:{season?:number;round?:number},lease
    constructorModel:'max(-5, 50% EWMA(0.25) + 50% recent-3 mean)',
    driverTrainingRows:production.trainingRows,
    componentSimulation:{weight:COMPONENT_WEIGHT,overtakeIntensity:COMPONENT_OVERTAKE_INTENSITY,simulations:component.simulations,sprint:SPRINT_ROUNDS_2026.has(round)},
-   weekendLock:weekendLock?{deadline:weekendLock.deadline.toISOString(),source:weekendLock.source}:null,
+   weekendLock:weekendLock?{deadline:weekendLock.deadline.toISOString(),source:weekendLock.source,isSprint:weekendLock.isSprint}:null,
    weekendNews:{...news,coverage:'Official F1 headlines and available article text; not an exhaustive FIA decision feed'},gridDrops,
    officialSync,historyReconciliation,
    predictions:created
@@ -180,6 +184,7 @@ export async function generateForecast(body:{season?:number;round?:number},lease
   if(missing.length===0&&created.length>0)await persistForecast(prisma,{leaseToken,deadline,grandPrixId:gp.id,assets:assets.map(asset=>({id:asset.id,type:asset.type,currentPrice:baselineByCode.get(asset.code)?.current??null})),predictions,result:responseData});
   return NextResponse.json(responseData);
  }catch(error){
+  if(error instanceof WeekendSourceUnavailable)return NextResponse.json({error:'OpenF1 is temporarily unavailable during the live session. Saved forecasts retained; retry after the session.',code:error.code},{status:503});
   return NextResponse.json({error:'Forecast update failed. Previous saved data may still be available; retry later.'},{status:500});
  }
 }

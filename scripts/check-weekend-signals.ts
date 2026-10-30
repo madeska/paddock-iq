@@ -12,6 +12,24 @@ test('missing database lock resolves to sprint start with calendar/provider agre
 
 test('normal weekend lock is qualifying start; conflicting event identity fails closed',async()=>{const race=make(9,'Race','2026-10-11T12:00:00Z','2026-10-11T14:00:00Z'),qualifying=make(8,'Qualifying','2026-10-10T13:00:00Z','2026-10-10T14:00:00Z');const m=mock.method(globalThis,'fetch',async(input:any)=>new Response(JSON.stringify(String(input).includes('f1fantasytools')?{races:[{roundNumber:17,name:'Singapore Grand Prix',sprint:false,start_times:{race:race.date_start,qualifying:qualifying.date_start}}]}:[qualifying,race])));try{const result=await getWeekendLock(2026,17,'Singapore GP',null);assert.equal(result?.deadline.toISOString(),'2026-10-10T13:00:00.000Z');assert.equal(result?.isSprint,false);assert.equal(await getWeekendLock(2026,17,'United States GP',null),null)}finally{m.mock.restore()}});
 test('malformed calendar or provider responses leave lock unavailable',async()=>{const m=mock.method(globalThis,'fetch',async()=>new Response('{"races":{}}'));try{assert.equal(await getWeekendLock(2026,17,'Singapore GP',null),null)}finally{m.mock.restore()}});
+test('OpenF1 live-access restriction is not mistaken for absent practice results',async()=>{
+ const m=mock.method(globalThis,'fetch',async()=>Response.json({error:'Live session requires authentication'},{status:401}));
+ try{await assert.rejects(getPracticeSnapshot(2026,new Date('2026-10-31T21:00:00Z')),error=>(error as any).code==='WEEKEND_SOURCE_UNAVAILABLE')}finally{m.mock.restore()}
+});
+test('access restriction on result/driver tables also stops practice refresh after sessions succeed',async()=>{
+ for(const blocked of ['session_result','drivers']){
+  const m=mock.method(globalThis,'fetch',async(input:any)=>{const url=String(input);if(url.includes('/'+blocked+'?'))return Response.json({error:'Restricted'},{status:401});return Response.json(url.includes('/sessions?')?sessions:[{driver_number:1,position:1}])});
+  try{await assert.rejects(getPracticeSnapshot(2026,new Date('2026-10-10T09:00:00Z'),new Date('2026-10-09T15:00:00Z')),error=>(error as any).code==='WEEKEND_SOURCE_UNAVAILABLE')}finally{m.mock.restore()}
+ }
+});
+test('provider outage can reuse only the same-round previously verified schedule',async()=>{
+ const calendar={races:[{roundNumber:19,name:'Mexico City Grand Prix',sprint:false,start_times:{qualifying:'2026-10-31T21:00:00Z',race:'2026-11-01T20:00:00Z'}}]};
+ const evidence={calendar:async()=>calendar,sessions:async()=>null};
+ const cached={season:2026,round:19,deadline:'2026-10-31T21:00:00Z',verifiedAt:'2026-10-30T06:06:14Z',isSprint:false};
+ const lock=await getWeekendLock(2026,19,'Mexico GP',null,evidence,cached);
+ assert.equal(lock?.deadline.toISOString(),'2026-10-31T21:00:00.000Z');assert.equal(lock?.providerUnavailable,true);
+ assert.equal(await getWeekendLock(2026,19,'Mexico GP',null,evidence,{...cached,round:18}),null);
+});
 
 test('R19 legacy Mexico GP matches Mexico City calendar without accepting a different race or round',async()=>{
  const race=make(20,'Race','2026-11-01T20:00:00Z','2026-11-01T22:00:00Z'),qualifying=make(19,'Qualifying','2026-10-31T21:00:00Z','2026-10-31T22:00:00Z');

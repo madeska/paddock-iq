@@ -23,19 +23,23 @@ export type PracticeSnapshot={
 };
 
 const OPEN='https://api.openf1.org/v1';
+export class WeekendSourceUnavailable extends Error{readonly code='WEEKEND_SOURCE_UNAVAILABLE';constructor(){super('Weekend data source temporarily unavailable');this.name='WeekendSourceUnavailable'}}
+export type CachedWeekendLock={season:number;round:number;deadline:string;verifiedAt:string;isSprint:boolean|null};
 
 async function tryJson<T>(url:string):Promise<T|null>{
   for(let attempt=0;attempt<3;attempt++){
     try{
       const response=await fetch(url,{headers:{'user-agent':'Paddock-IQ'},signal:AbortSignal.timeout(10000)});
       if(response.ok)return await response.json() as T;
+      if(url.startsWith(OPEN)&&(response.status===401||response.status===403))throw new WeekendSourceUnavailable();
       if(response.status===404)return null;
       if(response.status===429||response.status>=500){
         await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));
         continue;
       }
       return null;
-    }catch{
+    }catch(error){
+      if(error instanceof WeekendSourceUnavailable)throw error;
       if(attempt===2)return null;
       await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));
     }
@@ -105,18 +109,24 @@ export function applyPracticePositionModifier(baseXPts:number,position:number|nu
 type WeekendCalendar={races:{roundNumber:number;name:string;sprint:boolean;start_times:{race:string;sprint?:string;qualifying?:string}}[]};
 export type WeekendLockEvidence={calendar:(season:number)=>Promise<WeekendCalendar|null>;sessions:(season:number)=>Promise<OpenF1Session[]|null>};
 const liveLockEvidence:WeekendLockEvidence={calendar:season=>tryJson<WeekendCalendar>('https://f1fantasytools.com/api/statistics/'+season),sessions:season=>tryJson<OpenF1Session[]>(OPEN+'/sessions?year='+season)};
-export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null,evidence=liveLockEvidence){
+export async function getWeekendLock(season:number,round:number,eventName:string,storedDeadline:Date|null,evidence=liveLockEvidence,cached?:CachedWeekendLock|null){
  const normalize=normalizeFantasyRaceName;
+ const cachedAt=cached?Date.parse(cached.verifiedAt):NaN,cachedDeadline=cached?Date.parse(cached.deadline):NaN;
+ const validCache=cached?.season===season&&cached.round===round&&Number.isFinite(cachedAt)&&Number.isFinite(cachedDeadline)&&cachedAt<cachedDeadline;
+ const fallback=()=>validCache?{deadline:new Date(cachedDeadline),isSprint:cached!.isSprint,source:'Previously verified team lock; weekend source unavailable',providerUnavailable:true}:null;
  const calendar=await evidence.calendar(season);
+ if(!calendar||!Array.isArray(calendar.races))return fallback();
  const candidates=Array.isArray(calendar?.races)?calendar.races.filter(r=>r&&r.roundNumber===round&&typeof r.name==='string'&&normalize(r.name)===normalize(eventName)):[];
- if(candidates?.length!==1)return storedDeadline&&Number.isFinite(+storedDeadline)?{deadline:storedDeadline,isSprint:null,source:'Stored Fantasy deadline'}:null;
+ if(candidates?.length!==1)return null;
  const entry=candidates[0];if(typeof entry.sprint!=='boolean')return null;const raceAt=Date.parse(entry.start_times?.race),calendarLock=Date.parse(entry.sprint?entry.start_times?.sprint??'':entry.start_times?.qualifying??'');
  if(!Number.isFinite(raceAt)||!Number.isFinite(calendarLock)||calendarLock>=raceAt)return null;
- const sessions=await evidence.sessions(season);
+ let sessions:OpenF1Session[]|null;
+ try{sessions=await evidence.sessions(season)}catch(error){if(!(error instanceof WeekendSourceUnavailable))throw error;const saved=fallback();if(saved&&Math.abs(+saved.deadline-calendarLock)<12*3600000)return {...saved,isSprint:entry.sprint,deadline:new Date(Math.min(+saved.deadline,calendarLock))};throw error}
+ if(!sessions){const saved=fallback();return saved&&Math.abs(+saved.deadline-calendarLock)<12*3600000?{...saved,isSprint:entry.sprint,deadline:new Date(Math.min(+saved.deadline,calendarLock))}:null}
  const races=Array.isArray(sessions)?sessions.filter(s=>s&&s.year===season&&!s.is_cancelled&&s.session_name==='Race'&&Math.abs(Date.parse(s.date_start)-raceAt)<12*3600000):[];
  if(races?.length!==1)return null;
  const locks=sessions!.filter(s=>s&&s.year===season&&s.meeting_key===races[0].meeting_key&&!s.is_cancelled&&s.session_name===(entry.sprint?'Sprint':'Qualifying'));
  if(locks.length!==1||!Number.isFinite(Date.parse(locks[0].date_start))||Math.abs(Date.parse(locks[0].date_start)-calendarLock)>12*3600000)return null;
  const deadline=new Date(Math.min(calendarLock,Date.parse(locks[0].date_start),storedDeadline&&Number.isFinite(+storedDeadline)?+storedDeadline:Infinity));
- return {deadline,isSprint:entry.sprint,source:'Fantasy Tools calendar + OpenF1 session start; earliest cutoff'};
+ return {deadline,isSprint:entry.sprint,source:'Fantasy Tools calendar + OpenF1 session start; earliest cutoff',providerUnavailable:false};
 }

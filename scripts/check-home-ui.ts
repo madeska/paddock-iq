@@ -4,6 +4,7 @@ async function main(){
  const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH});
  try{
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
+ await page.clock.install({time:new Date('2026-10-19T12:00:00Z')});
  const assets=[...['VER','ANT','LEC','HAM','RUS','NOR'].map((code,i)=>({code,name:['Max Verstappen','Kimi Antonelli','Charles Leclerc','Lewis Hamilton','George Russell','Lando Norris'][i],type:'DRIVER',price:i<2?25:6,expectedPoints:30-i,boostExpectedPoints:35-i,expectedDelta:.2})),...['MER','FER','RBR'].map(code=>({code,name:code,type:'CONSTRUCTOR',price:20,expectedPoints:50,expectedDelta:.3}))].map(a=>({...a,probabilityMaxRise:.6,probabilitySmallRise:.2,probabilitySmallFall:.1,probabilityMaxFall:.1,recentFantasyScores:[{round:16,points:20},{round:17,points:25}]}));
  const market={season:2026,round:18,grandPrix:'United States Grand Prix',deadline:'2026-10-24T21:00:00Z',complete:true,incomplete:[],assets};
  await page.route('**/api/account',route=>route.fulfill({json:{maintenance:true,user:{email:'admin@example.test'}}}));
@@ -89,6 +90,12 @@ async function main(){
  await page.route('**/api/market?*',route=>route.fulfill({status:500,body:''}));
  await page.reload();await page.getByText('Server error (HTTP 500).',{exact:false}).waitFor();
  await page.unroute('**/api/market?*');
+ await page.route('**/api/market?*',route=>route.fulfill({json:{...market,forecastFreshness:{status:'STALE',oldestAt:'2026-10-18T12:00:00Z',latestAt:'2026-10-18T12:00:00Z',checkedAt:'2026-10-19T12:00:00Z'}}}));
+ await page.reload();await page.getByRole('heading',{name:'Mexico Grand Prix',exact:true}).waitFor();
+ await page.route('**/api/predictions/auto',route=>route.fulfill({status:503,json:{code:'WEEKEND_SOURCE_UNAVAILABLE',error:'OpenF1 source temporarily unavailable; saved forecasts retained.'}}));
+ await page.getByRole('button',{name:'Refresh projections',exact:true}).click();
+ await page.getByText('Waiting for weekend data source',{exact:true}).waitFor();
+ await page.unroute('**/api/market?*');
  await page.route('**/api/market?*',route=>route.fulfill({json:market}));
  await page.route('**/api/account',route=>route.fulfill({json:{user:null,maintenance:false}}));
  let publicWrites=0;
@@ -97,7 +104,6 @@ async function main(){
  await page.getByRole('button',{name:'Refresh market',exact:true}).click();
  const persisted={weekendLock:{deadline:market.deadline,source:'Verified calendar'},forecastAt:'2026-10-19T12:00:00Z',practiceSnapshot:{sessionName:'Practice 3',drivers:22,sprintQualifyingDrivers:0},weekendNews:{coverage:'Official sources',mentions:[],errors:[]}};
  await page.route('**/api/market?*',route=>route.fulfill({json:{...market,forecastContext:persisted,forecastFreshness:{status:'STALE',oldestAt:'2026-10-01T12:00:00Z',latestAt:'2026-10-01T12:00:00Z',checkedAt:new Date().toISOString()},maintenance:{status:'FAILED'}}}));
- await page.clock.install();
  await page.reload();await page.getByText('Practice 3: 22 drivers',{exact:false}).waitFor();
  await page.getByText('Forecast needs an update',{exact:true}).waitFor();
  await page.getByText('Last update did not complete. Showing saved values.',{exact:true}).waitFor();
