@@ -13,7 +13,7 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
  const names=c.drivers.filter(d=>{const surname=normalize(d.name).split(/\s+/).at(-1)!;return surname.length>2&&new RegExp('\\b'+surname.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(title)});
  const code=names.length===1?names[0].code:null;
 
- // Body evidence must name this driver and event in the same sentence. Rules and hypotheticals are excluded.
+ // Most decisions bind driver, event and amount in one sentence; cumulative totals may use a separate event anchor.
  if(article.body&&code&&!/\bcould\b|\bmay\b|\bmight\b|\bappeal\b|\boverturned\b|\breversed\b|\bno penalty\b/.test(title+' '+normalize(article.description))){
   const surname=normalize(c.drivers.find(d=>d.code===code)!.name).split(/\s+/).at(-1)!;
   const body=normalize(article.body);
@@ -30,6 +30,26 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
    if(/\b(?:will|is set to|is due to|prepares to|is preparing to) (?:start|line up)\b[^.!?]{0,100}\b(?:at|from) the (?:back of the grid|rear of the field)\b/.test(sentence)){evidence.push({...base,kind:'BACK_OF_GRID',status:'CONFIRMED',reason:'Confirmed back-of-grid start for '+target});continue}
    const exact=parseOfficialPenaltyArticle({...article,body:undefined,headline:sentence,description:''},c);
    if(exact?.status==='CONFIRMED'&&!/minimum|at least|depending/.test(sentence))evidence.push({...exact,headline:article.headline,kind:'EXACT'});
+  }
+  // An explicit official total is reported separately from the event-specific decision in some articles.
+  // Never calculate a total from generic allocation rules or infer a penalty from new parts alone.
+  const uncertain=/\b(?:if|unless|whether|unclear|unconfirmed|would|could|may|might|possible|possibly|potential|potentially|appeal|overturned|reversed)\b|\bno penalty\b/;
+  const named=new RegExp('\\b'+surname.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
+  const eventReference=new RegExp('\\b'+event.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s+(?:grand prix|gp)\\b','g');
+  const otherEvent=(t:string)=>/\bgrand prix\b|\bgp\b/.test(t.replace(eventReference,''));
+  const allSentences=(normalize(article.description)+'\n'+body).split(/[.!?\n]+/);
+  const anchors=allSentences.filter(t=>named.test(t)&&t.includes(event)&&!otherEvent(t)&&!uncertain.test(t)&&/\bwill (?:take|receive|serve)\b[^.!?]{0,50}\bgrid (?:drop|penalty)\b/.test(t));
+  const targets=new Set(anchors.flatMap(t=>/\bsprint\b/.test(t)?[]:/\bgrand prix\b|\brace\b/.test(t)?['RACE' as const]:[]));
+  if(targets.size===1&&!uncertain.test(title+' '+normalize(article.description))&&!/\b(?:overturned|reversed|rescinded)\b|\bno penalty\b/.test(body)){
+   for(const sentence of allSentences.filter(t=>named.test(t))){
+    const total=sentence.match(/\b(?:is in line for an|will receive an|has received an) official drop of (\d+) places\b/);
+    if(!total||uncertain.test(sentence)||/minimum|at least|depending|\bsprint\b/.test(sentence))continue;
+    if(otherEvent(sentence))continue;
+    if([...sentence.matchAll(/\b20\d{2}\b/g)].some(m=>+m[0]!==c.season))continue;
+    if(c.drivers.some(d=>d.code!==code&&new RegExp('\\b'+normalize(d.name).split(/\s+/).at(-1)!+'\\b').test(sentence)))continue;
+    const places=+total[1];if(!Number.isInteger(places)||places<1||places>100)continue;
+    evidence.push({code,places,kind:'EXACT',session:'RACE',status:'CONFIRMED',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'Official cumulative grid drop: '+places+' places for RACE'+(places>15?'; back-of-grid starting group':'')});
+   }
   }
   const unique=evidence.filter((m,i)=>evidence.findIndex(other=>other.kind===m.kind&&other.session===m.session&&other.places===m.places&&other.minimumPlaces===m.minimumPlaces)===i);
   // A confirmed starting group is enough even when the exact cumulative drop remains unknown.

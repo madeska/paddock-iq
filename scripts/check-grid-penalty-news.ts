@@ -99,3 +99,25 @@ test('joint future conditions and another event cannot become current-event deci
   assert.ok(parseOfficialPenaltyArticles({...mexicoArticle,description,body:''},mexicoContext).every(m=>m.status!=='CONFIRMED'));
  }
 });
+const bottasContext={...mexicoContext,drivers:[...mexicoContext.drivers,{code:'BOT',name:'Valtteri Bottas'}]};
+const bottasArticle={...mexicoArticle,headline:'Valtteri Bottas set for grid penalty at 2026 Formula 1 Mexico City Grand Prix after power unit changes',description:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix.',body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Regulations specify 10 places for an initial breach and five for another breach. If the total exceeds 15, a driver starts at the back. Bottas has five first breaches for this season, meaning he is in line for an official drop of 50 places.'};
+test('Bottas event-specific power-unit total is read across paragraphs without applying generic rule examples',()=>{
+ const r=parseOfficialPenaltyArticle(bottasArticle,bottasContext);
+ assert.equal(r?.code,'BOT');assert.equal(r?.status,'CONFIRMED');assert.equal(r?.places,50);assert.equal(r?.session,'RACE');
+ assert.equal(applyGridDrops(['BOT','VER','LAW'],{BOT:r!.places!}).get('BOT'),3);
+});
+test('official total needs its own named driver, current event anchor, exact amount and nonconditional evidence',()=>{
+ for(const change of [
+  {body:'If Bottas exceeds the allowance, he is in line for an official drop of 50 places.'},
+  {description:'Bottas could take a grid penalty at the Mexico City Grand Prix.'},
+  {body:'Bottas will take a sizeable grid drop at the Sao Paulo Grand Prix. Bottas is in line for an official drop of 50 places.',description:''},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Verstappen is in line for an official drop of 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of at least 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. In 2025 Bottas was in line for an official drop of 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of 50 places. The penalty was overturned.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of 50 places at the Sao Paulo Grand Prix.'},
+ ])assert.notEqual(parseOfficialPenaltyArticle({...bottasArticle,...change},bottasContext)?.status,'CONFIRMED');
+});
+test('cumulative destination must match even with incidental current-event mention, and unless is conditional',()=>{
+ for(const body of ['After Mexico City practice, Bottas is in line for an official drop of 50 places at the Sao Paulo Grand Prix.','Bottas will receive an official drop of 50 places unless the power unit is repaired.'])assert.notEqual(parseOfficialPenaltyArticle({...bottasArticle,body},bottasContext)?.status,'CONFIRMED');
+});

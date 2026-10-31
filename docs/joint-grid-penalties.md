@@ -20,3 +20,13 @@ values under the existing rules.
 
 Regression checks: `npx tsx --test scripts/check-grid-penalty-news.ts scripts/check-weekend-grid-simulation.ts`.
 These checks also run in the Home UI CI workflow.
+
+## Explicit cumulative totals (Bottas)
+
+The 30 October Mexico City Bottas report binds the current event and driver in
+its opening statement and gives an explicit official 50-place total in another
+paragraph. The parser now joins that named total to the event-specific decision.
+It does not sum the generic 10-place/five-place regulation examples in the body.
+The 50-place value enters the existing >15-place back-of-grid starting group.
+Conditional totals, other drivers/events/years and overturned decisions remain
+unapplied. Verified against the official article HTML and regression fixtures.
