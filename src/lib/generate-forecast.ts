@@ -53,7 +53,7 @@ export async function generateForecast(body:{season?:number;round?:number},lease
    }
   });
 
-  const news=deadline?await getGridPenaltyNews({season,round,eventName:gp.name,deadline,asOf:forecastAt,drivers:assets.filter(a=>a.type==='DRIVER').map(a=>({code:a.code,name:a.name}))}):{mentions:[],errors:['Fantasy lock unavailable; news not applied'],scanned:0};
+  const news=deadline?await getGridPenaltyNews({season,round,eventName:gp.name,deadline,asOf:forecastAt,isSprint:weekendLock?.isSprint??undefined,drivers:assets.filter(a=>a.type==='DRIVER').map(a=>({code:a.code,name:a.name}))}):{mentions:[],errors:['Fantasy lock unavailable; news not applied'],scanned:0};
   const gridDrops:{race:Record<string,number>;sprint:Record<string,number>}={race:{},sprint:{}};
   for(const mention of news.mentions)if(mention.status==='CONFIRMED'&&mention.code&&(mention.places!=null||mention.kind==='BACK_OF_GRID')&&mention.session)gridDrops[mention.session==='SPRINT'?'sprint':'race'][mention.code]=mention.kind==='BACK_OF_GRID'?100:mention.places!;
   const forecastAssets=assets.map(asset=>{
