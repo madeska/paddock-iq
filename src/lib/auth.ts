@@ -4,6 +4,18 @@ import {NextResponse} from 'next/server';
 import {prisma} from './prisma';
 import {linkGoogleIdentity} from './google-identity';
 export function authConfigured(){return Boolean(process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET&&process.env.NEXTAUTH_SECRET&&process.env.NEXTAUTH_URL)}
+export function maintenanceAdmin(email:string|null){if(!email)return false;return (process.env.ADMIN_EMAILS??'').split(',').map(value=>value.trim().toLowerCase()).filter(Boolean).includes(email.toLowerCase())}
+export async function authorizeMaintenanceRequest(request:Request){
+ const key=process.env.MARKET_ADMIN_KEY;
+ if(key&&request.headers.get('x-market-admin-key')===key)return null;
+ try{
+  const owner=await sessionOwner();
+  if(!owner)return NextResponse.json({error:'Sign in to access maintenance operations.'},{status:401});
+  if(!maintenanceAdmin(owner.email))return NextResponse.json({error:'This operation requires an administrator.'},{status:403});
+  if(request.method!=='GET'&&request.headers.get('origin')!==new URL(process.env.NEXTAUTH_URL!).origin)return NextResponse.json({error:'Submit this change from Paddock IQ.'},{status:403});
+  return null;
+ }catch{return NextResponse.json({error:'Account service unavailable. Please retry.'},{status:503})}
+}
 export const authOptions:NextAuthOptions={
  secret:process.env.NEXTAUTH_SECRET,
  session:{strategy:'jwt',maxAge:7*24*60*60},

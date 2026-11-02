@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
+import {authorizeMaintenanceRequest} from '../../../../lib/auth';
 
-export async function GET() {
+export async function GET(request:Request) {
+  const denied=await authorizeMaintenanceRequest(request);if(denied)return denied;
   try {
     const [users, teams, assets, snapshots, prices, predictions] = await Promise.all([
       prisma.user.count(),
@@ -20,7 +22,7 @@ export async function GET() {
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : 'Database connection failed',
+        error: 'Database connection unavailable.',
       },
       { status: 500 },
     );

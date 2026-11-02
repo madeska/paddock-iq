@@ -4,7 +4,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import {getRememberedProfile,rememberProfile} from '../../lib/remembered-profile';
 import { type Mode } from '../../lib/optimizer';
 import styles from '../market-dashboard.module.css';
+import dashboard from './team-dashboard.module.css';
 import TeamEditor from './team-editor';
+import {readApiJson} from '../../lib/api-response';
 
 type Score = { round: number; name: string; points: number };
 type Asset = {
@@ -101,7 +103,7 @@ function TeamMarketBoard({title,tier,assets,round,locked,onToggleLock}:{title:st
           <td className={styles.assetCell}>
             <span className={styles.code} style={{'--accent':accents[asset.code] ?? '#64748b'} as CSSProperties}>{asset.code}</span>
             <span className={styles.assetName}>{asset.name}{asset.isDoubled ? ' · 2×' : ''}</span>
-            <button type="button" className={styles.lockChip} title={locked.includes(asset.code) ? 'Unlock asset' : 'Lock asset'} onClick={() => onToggleLock(asset.code)}>{locked.includes(asset.code) ? '🔒' : '○'}</button>
+            <button type="button" className={styles.lockChip} aria-pressed={locked.includes(asset.code)} aria-label={locked.includes(asset.code)?'Allow replacing '+asset.code:'Keep '+asset.code} title={locked.includes(asset.code) ? 'Unlock asset' : 'Lock asset'} onClick={() => onToggleLock(asset.code)}>{locked.includes(asset.code) ? '🔒' : '○'}</button>
           </td>
           <td>{asset.price?.toFixed(1) ?? '—'}</td>
           <td>{scoreAt(asset,round-2) ?? '—'}</td>
@@ -231,8 +233,11 @@ function buildCurrentTeamView(current:any[],horizon:boolean):TeamView{
 }
 
 export default function MyTeam() {
+  const [maintenance,setMaintenance]=useState(false);
   const [email, setEmail] = useState('');
   const loadGeneration=useRef(0);
+  const optimizeBusy=useRef(false);
+  const [optimizing,setOptimizing]=useState(false);
   const [editingTeam,setEditingTeam]=useState(false),[deletingTeam,setDeletingTeam]=useState(false);
   const [data, setData] = useState<Data | null>(null);
   const [status, setStatus] = useState('');
@@ -248,7 +253,7 @@ export default function MyTeam() {
   const [possibleTeamsSort, setPossibleTeamsSort] = useState<'SCORE'|'XPTS'|'DELTA'>('SCORE');
   const [possibleTeamsSortDir, setPossibleTeamsSortDir] = useState<'ASC'|'DESC'>('DESC');
 
-  useEffect(()=>{fetch('/api/account').then(r=>r.json()).then(j=>{if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
+  useEffect(()=>{fetch('/api/account').then(r=>readApiJson(r)).then(j=>{setMaintenance(Boolean(j.maintenance));if(j.user){setEmail(j.user.email);void load(j.user.email)}else window.location.assign('/login')}).catch(()=>setStatus('Unable to load your account. Please retry.'))},[]);
 
   async function load(profileEmail=email,selectedTeamId?:string) {
     const generation=++loadGeneration.current;
@@ -260,7 +265,7 @@ export default function MyTeam() {
       const profile=getRememberedProfile();const sameProfile=profile?.email===profileEmail.trim().toLowerCase();
       const teamId=selectedTeamId??(sameProfile?profile?.teamId:undefined);
       const response = await fetch('/api/team?'+(teamId?'teamId='+encodeURIComponent(teamId):'')+(sameProfile&&profile?.season?'&season='+profile.season:''));
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Load failed');
       rememberProfile({email:profileEmail,teamId:json.team.id,season:json.team.season});
@@ -274,10 +279,15 @@ export default function MyTeam() {
   async function removeTeam(){
     if(!data||editingTeam||deletingTeam||!window.confirm('Delete "'+data.team.name+'" and its saved history from Paddock IQ?'))return;
     const ownerEmail=data.user.email,season=data.team.season;setDeletingTeam(true);++loadGeneration.current;setStatus('Deleting team…');
-    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({teamId:data.team.id})});const json=await response.json();if(!response.ok)throw Error(json.error||'Delete failed.');
+    try{const response=await fetch('/api/team/manage',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({teamId:data.team.id})});const json=await readApiJson(response);if(!response.ok)throw Error(json.error||'Delete failed.');
       setData(null);setRecs([]);setLocked([]);setCurrentTeamView(null);const next=json.teams[0];rememberProfile({email:ownerEmail,season,teamId:next?.id});
       if(next)await load(ownerEmail,next.id);else setStatus('Team deleted. No teams left for this profile.');
     }catch(error){setStatus(error instanceof Error?error.message:'Delete failed.')}finally{setDeletingTeam(false)}
+  }
+  function toggleLock(code:string){
+    ++loadGeneration.current;
+    setLocked(prev=>prev.includes(code)?prev.filter(item=>item!==code):[...prev,code]);
+    setRecs([]);setCurrentTeamView(null);setStatus('');
   }
   async function generatePredictions() {
     if (!data||editingTeam||deletingTeam) return;
@@ -288,7 +298,7 @@ export default function MyTeam() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ season: data.team.season, round: data.snapshot.grandPrix.round }),
       });
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Prediction failed');
       setStatus('Generated ' + json.created + ' predictions. Reloading team…');
@@ -300,12 +310,13 @@ export default function MyTeam() {
   }
 
   async function optimize() {
-    if (!data||editingTeam||deletingTeam) return;
+    if (!data||editingTeam||deletingTeam||optimizeBusy.current) return;
+    optimizeBusy.current=true;setOptimizing(true);setRecs([]);setCurrentTeamView(null);
     const generation=loadGeneration.current;
     setStatus('Calculating…');
     try {
       const marketResponse = await fetch('/api/market?season=' + data.team.season + '&round=' + data.snapshot.grandPrix.round);
-      const marketJson = await marketResponse.json();
+      const marketJson = await readApiJson(marketResponse);
       if (!marketResponse.ok) throw Error(marketJson.error || 'Market unavailable');
       const current = data.snapshot.assets.map((asset) => ({
         code: asset.code, type: asset.type, price: asset.price,
@@ -320,7 +331,7 @@ export default function MyTeam() {
       let optimizeMarket=market;
       if(mode==='horizon'){
         const hr=await fetch('/api/predictions/horizon?season='+data.team.season+'&round='+data.snapshot.grandPrix.round+'&length=3');
-        const hj=await hr.json();
+        const hj=await readApiJson(hr);
         if(!hr.ok)throw Error(hj.error||'Horizon unavailable');
         const byCode=new Map(hj.assets.map((a:any)=>[a.code,{points:a.rounds.map((r:any)=>r.expectedPoints),valueDelta:a.totalExpectedPriceDelta}]));
         optimizeCurrent=current.map((a:any)=>{const h=byCode.get(a.code) as any;return {...a,horizonPoints:h?.points,expectedDelta:h?.valueDelta??a.expectedDelta}});
@@ -333,7 +344,7 @@ export default function MyTeam() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ current: optimizeCurrent, market: optimizeMarket, cash: data.snapshot.cashBalance ?? 0, freeTransfers: data.snapshot.freeTransfers ?? 0, mode: mode==='horizon'?'points':mode, weight: customWeight, maxChanges: 3, locked }),
       });
-      const json = await response.json();
+      const json = await readApiJson(response);
       if(generation!==loadGeneration.current)return;
       if (!response.ok) throw Error(json.error || 'Optimization failed');
       const scenarios = Array.isArray(json.scenarios) ? json.scenarios : Array.isArray(json.proposals) ? json.proposals : Array.isArray(json) ? json : [];
@@ -344,7 +355,7 @@ export default function MyTeam() {
     } catch (error) {
       if(generation!==loadGeneration.current)return;
       setRecs([]); setStatus(error instanceof Error ? error.message : 'Optimization failed');
-    }
+    }finally{optimizeBusy.current=false;setOptimizing(false)}
   }
 
   const ownedCodes = new Set(currentTeamView?.assets.map((asset) => asset.code) ?? []);
@@ -374,30 +385,35 @@ export default function MyTeam() {
       setPossibleTeamsSortDir('DESC');
     }
   };
+  const doubled=data?.snapshot.assets.find(asset=>asset.isDoubled&&asset.type==='DRIVER');
+  const lineupPoints=data&&data.snapshot.assets.every(asset=>asset.expectedPoints!=null)&&doubled
+    ?data.snapshot.assets.reduce((sum,asset)=>sum+asset.expectedPoints!,0)+(doubled.boostExpectedPoints??doubled.expectedPoints!):null;
+  const lineupPriceChange=data&&data.snapshot.assets.length>0&&data.snapshot.assets.every(asset=>asset.expectedDelta!=null)
+    ?data.snapshot.assets.reduce((sum,asset)=>sum+asset.expectedDelta!,0):null;
 
   return (
-    <main>
+    <main className={dashboard.page}>
       <nav style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,marginBottom:18}}>
         <a href="/" style={{textDecoration:'none'}}>← Market Board</a>
-        <a href="/team/import" style={{textDecoration:'none'}}>Team setup</a>
+        <a href="/team/import" style={{textDecoration:'none'}}>Import teams</a>
       </nav>
       <header>
-        <span className="eyebrow">PADDOCK IQ · DATABASE TEAM</span>
-        <h1>My Team</h1>
-        <p>Actual F1 Fantasy history + Paddock IQ projections.</p>
+        <h1>My teams</h1>
+        <p>Your lineup, race outlook and transfer options.</p>
       </header>
-      <section>
-        <p>Your saved teams</p>
+      <div className={dashboard.accountActions}>
         <button disabled={editingTeam||deletingTeam} onClick={()=>void load()}>Refresh teams</button>{' '}<a href="/team/import">Create / update team</a>
-        <p className="notice">{status}</p>
-      </section>
+        {status&&<p className="notice" role="status">{status}</p>}
+        {!data&&status!=='Loading…'&&<p>Import your F1 Fantasy teams or create a lineup to get started.</p>}
+      </div>
       {data && <>
-        <section>
-          <label>Your teams<select disabled={editingTeam||deletingTeam} value={data.team.id} onChange={event=>void load(data.user.email,event.target.value)}>{data.teams.map(team=><option key={team.id} value={team.id}>{team.name}</option>)}</select></label>
+        <section className={dashboard.overview}>
+          <div className={dashboard.teamTabs} aria-label="Your saved teams">{data.teams.map(team=><button type="button" key={team.id} disabled={editingTeam||deletingTeam} aria-pressed={data.team.id===team.id} onClick={()=>void load(data.user.email,team.id)}>{team.name}</button>)}</div>
+          <label className={dashboard.teamSelect}>Your teams<select aria-label="Your teams" disabled={editingTeam||deletingTeam} value={data.team.id} onChange={event=>void load(data.user.email,event.target.value)}>{data.teams.map(team=><option key={team.id} value={team.id}>{team.name}</option>)}</select></label>
           <h2>{data.team.name} · {data.team.season}</h2>
-          <p><button disabled={editingTeam||deletingTeam} onClick={()=>{++loadGeneration.current;setStatus('');setEditingTeam(true)}}>Edit team</button> <button disabled={editingTeam||deletingTeam} onClick={()=>void removeTeam()}>Delete team</button></p>
+          <p className={dashboard.manageActions}><button disabled={editingTeam||deletingTeam} onClick={()=>{++loadGeneration.current;setStatus('');setEditingTeam(true)}}>Edit team</button> <button className={dashboard.deleteButton} disabled={editingTeam||deletingTeam} onClick={()=>void removeTeam()}>Delete team</button></p>
           {editingTeam&&<TeamEditor key={data.team.id} data={data} onCancel={()=>setEditingTeam(false)} onSaved={()=>load(data.user.email,data.team.id)}/>}
-          <div className="stats">
+          <div className={`stats ${dashboard.overviewStats}`}>
             <article><small>GP</small><strong>{data.snapshot.grandPrix.name}</strong></article>
             <article><small>Points</small><strong>{data.snapshot.totalPoints ?? '—'}</strong></article>
             <article><small>Cash</small><strong>{data.snapshot.cashBalance == null ? '—' : '$' + data.snapshot.cashBalance + 'M'}</strong></article>
@@ -405,21 +421,30 @@ export default function MyTeam() {
           </div>
         </section>
         <section>
-          <div className={styles.sectionHeading}><h2>Lineup</h2><span>{data.snapshot.assets.length} assets · same format as Market Board</span></div>
-          <TeamMarketBoard title="Drivers" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
-          <TeamMarketBoard title="Drivers" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
-          <TeamMarketBoard title="Constructors" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
-          <TeamMarketBoard title="Constructors" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={(code) => setLocked((prev) => prev.includes(code) ? prev.filter((item) => item !== code) : [...prev, code])}/>
+          <div className={styles.sectionHeading}><h2>Current lineup</h2><span>Round {data.snapshot.grandPrix.round}</span></div>
+          <dl className={dashboard.lineupTotals}><div><dt>Expected points · includes current 2×</dt><dd data-lineup-points>{lineupPoints==null?'—':lineupPoints.toFixed(1)+' xPts'}</dd></div><div><dt>Expected price change</dt><dd data-lineup-price-change className={lineupPriceChange==null?undefined:lineupPriceChange>=0?styles.teamDeltaPos:styles.teamDeltaNeg}>{fmtDelta(lineupPriceChange)}</dd></div></dl>
+          <p className={dashboard.help}>Keep an asset to exclude it from suggested transfers. Your saved lineup stays unchanged.</p>
+          {(['CONSTRUCTOR','DRIVER'] as const).map(type=><div key={type}><h3>{type==='DRIVER'?'Drivers':'Constructors'}</h3><div className={dashboard.assetGrid}>{data.snapshot.assets.filter(asset=>asset.type===type).map(asset=><article data-owned-asset key={asset.code} className={dashboard.assetCard} style={{borderTopColor:accents[asset.code]??'#64748b'}}>
+           <div className={dashboard.assetTop}><strong>{asset.code}</strong>{asset.isDoubled&&<span data-boost className={dashboard.boost}>2×</span>}</div><span>{asset.name}</span>
+           <div className={dashboard.assetNumbers}><b>{asset.expectedPoints==null?'—':asset.expectedPoints.toFixed(1)} <small>xPts</small></b><small>{asset.price==null?'—':'$'+asset.price.toFixed(1)+'M'}</small></div>
+           <button type="button" disabled={editingTeam||deletingTeam||optimizing} aria-pressed={locked.includes(asset.code)} aria-label={locked.includes(asset.code)?'Allow replacing '+asset.code:'Keep '+asset.code} onClick={()=>toggleLock(asset.code)}>{locked.includes(asset.code)?'Keeping':'Keep'}</button>
+          </article>)}</div></div>)}
+          <details className={dashboard.details}><summary>Detailed prices & probabilities</summary>
+          <TeamMarketBoard title="Drivers" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={toggleLock}/>
+          <TeamMarketBoard title="Drivers" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'DRIVER')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={toggleLock}/>
+          <TeamMarketBoard title="Constructors" tier="A" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={toggleLock}/>
+          <TeamMarketBoard title="Constructors" tier="B" assets={data.snapshot.assets.filter((asset) => asset.type === 'CONSTRUCTOR')} round={data.snapshot.grandPrix.round} locked={locked} onToggleLock={toggleLock}/>
           <p><small>Forecast model: driver ridge50/EWMA50 · constructor EWMA50/mean3 · dedicated ridge50 x2 selector · price probabilities v0.3 floor-aware.</small></p>
+          </details>
         </section>
         <section>
-          <h2>Strategy optimizer</h2>
-          <p><button onClick={generatePredictions}>Generate / refresh xPts + price probabilities</button></p>
-          <div className="tabs">{(['points','balanced','budget','custom','horizon'] as const).map((value) => <button key={value} className={mode === value ? 'active' : ''} onClick={() => setMode(value as Mode | 'horizon')}>{value === 'horizon' ? '3 GP hold' : value}</button>)}</div>
-          {mode === 'horizon' && <p><small>3 GP hold = projected R16–R18 points if you make transfers now and hold the lineup. Sprint-format correction is applied; future transfers and circuit/weather/news modifiers are not simulated. Historical single-asset forecast RMSE is roughly 16 pts for drivers and 21–22 pts for constructors, so treat small differences between scenarios cautiously.</small></p>}
-          {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => setCustomWeight(Number(event.target.value))} /></label></div>}
+          <h2>Find better transfers</h2>
+          {maintenance&&<p><button disabled={editingTeam||deletingTeam||optimizing} onClick={generatePredictions}>Refresh forecasts</button></p>}
+          <div className="tabs">{(['points','balanced','budget','custom','horizon'] as const).map((value) => <button key={value} disabled={editingTeam||deletingTeam||optimizing} aria-pressed={mode===value} className={mode === value ? 'active' : ''} onClick={() => {setMode(value as Mode | 'horizon');setRecs([]);setCurrentTeamView(null);setStatus('')}}>{{points:'Most points',balanced:'Balanced',budget:'Price growth',custom:'Custom',horizon:'Next 3 races'}[value]}</button>)}</div>
+          {mode === 'horizon' && <p><small>Projected R{data.snapshot.grandPrix.round}–R{data.snapshot.grandPrix.round+2} points if you make transfers now and hold the lineup. Future transfers are not included. Small forecast differences may not translate into better results.</small></p>}
+          {mode === 'custom' && <div className="inputs"><label>Points weight: {Math.round(customWeight * 100)}% · Budget weight: {Math.round((1-customWeight) * 100)}%<input disabled={optimizing} type="range" min="0" max="1" step="0.05" value={customWeight} onChange={(event) => {setCustomWeight(Number(event.target.value));setRecs([]);setCurrentTeamView(null);setStatus('')}} /></label></div>}
           <p><small>Locked: {locked.length ? locked.join(', ') : 'none'}</small></p>
-          <button onClick={optimize}>Generate recommendations</button>
+          <button disabled={editingTeam||deletingTeam||optimizing} aria-busy={optimizing} className={dashboard.primary} onClick={optimize}>{optimizing?'Finding transfers…':'Find better transfers'}</button>
           {recs.length > 0 && <>
           <div className={styles.confidenceFilters}>
             <span>Diversity:</span>
@@ -432,6 +457,8 @@ export default function MyTeam() {
             </>}
             <span style={{marginLeft:'auto'}}>{mode==='custom'?'Empirical lineup confidence is not calibrated for custom mode yet.':mode==='horizon'?'3GP confidence = historical pairwise lineup-ranking accuracy by predicted 3GP xPts gap; gaps ≥40 xPts are not extrapolated.':'Confidence = average historical pairwise ranking accuracy versus lower-ranked displayed teams.'}</span>
           </div>
+          {currentTeamView&&possibleTeamRows.length===0&&<p className="notice">No transfer options match your filters. You can keep your lineup or choose All confidence levels.</p>}
+          <details open className={dashboard.details}><summary>Compare all possible lineups</summary>
           {currentTeamView && <div className={styles.bestTeamsBoard}>
             <div className={styles.bestTeamsTitle}>
               <div><h3>Possible teams</h3><small>{mode === 'horizon' ? 'Ranked by 3 GP hold score' : 'Ranked by selected optimizer mode'}</small></div>
@@ -481,6 +508,7 @@ export default function MyTeam() {
               </table>
             </div>
           </div>}
+          </details>
           <div className="stats">{[0,1,2,3].map((count) => {
             const candidates = visibleRecs.filter((scenario:any) => scenario.transfers === count);
             const best = candidates[0];
@@ -491,6 +519,10 @@ export default function MyTeam() {
             const key = best ? scenarioKey(best) : null;
             return <article
               key={count}
+              role={key?'button':undefined}
+              tabIndex={key?0:undefined}
+              aria-label={key?'View '+count+'-transfer comparison':undefined}
+              onKeyDown={event=>{if(key&&(event.key==='Enter'||event.key===' ')){event.preventDefault();event.currentTarget.click()}}}
               className={key && (hoveredScenario === key || focusedScenario === key) ? styles.summaryCardActive : styles.summaryCard}
               onMouseEnter={() => key && setHoveredScenario(key)}
               onMouseLeave={() => setHoveredScenario(null)}
@@ -500,6 +532,7 @@ export default function MyTeam() {
                 const target = count === 0
                   ? document.getElementById('scenario-current')
                   : document.getElementById('scenario-' + encodeURIComponent(key));
+                const disclosure=target?.closest('details');if(disclosure)disclosure.open=true;
                 target?.focus({preventScroll:true});
                 target?.scrollIntoView({behavior:'smooth',block:'center'});
               }}

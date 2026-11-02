@@ -1,4 +1,6 @@
 import {AssetType,PrismaClient} from '@prisma/client';
+import {fantasyRaceName} from './fantasy-race-calendar';
+import {reconcileOfficialRoster} from './official-roster';
 
 const BASE='https://fantasy.formula1.com/feeds/drivers';
 
@@ -32,17 +34,6 @@ const CONSTRUCTOR_CODES:Record<string,string>={
  'AUDI REVOLUT F1 TEAM':'AUD',
  'CADILLAC':'CAD',
  'CADILLAC FORMULA 1 TEAM':'CAD',
-};
-
-const GP_NAMES_2026:Record<number,string>={
- 16:'Bahrain GP in Malaysia',
- 17:'Singapore GP',
- 18:'United States GP',
- 19:'Mexico GP',
- 20:'São Paulo GP',
- 21:'Las Vegas GP',
- 22:'Qatar GP',
- 23:'Abu Dhabi GP',
 };
 
 function constructorCode(name:unknown){
@@ -108,9 +99,13 @@ export type OfficialFantasySyncResult={
  driverTeams:Record<string,string>;
 };
 
+export async function syncOfficialFantasyRoster(prisma:PrismaClient,season:number,round:number){
+ const rows=await fetchRound(round);
+ if(!rows)throw Error('Official roster feed unavailable');
+ return reconcileOfficialRoster(prisma,season,round,rows);
+}
+
 export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,targetRound=17):Promise<OfficialFantasySyncResult>{
- const existingAssets=await prisma.asset.findMany({where:{season}});
- const byKey=new Map(existingAssets.map(a=>[a.type+':'+a.code,a]));
  const completedRounds=[Math.max(1,targetRound-2),Math.max(1,targetRound-1)];
  const [olderRows,completedRows,currentRows]=await Promise.all([
   fetchRound(completedRounds[0]),
@@ -118,6 +113,9 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   fetchRound(targetRound),
  ]);
  if(!currentRows)throw new Error('Official F1 Fantasy current round '+targetRound+' feed is unavailable');
+ await reconcileOfficialRoster(prisma,season,targetRound,currentRows);
+ const existingAssets=await prisma.asset.findMany({where:{season}});
+ const byKey=new Map(existingAssets.map(a=>[a.type+':'+a.code,a]));
  const driverTeams=officialDriverTeams(currentRows);
  if(olderRows)officialDriverTeams(olderRows);
  if(completedRows)officialDriverTeams(completedRows);
@@ -135,11 +133,9 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
   }
   const gp=await prisma.grandPrix.upsert({
    where:{season_round:{season,round}},
-   update:{name:GP_NAMES_2026[round]??'Round '+round},
-   create:{season,round,name:GP_NAMES_2026[round]??'Round '+round},
+   update:{name:fantasyRaceName(season,round)},
+   create:{season,round,name:fantasyRaceName(season,round)},
   });
-
-  if(markCurrent)await prisma.asset.updateMany({where:{season},data:{active:false}});
 
   for(const row of rows){
    if(!usableOfficialRow(row))continue;
@@ -147,8 +143,6 @@ export async function syncOfficialFantasyMarket(prisma:PrismaClient,season=2026,
    if(!identity)continue;
    const asset=byKey.get(identity.type+':'+identity.code);
    if(!asset){skipped.add(identity.type+':'+identity.code);continue}
-
-   if(markCurrent)await prisma.asset.update({where:{id:asset.id},data:{active:true}});
 
    const price=Number(row.Value);
    if(Number.isFinite(price)&&price>0){

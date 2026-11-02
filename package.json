@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/check-deployment-env.mjs --vercel-only && prisma generate && next build",
+    "deploy:check": "node scripts/check-deployment-env.mjs",
+    "postinstall": "prisma generate",
     "start": "next start",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "fantasy:sync": "tsx scripts/sync-fantasy-statistics.ts",
@@ -86,13 +89,15 @@
     "fantasy:sync-components-2025": "tsx scripts/sync-fantasy-components-2025.ts",
     "fantasy:backtest-production-calibration": "tsx scripts/backtest-production-calibration-2025.ts"
   },
+  "engines": {"node": "22.x"},
+  "overrides": {"postcss": "8.5.30", "deepmerge-ts": "8.0.0"},
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "lucide-react": "^0.468.0",
-    "next": "^15.5.0",
+    "next": "15.5.27",
     "next-auth": "^4.24.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

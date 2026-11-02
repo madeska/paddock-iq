@@ -65,3 +65,59 @@ test('current event archive finds a confirmed penalty after it leaves the latest
  });
  try{const result=await getGridPenaltyNews(c);assert.equal(result.mentions[0]?.status,'CONFIRMED');assert.equal(result.mentions[0]?.kind,'BACK_OF_GRID');assert.ok(!requested.some(u=>u.includes('beyond-the-grid.other')))}finally{mocked.mock.restore()}
 });
+import {parseOfficialPenaltyArticles} from '../src/lib/grid-penalty-news';
+const mexicoContext={...context,round:19,eventName:'Mexico City GP',isSprint:false,deadline:new Date('2026-10-31T21:00:00Z'),asOf:new Date('2026-10-31T10:00:00Z'),drivers:[{code:'VER',name:'Max Verstappen'},{code:'LAW',name:'Liam Lawson'}]};
+const mexicoArticle={...article,url:'https://www.formula1.com/en/latest/article/verstappen-and-lawson-grid-penalties.abc',headline:'Verstappen and Lawson get grid penalties after clumsy Mexico City practice clash',description:'Max Verstappen and Liam Lawson will both lose a place on the grid at the Autodromo Hermanos Rodriguez.',body:'The stewards issued individual one-place grid drops after reviewing the practice collision. Each driver also received one penalty point.',publishedAt:'2026-10-31T04:58:00Z',modifiedAt:'2026-10-31T04:58:00Z'};
+test('Mexico joint decision produces separate one-place race drops for both drivers',()=>{
+ const mentions=parseOfficialPenaltyArticles(mexicoArticle,mexicoContext);
+ assert.deepEqual(mentions.map(m=>[m.code,m.status,m.places,m.session]),[['VER','CONFIRMED',1,'RACE'],['LAW','CONFIRMED',1,'RACE']]);
+ assert.deepEqual([...applyGridDrops(['VER','X','LAW','Y'],Object.fromEntries(mentions.map(m=>[m.code!,m.places!])) )],[['X',1],['VER',2],['Y',3],['LAW',4]]);
+});
+test('joint report cannot assign a race penalty without a verified normal weekend or explicit session',()=>{
+ for(const isSprint of [undefined,true])assert.ok(parseOfficialPenaltyArticles(mexicoArticle,{...mexicoContext,isSprint}).every(m=>m.status!=='CONFIRMED'));
+});
+test('joint rumors, penalty points alone, mismatched recipients and conflicting drops stay pending',()=>{
+ for(const change of [
+  {description:mexicoArticle.description.replace('will both','could both')},
+  {description:'Both drivers received a penalty point.',body:'The stewards issued one penalty point each.'},
+  {description:'Max Verstappen will lose one place on the grid.'},
+  {body:'The stewards issued individual five-place grid drops.'},
+  {body:'The penalty was overturned.'},
+ ])assert.ok(parseOfficialPenaltyArticles({...mexicoArticle,...change},mexicoContext).every(m=>m.status!=='CONFIRMED'));
+});
+test('scanner retains both recipients from the same source URL',async()=>{
+ const asOf=new Date(),c={...mexicoContext,season:asOf.getUTCFullYear(),asOf,deadline:new Date(+asOf+86400000)};
+ const mocked=mock.method(globalThis,'fetch',async(input:any)=>new Response(String(input).endsWith('/en/latest')?'<a href="/en/latest/article/verstappen-lawson-grid.abc">News</a>':'<script type="application/ld+json">'+JSON.stringify({'@type':'NewsArticle',headline:mexicoArticle.headline,description:mexicoArticle.description,articleBody:mexicoArticle.body,datePublished:new Date(+asOf-60000).toISOString(),dateModified:new Date(+asOf-60000).toISOString()})+'</script>'));
+ try{const r=await getGridPenaltyNews(c);assert.deepEqual(r.mentions.map(m=>[m.code,m.places,m.status]),[['VER',1,'CONFIRMED'],['LAW',1,'CONFIRMED']])}finally{mocked.mock.restore()}
+});
+test('publisher description may omit the amount: named body decision supplies individual drops',()=>{
+ const a={...mexicoArticle,description:'Following the Mexico practice incident, the stewards penalised Max Verstappen and Liam Lawson.',body:'After speaking to Verstappen and Lawson, the stewards issued individual one-place grid drops. They also assigned a penalty point each.'};
+ assert.deepEqual(parseOfficialPenaltyArticles(a,mexicoContext).map(m=>[m.code,m.places,m.status]),[['VER',1,'CONFIRMED'],['LAW',1,'CONFIRMED']]);
+});
+test('joint future conditions and another event cannot become current-event decisions',()=>{
+ for(const description of ['If Verstappen and Lawson cause another collision, they will both lose a place on the grid at the Mexico City Grand Prix.','Verstappen and Lawson will both lose a place on the grid at the Sao Paulo Grand Prix.']){
+  assert.ok(parseOfficialPenaltyArticles({...mexicoArticle,description,body:''},mexicoContext).every(m=>m.status!=='CONFIRMED'));
+ }
+});
+const bottasContext={...mexicoContext,drivers:[...mexicoContext.drivers,{code:'BOT',name:'Valtteri Bottas'}]};
+const bottasArticle={...mexicoArticle,headline:'Valtteri Bottas set for grid penalty at 2026 Formula 1 Mexico City Grand Prix after power unit changes',description:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix.',body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Regulations specify 10 places for an initial breach and five for another breach. If the total exceeds 15, a driver starts at the back. Bottas has five first breaches for this season, meaning he is in line for an official drop of 50 places.'};
+test('Bottas event-specific power-unit total is read across paragraphs without applying generic rule examples',()=>{
+ const r=parseOfficialPenaltyArticle(bottasArticle,bottasContext);
+ assert.equal(r?.code,'BOT');assert.equal(r?.status,'CONFIRMED');assert.equal(r?.places,50);assert.equal(r?.session,'RACE');
+ assert.equal(applyGridDrops(['BOT','VER','LAW'],{BOT:r!.places!}).get('BOT'),3);
+});
+test('official total needs its own named driver, current event anchor, exact amount and nonconditional evidence',()=>{
+ for(const change of [
+  {body:'If Bottas exceeds the allowance, he is in line for an official drop of 50 places.'},
+  {description:'Bottas could take a grid penalty at the Mexico City Grand Prix.'},
+  {body:'Bottas will take a sizeable grid drop at the Sao Paulo Grand Prix. Bottas is in line for an official drop of 50 places.',description:''},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Verstappen is in line for an official drop of 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of at least 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. In 2025 Bottas was in line for an official drop of 50 places.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of 50 places. The penalty was overturned.'},
+  {body:'Bottas will take a sizeable grid drop at the Mexico City Grand Prix. Bottas is in line for an official drop of 50 places at the Sao Paulo Grand Prix.'},
+ ])assert.notEqual(parseOfficialPenaltyArticle({...bottasArticle,...change},bottasContext)?.status,'CONFIRMED');
+});
+test('cumulative destination must match even with incidental current-event mention, and unless is conditional',()=>{
+ for(const body of ['After Mexico City practice, Bottas is in line for an official drop of 50 places at the Sao Paulo Grand Prix.','Bottas will receive an official drop of 50 places unless the power unit is repaired.'])assert.notEqual(parseOfficialPenaltyArticle({...bottasArticle,body},bottasContext)?.status,'CONFIRMED');
+});

@@ -1,5 +1,5 @@
 export type PenaltyArticle={body?:string;url:string;headline:string;description:string;publishedAt:string;modifiedAt:string};
-export type PenaltyNewsContext={season:number;round:number;eventName:string;deadline:Date;asOf:Date;drivers:readonly {code:string;name:string}[]};
+export type PenaltyNewsContext={season:number;round:number;eventName:string;deadline:Date;asOf:Date;isSprint?:boolean;drivers:readonly {code:string;name:string}[]};
 export type PenaltyMention={kind?:'EXACT'|'MINIMUM'|'BACK_OF_GRID';minimumPlaces?:number;code:string|null;places:number|null;session:'RACE'|'SPRINT'|null;status:'CONFIRMED'|'PENDING';sourceUrl:string;publishedAt:string;headline:string;reason:string};
 const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function official(url:string){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname==='www.formula1.com'&&u.pathname.startsWith('/en/latest/article/')&&!u.username&&!u.password}catch{return false}}
@@ -13,7 +13,7 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
  const names=c.drivers.filter(d=>{const surname=normalize(d.name).split(/\s+/).at(-1)!;return surname.length>2&&new RegExp('\\b'+surname.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(title)});
  const code=names.length===1?names[0].code:null;
 
- // Body evidence must name this driver and event in the same sentence. Rules and hypotheticals are excluded.
+ // Most decisions bind driver, event and amount in one sentence; cumulative totals may use a separate event anchor.
  if(article.body&&code&&!/\bcould\b|\bmay\b|\bmight\b|\bappeal\b|\boverturned\b|\breversed\b|\bno penalty\b/.test(title+' '+normalize(article.description))){
   const surname=normalize(c.drivers.find(d=>d.code===code)!.name).split(/\s+/).at(-1)!;
   const body=normalize(article.body);
@@ -31,6 +31,26 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
    const exact=parseOfficialPenaltyArticle({...article,body:undefined,headline:sentence,description:''},c);
    if(exact?.status==='CONFIRMED'&&!/minimum|at least|depending/.test(sentence))evidence.push({...exact,headline:article.headline,kind:'EXACT'});
   }
+  // An explicit official total is reported separately from the event-specific decision in some articles.
+  // Never calculate a total from generic allocation rules or infer a penalty from new parts alone.
+  const uncertain=/\b(?:if|unless|whether|unclear|unconfirmed|would|could|may|might|possible|possibly|potential|potentially|appeal|overturned|reversed)\b|\bno penalty\b/;
+  const named=new RegExp('\\b'+surname.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b');
+  const eventReference=new RegExp('\\b'+event.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s+(?:grand prix|gp)\\b','g');
+  const otherEvent=(t:string)=>/\bgrand prix\b|\bgp\b/.test(t.replace(eventReference,''));
+  const allSentences=(normalize(article.description)+'\n'+body).split(/[.!?\n]+/);
+  const anchors=allSentences.filter(t=>named.test(t)&&t.includes(event)&&!otherEvent(t)&&!uncertain.test(t)&&/\bwill (?:take|receive|serve)\b[^.!?]{0,50}\bgrid (?:drop|penalty)\b/.test(t));
+  const targets=new Set(anchors.flatMap(t=>/\bsprint\b/.test(t)?[]:/\bgrand prix\b|\brace\b/.test(t)?['RACE' as const]:[]));
+  if(targets.size===1&&!uncertain.test(title+' '+normalize(article.description))&&!/\b(?:overturned|reversed|rescinded)\b|\bno penalty\b/.test(body)){
+   for(const sentence of allSentences.filter(t=>named.test(t))){
+    const total=sentence.match(/\b(?:is in line for an|will receive an|has received an) official drop of (\d+) places\b/);
+    if(!total||uncertain.test(sentence)||/minimum|at least|depending|\bsprint\b/.test(sentence))continue;
+    if(otherEvent(sentence))continue;
+    if([...sentence.matchAll(/\b20\d{2}\b/g)].some(m=>+m[0]!==c.season))continue;
+    if(c.drivers.some(d=>d.code!==code&&new RegExp('\\b'+normalize(d.name).split(/\s+/).at(-1)!+'\\b').test(sentence)))continue;
+    const places=+total[1];if(!Number.isInteger(places)||places<1||places>100)continue;
+    evidence.push({code,places,kind:'EXACT',session:'RACE',status:'CONFIRMED',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'Official cumulative grid drop: '+places+' places for RACE'+(places>15?'; back-of-grid starting group':'')});
+   }
+  }
   const unique=evidence.filter((m,i)=>evidence.findIndex(other=>other.kind===m.kind&&other.session===m.session&&other.places===m.places&&other.minimumPlaces===m.minimumPlaces)===i);
   // A confirmed starting group is enough even when the exact cumulative drop remains unknown.
   const back=unique.find(m=>m.kind==='BACK_OF_GRID');
@@ -39,8 +59,8 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
   if(unique.length>1)return {code,places:null,session:null,status:'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'Multiple penalty statements require reconciliation; not applied'};
   if(lowerBounds.length===1&&raceOnly&&+lowerBounds[0][1]>0&&+lowerBounds[0][1]<=100)return {code,places:null,minimumPlaces:+lowerBounds[0][1],kind:'MINIMUM',session:'RACE',status:'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:'At least '+lowerBounds[0][1]+' grid places for RACE only; final penalty unknown, not applied'};
  }
- const number=title.match(/\b(\d+|three|five|ten|fifteen|twenty)[ -]place(?:s)?\b/);
- const words:Record<string,number>={three:3,five:5,ten:10,fifteen:15,twenty:20};
+ const number=title.match(/\b(\d+|one|two|three|five|ten|fifteen|twenty)[ -]place(?:s)?\b/);
+ const words:Record<string,number>={one:1,two:2,three:3,five:5,ten:10,fifteen:15,twenty:20};
  const places=number?(words[number[1]]??Number(number[1])):null;
  const session=/\bsprint\b/.test(title)?'SPRINT':/\bgrand prix\b|\bgp\b|\brace\b/.test(title)?'RACE':null;
  const uncertain=/\bcould\b|\bmay\b|\bmight\b|\bpossible\b|\bpotential\b|\bavoids?\b|\bescapes?\b|\bappeal\b|\boverturned\b|\breversed\b|\bno penalty\b/.test(title+' '+normalize(article.description));
@@ -48,6 +68,38 @@ export function parseOfficialPenaltyArticle(article:PenaltyArticle,c:PenaltyNews
  const appliesHere=new RegExp('(?:for|at|ahead of) (?:the )?'+eventPattern+' (?:grand prix|gp|sprint)').test(title);
  const confirmed=appliesHere&&/grid/.test(title)&&code&&places!=null&&Number.isInteger(places)&&places>0&&places<=100&&session&&!uncertain&&/\bhanded\b|\bgiven\b|\breceives?\b|\bgets\b|\bto serve\b|\bhit with\b/.test(title);
  return {code,places:confirmed?places:null,session,status:confirmed?'CONFIRMED':'PENDING',sourceUrl:article.url,publishedAt:article.publishedAt,headline:article.headline,reason:confirmed?'Explicit official headline; provisional grid, subject to later decisions':'Uncertain, unsupported or incomplete penalty details; not applied'};
+}
+/** A joint article needs explicit, equal drops for both named recipients, not just penalty points. */
+export function parseOfficialPenaltyArticles(article:PenaltyArticle,c:PenaltyNewsContext):PenaltyMention[]{
+ const original=parseOfficialPenaltyArticle(article,c);
+ if(!original)return [];
+ if(original.code)return [original];
+ const title=normalize(article.headline),summary=normalize(article.description),body=normalize(article.body??'');
+ const names=c.drivers.filter(d=>new RegExp('\\b'+normalize(d.name).split(/\s+/).at(-1)!+'\\b').test(title));
+ const pending=()=>[original];
+ if(names.length!==2||/\b(?:if|could|may|might|possible|potential|appeal|overturned|reversed)\b|\bno penalty\b/.test(title+' '+summary+' '+body))return pending();
+ const sentences=(summary+'\n'+body).split(/[.!?\n]+/).filter(s=>names.every(d=>new RegExp('\\b'+normalize(d.name).split(/\s+/).at(-1)!+'\\b').test(s)));
+ const values: number[]=[];
+ let session:'RACE'|'SPRINT'|null=null;
+ for(const sentence of sentences){
+  const drop=sentence.match(/\bwill (?:both|each) lose (a|one|two|three|five|ten|\d+) places? on the grid\b/)
+   ??(/\bstewards\b/.test(sentence)?sentence.match(/\bissu(?:ed|ing) individual (one|two|three|five|ten|\d+)[ -]place grid drops\b/):null);
+  if(!drop)continue;
+  const event=normalize(c.eventName).replace(/\s+(grand prix|gp)\b.*$/,'').trim();
+  if(/\bgrand prix\b|\bgp\b/.test(sentence)&&!sentence.includes(event))return pending();
+  const n=({a:1,one:1,two:2,three:3,five:5,ten:10} as Record<string,number>)[drop[1]]??Number(drop[1]);
+  if(!Number.isInteger(n)||n<1||n>100)return pending();
+  const sprint=/\bsprint\b/.test(sentence),race=/\brace\b|\bgrand prix\b/.test(sentence);
+  const target=sprint&&!race?'SPRINT':!sprint&&(race||c.isSprint===false)?'RACE':null;
+  if(!target||(session&&session!==target))return pending();
+  session=target;values.push(n);
+ }
+ if(!session||!values.length||new Set(values).size!==1)return pending();
+ // A contradictory numeric drop in the article requires reconciliation, never a guess.
+ const drops=[...body.matchAll(/\b(\d+|one|two|three|five|ten)[ -]place(?:s)? grid (?:drops?|penalt(?:y|ies))\b/g)];
+ const words:Record<string,number>={one:1,two:2,three:3,five:5,ten:10};
+ if(drops.some(m=>(words[m[1]]??Number(m[1]))!==values[0])||/minimum|at least|depending|\bsprint\b/.test(body))return pending();
+ return names.map(d=>({...original,code:d.code,places:values[0],session,status:'CONFIRMED',kind:'EXACT',reason:'Official report explicitly assigns the same grid drop to both named drivers'}));
 }
 /** Provisional classified grid: temporary positions, unpenalised slots, compression, >15 back group. */
 export function applyGridDrops(order:readonly string[],drops:Readonly<Record<string,number>>):Map<string,number>{
@@ -96,7 +148,8 @@ export async function getGridPenaltyNews(context:PenaltyNewsContext){
     let parsed:any;try{parsed=JSON.parse(match[1])}catch{continue}
     const nodes=Array.isArray(parsed)?parsed:[parsed,...(parsed['@graph']??[])];
     for(const n of nodes){if(n['@type']!=='NewsArticle'||typeof n.headline!=='string'||typeof n.datePublished!=='string'||typeof n.dateModified!=='string')continue;
-     const mention=parseOfficialPenaltyArticle({url,headline:n.headline,description:String(n.description??''),body:typeof n.articleBody==='string'?n.articleBody:extractOfficialArticleBody(html),publishedAt:n.datePublished,modifiedAt:n.dateModified},context);if(mention&&!mentions.some(m=>m.sourceUrl===url))mentions.push(mention);
+     const parsedMentions=parseOfficialPenaltyArticles({url,headline:n.headline,description:String(n.description??''),body:typeof n.articleBody==='string'?n.articleBody:extractOfficialArticleBody(html),publishedAt:n.datePublished,modifiedAt:n.dateModified},context);
+     for(const mention of parsedMentions)if(!mentions.some(m=>m.sourceUrl===url&&m.code===mention.code&&m.session===mention.session))mentions.push(mention);
     }
    }
   }catch{errors.push('Could not read official article: '+url)}

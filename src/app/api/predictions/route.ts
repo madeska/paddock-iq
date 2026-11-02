@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 import { predictPrice } from '../../../lib/price-predictor';
+import {authorizeMaintenanceRequest} from '../../../lib/auth';
 
 export async function GET(request: NextRequest) {
   const season = Number(request.nextUrl.searchParams.get('season') ?? 2026);
@@ -36,6 +37,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied=await authorizeMaintenanceRequest(request);if(denied)return denied;
   try {
     const body = await request.json();
     const season = Number(body.season ?? 2026);
